@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import AppModuleLayout from "../../components/AppModuleLayout";
+import { useParams } from "next/navigation";
+import AppModuleLayout from "../../../components/AppModuleLayout";
+import { defaultLocale, getMessages, isValidLocale } from "../../../lib/i18n";
 
 type PlanTier = "basic" | "premium" | "elite";
 
@@ -99,6 +101,11 @@ function average(numbers: number[]) {
 }
 
 export default function DashboardPage() {
+  const params = useParams();
+  const rawLocale = typeof params.locale === "string" ? params.locale : defaultLocale;
+  const locale = isValidLocale(rawLocale) ? rawLocale : defaultLocale;
+  const t = getMessages(locale);
+
   const [profile, setProfile] = useState<BabyProfile | null>(null);
   const [todayLabel, setTodayLabel] = useState("");
   const [selectedPlan, setSelectedPlan] = useState<PlanTier>("basic");
@@ -173,7 +180,7 @@ export default function DashboardPage() {
   function handleAskAgain() {
     const cleanQuestion = aiInput.trim();
     if (!cleanQuestion || typeof window === "undefined") return;
-    window.location.href = `/dashboard?q=${encodeURIComponent(cleanQuestion)}`;
+    window.location.href = `/${locale}/dashboard?q=${encodeURIComponent(cleanQuestion)}`;
   }
 
   const babyName = profile?.babyName || "Your baby";
@@ -591,21 +598,19 @@ export default function DashboardPage() {
   return (
     <AppModuleLayout
       active="dashboard"
-      title={`Welcome back, ${babyName}`}
+      title={`${t.dashboard.welcomeBack}, ${babyName}`}
       subtitle="One premium view for sleep, food, care and AI-guided daily clarity."
-      label="Unified overview"
-      currentFocusTitle="Main dashboard"
-      currentFocusText="Overview, AI guidance and quick access to every module."
+      label={t.dashboard.unifiedOverview}
+      currentFocusTitle={t.dashboard.mainDashboard}
+      currentFocusText={t.dashboard.overviewText}
       dateLabel={todayLabel || "Loading..."}
     >
       <section className="neoDash__panel">
         <div className="neoDash__panelHeader">
           <div>
             <p className="neoDash__label">Subscription</p>
-            <h3>Your current plan</h3>
-            <p className="neoDash__panelText">
-              Choose a plan to unlock more value across the full ecosystem.
-            </p>
+            <h3>{t.dashboard.currentPlan}</h3>
+            <p className="neoDash__panelText">{t.dashboard.choosePlan}</p>
           </div>
         </div>
 
@@ -726,8 +731,8 @@ export default function DashboardPage() {
               <p className="neoDash__label">Central AI Assistant</p>
               <h3>{aiAssistant.title}</h3>
               <p className="neoDash__panelText">
-                Based on your question, the unified dashboard adapted today&apos;s
-                guidance using real module data.
+                Based on your question, the unified dashboard adapted today&apos;s guidance
+                using real module data.
               </p>
             </div>
           </div>
@@ -859,7 +864,7 @@ export default function DashboardPage() {
         }}
       >
         <a
-          href="/sleep"
+          href={`/${locale}/sleep`}
           className="neoDash__card"
           style={{ textDecoration: "none", color: "inherit" }}
         >
@@ -875,7 +880,7 @@ export default function DashboardPage() {
         </a>
 
         <a
-          href="/food"
+          href={`/${locale}/food`}
           className="neoDash__card"
           style={{ textDecoration: "none", color: "inherit" }}
         >
@@ -891,7 +896,7 @@ export default function DashboardPage() {
         </a>
 
         <a
-          href="/care"
+          href={`/${locale}/care`}
           className="neoDash__card"
           style={{ textDecoration: "none", color: "inherit" }}
         >

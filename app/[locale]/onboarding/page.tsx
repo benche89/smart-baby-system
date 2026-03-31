@@ -1,7 +1,8 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useMemo, useState, type CSSProperties, type FormEvent } from "react";
+import { defaultLocale, getMessages, isValidLocale } from "../../../lib/i18n";
 
 type PlanTier = "basic" | "premium" | "elite";
 
@@ -63,6 +64,10 @@ const PLAN_CONTENT: Record<
 
 export default function OnboardingPage() {
   const router = useRouter();
+  const params = useParams();
+  const rawLocale = typeof params.locale === "string" ? params.locale : defaultLocale;
+  const locale = isValidLocale(rawLocale) ? rawLocale : defaultLocale;
+  const t = getMessages(locale);
 
   const [selectedPlan, setSelectedPlan] = useState<PlanTier>("premium");
   const [isReady, setIsReady] = useState(false);
@@ -135,7 +140,7 @@ export default function OnboardingPage() {
       localStorage.setItem(PLAN_STORAGE_KEY, selectedPlan);
     }
 
-    router.push("/dashboard");
+    router.push(`/${locale}/dashboard`);
   }
 
   const plan = useMemo(() => PLAN_CONTENT[selectedPlan], [selectedPlan]);
@@ -190,7 +195,7 @@ export default function OnboardingPage() {
                 color: "#0f172a",
               }}
             >
-              Set up your premium parenting profile
+              {t.onboarding.title}
             </h1>
 
             <p
@@ -202,8 +207,7 @@ export default function OnboardingPage() {
                 maxWidth: "760px",
               }}
             >
-              Add a few key details so Smart Baby System can personalize sleep, food and care
-              guidance for your baby.
+              {t.onboarding.subtitle}
             </p>
           </div>
 
@@ -362,16 +366,7 @@ export default function OnboardingPage() {
               }}
             >
               <label style={{ display: "grid", gap: "8px" }}>
-                <span
-                  style={{
-                    fontSize: "14px",
-                    fontWeight: 600,
-                    color: "#0f172a",
-                  }}
-                >
-                  Baby name
-                </span>
-
+                <span style={labelStyle}>{t.onboarding.babyName}</span>
                 <input
                   type="text"
                   value={form.babyName}
@@ -382,16 +377,7 @@ export default function OnboardingPage() {
               </label>
 
               <label style={{ display: "grid", gap: "8px" }}>
-                <span
-                  style={{
-                    fontSize: "14px",
-                    fontWeight: 600,
-                    color: "#0f172a",
-                  }}
-                >
-                  Age in months
-                </span>
-
+                <span style={labelStyle}>{t.onboarding.ageMonths}</span>
                 <input
                   type="number"
                   value={form.ageMonths}
@@ -402,16 +388,7 @@ export default function OnboardingPage() {
               </label>
 
               <label style={{ display: "grid", gap: "8px" }}>
-                <span
-                  style={{
-                    fontSize: "14px",
-                    fontWeight: 600,
-                    color: "#0f172a",
-                  }}
-                >
-                  Usual bedtime
-                </span>
-
+                <span style={labelStyle}>{t.onboarding.bedtime}</span>
                 <input
                   type="time"
                   value={form.bedtime}
@@ -421,22 +398,13 @@ export default function OnboardingPage() {
               </label>
 
               <label style={{ display: "grid", gap: "8px" }}>
-                <span
-                  style={{
-                    fontSize: "14px",
-                    fontWeight: 600,
-                    color: "#0f172a",
-                  }}
-                >
-                  Main concern
-                </span>
-
+                <span style={labelStyle}>{t.onboarding.mainConcern}</span>
                 <select
                   value={form.mainConcern}
                   onChange={(e) => setForm((prev) => ({ ...prev, mainConcern: e.target.value }))}
                   style={inputStyle}
                 >
-                  <option value="">Choose one</option>
+                  <option value="">{t.onboarding.chooseOne}</option>
                   <option value="Sleep rhythm">Sleep rhythm</option>
                   <option value="Short naps">Short naps</option>
                   <option value="Night waking">Night waking</option>
@@ -454,16 +422,7 @@ export default function OnboardingPage() {
                   gridColumn: "1 / -1",
                 }}
               >
-                <span
-                  style={{
-                    fontSize: "14px",
-                    fontWeight: 600,
-                    color: "#0f172a",
-                  }}
-                >
-                  Notes
-                </span>
-
+                <span style={labelStyle}>{t.onboarding.notes}</span>
                 <textarea
                   value={form.notes}
                   onChange={(e) => setForm((prev) => ({ ...prev, notes: e.target.value }))}
@@ -487,36 +446,16 @@ export default function OnboardingPage() {
                 marginTop: "24px",
               }}
             >
-              <button
-                type="submit"
-                style={{
-                  border: "none",
-                  borderRadius: "999px",
-                  padding: "14px 22px",
-                  background: "#0f172a",
-                  color: "#fff",
-                  fontWeight: 700,
-                  cursor: "pointer",
-                  boxShadow: "0 12px 30px rgba(15,23,42,0.16)",
-                }}
-              >
-                Save profile & open dashboard
+              <button type="submit" style={primaryButtonStyle}>
+                {t.onboarding.save}
               </button>
 
               <button
                 type="button"
-                onClick={() => router.push("/dashboard")}
-                style={{
-                  borderRadius: "999px",
-                  padding: "14px 22px",
-                  background: "#fff",
-                  color: "#0f172a",
-                  border: "1px solid rgba(148,163,184,0.25)",
-                  fontWeight: 700,
-                  cursor: "pointer",
-                }}
+                onClick={() => router.push(`/${locale}/dashboard`)}
+                style={secondaryButtonStyle}
               >
-                Skip for now
+                {t.onboarding.skip}
               </button>
             </div>
           </form>
@@ -647,6 +586,12 @@ export default function OnboardingPage() {
   );
 }
 
+const labelStyle: CSSProperties = {
+  fontSize: "14px",
+  fontWeight: 600,
+  color: "#0f172a",
+};
+
 const inputStyle: CSSProperties = {
   width: "100%",
   border: "1px solid rgba(148,163,184,0.22)",
@@ -656,4 +601,25 @@ const inputStyle: CSSProperties = {
   outline: "none",
   background: "#fff",
   color: "#0f172a",
+};
+
+const primaryButtonStyle: CSSProperties = {
+  border: "none",
+  borderRadius: "999px",
+  padding: "14px 22px",
+  background: "#0f172a",
+  color: "#fff",
+  fontWeight: 700,
+  cursor: "pointer",
+  boxShadow: "0 12px 30px rgba(15,23,42,0.16)",
+};
+
+const secondaryButtonStyle: CSSProperties = {
+  borderRadius: "999px",
+  padding: "14px 22px",
+  background: "#fff",
+  color: "#0f172a",
+  border: "1px solid rgba(148,163,184,0.25)",
+  fontWeight: 700,
+  cursor: "pointer",
 };

@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
+import AppModuleLayout from "../../../components/AppModuleLayout";
 
 type PlanTier = "basic" | "premium" | "elite";
 
