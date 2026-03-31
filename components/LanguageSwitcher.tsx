@@ -21,7 +21,9 @@ export default function LanguageSwitcher() {
             border: "1px solid rgba(148,163,184,0.25)",
             textDecoration: "none",
             color: "#0f172a",
-            background: "#fff"
+            background: "#fff",
+            fontWeight: 700,
+            fontSize: "13px",
           }}
         >
           {locale.toUpperCase()}
