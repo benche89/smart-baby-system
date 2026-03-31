@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 
 type ActiveModule = "dashboard" | "sleep" | "food" | "care";
 
@@ -22,7 +22,7 @@ export default function AppModuleLayout({
   active,
   title,
   subtitle,
-  label = "Today’s overview",
+  label = "Today's overview",
   children,
   currentFocusTitle = "Smart Baby System",
   currentFocusText = "Premium navigation unified across the app.",

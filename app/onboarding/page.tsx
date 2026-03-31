@@ -1,7 +1,7 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useState, type CSSProperties } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useState, type CSSProperties, type FormEvent } from "react";
 
 type PlanTier = "basic" | "premium" | "elite";
 
@@ -63,7 +63,6 @@ const PLAN_CONTENT: Record<
 
 export default function OnboardingPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
 
   const [selectedPlan, setSelectedPlan] = useState<PlanTier>("premium");
   const [isReady, setIsReady] = useState(false);
@@ -77,15 +76,18 @@ export default function OnboardingPage() {
   });
 
   useEffect(() => {
-    const planFromUrl = searchParams.get("plan");
+    if (typeof window === "undefined") return;
+
+    const params = new URLSearchParams(window.location.search);
+    const planFromUrl = params.get("plan");
     const savedPlan = localStorage.getItem(PLAN_STORAGE_KEY);
 
     const normalizedPlan: PlanTier =
       planFromUrl === "basic" || planFromUrl === "premium" || planFromUrl === "elite"
         ? planFromUrl
         : savedPlan === "basic" || savedPlan === "premium" || savedPlan === "elite"
-        ? savedPlan
-        : "premium";
+          ? savedPlan
+          : "premium";
 
     setSelectedPlan(normalizedPlan);
     localStorage.setItem(PLAN_STORAGE_KEY, normalizedPlan);
@@ -108,26 +110,30 @@ export default function OnboardingPage() {
     }
 
     setIsReady(true);
-  }, [searchParams]);
+  }, []);
 
   function choosePlan(plan: PlanTier) {
     setSelectedPlan(plan);
-    localStorage.setItem(PLAN_STORAGE_KEY, plan);
+    if (typeof window !== "undefined") {
+      localStorage.setItem(PLAN_STORAGE_KEY, plan);
+    }
   }
 
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    const profileData: BabyProfile = {
-      babyName: form.babyName,
-      ageMonths: form.ageMonths,
-      bedtime: form.bedtime,
-      mainConcern: form.mainConcern,
-      notes: form.notes,
-    };
+    if (typeof window !== "undefined") {
+      const profileData: BabyProfile = {
+        babyName: form.babyName,
+        ageMonths: form.ageMonths,
+        bedtime: form.bedtime,
+        mainConcern: form.mainConcern,
+        notes: form.notes,
+      };
 
-    localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(profileData));
-    localStorage.setItem(PLAN_STORAGE_KEY, selectedPlan);
+      localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(profileData));
+      localStorage.setItem(PLAN_STORAGE_KEY, selectedPlan);
+    }
 
     router.push("/dashboard");
   }
@@ -196,8 +202,8 @@ export default function OnboardingPage() {
                 maxWidth: "760px",
               }}
             >
-              Add a few key details so Smart Baby System can personalize sleep,
-              food and care guidance for your baby.
+              Add a few key details so Smart Baby System can personalize sleep, food and care
+              guidance for your baby.
             </p>
           </div>
 
@@ -267,9 +273,7 @@ export default function OnboardingPage() {
                 color: selectedPlan === "premium" ? "#fff" : "#0f172a",
                 cursor: "pointer",
                 boxShadow:
-                  selectedPlan === "premium"
-                    ? "0 18px 40px rgba(15,23,42,0.16)"
-                    : "none",
+                  selectedPlan === "premium" ? "0 18px 40px rgba(15,23,42,0.16)" : "none",
               }}
             >
               <div
@@ -371,9 +375,7 @@ export default function OnboardingPage() {
                 <input
                   type="text"
                   value={form.babyName}
-                  onChange={(e) =>
-                    setForm((prev) => ({ ...prev, babyName: e.target.value }))
-                  }
+                  onChange={(e) => setForm((prev) => ({ ...prev, babyName: e.target.value }))}
                   placeholder="e.g. Emma"
                   style={inputStyle}
                 />
@@ -393,9 +395,7 @@ export default function OnboardingPage() {
                 <input
                   type="number"
                   value={form.ageMonths}
-                  onChange={(e) =>
-                    setForm((prev) => ({ ...prev, ageMonths: e.target.value }))
-                  }
+                  onChange={(e) => setForm((prev) => ({ ...prev, ageMonths: e.target.value }))}
                   placeholder="e.g. 8"
                   style={inputStyle}
                 />
@@ -415,9 +415,7 @@ export default function OnboardingPage() {
                 <input
                   type="time"
                   value={form.bedtime}
-                  onChange={(e) =>
-                    setForm((prev) => ({ ...prev, bedtime: e.target.value }))
-                  }
+                  onChange={(e) => setForm((prev) => ({ ...prev, bedtime: e.target.value }))}
                   style={inputStyle}
                 />
               </label>
@@ -435,9 +433,7 @@ export default function OnboardingPage() {
 
                 <select
                   value={form.mainConcern}
-                  onChange={(e) =>
-                    setForm((prev) => ({ ...prev, mainConcern: e.target.value }))
-                  }
+                  onChange={(e) => setForm((prev) => ({ ...prev, mainConcern: e.target.value }))}
                   style={inputStyle}
                 >
                   <option value="">Choose one</option>
@@ -470,9 +466,7 @@ export default function OnboardingPage() {
 
                 <textarea
                   value={form.notes}
-                  onChange={(e) =>
-                    setForm((prev) => ({ ...prev, notes: e.target.value }))
-                  }
+                  onChange={(e) => setForm((prev) => ({ ...prev, notes: e.target.value }))}
                   placeholder="Anything useful about naps, meals, allergies, routines, signals..."
                   rows={5}
                   style={{
@@ -642,9 +636,9 @@ export default function OnboardingPage() {
                 lineHeight: 1.7,
               }}
             >
-              The better your profile, the more useful the dashboard becomes.
-              Sleep guidance, food patterns and care suggestions work best when the
-              system understands your baby’s real context.
+              The better your profile, the more useful the dashboard becomes. Sleep guidance,
+              food patterns and care suggestions work best when the system understands your
+              baby&apos;s real context.
             </p>
           </div>
         </aside>

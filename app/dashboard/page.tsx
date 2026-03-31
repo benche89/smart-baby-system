@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "next/navigation";
 import AppModuleLayout from "../../components/AppModuleLayout";
 
 type PlanTier = "basic" | "premium" | "elite";
@@ -100,9 +99,6 @@ function average(numbers: number[]) {
 }
 
 export default function DashboardPage() {
-  const searchParams = useSearchParams();
-  const aiQuestion = searchParams.get("q")?.trim() || "";
-
   const [profile, setProfile] = useState<BabyProfile | null>(null);
   const [todayLabel, setTodayLabel] = useState("");
   const [selectedPlan, setSelectedPlan] = useState<PlanTier>("basic");
@@ -110,50 +106,56 @@ export default function DashboardPage() {
   const [foodHistory, setFoodHistory] = useState<FoodEntry[]>([]);
   const [careHistory, setCareHistory] = useState<CareEntry[]>([]);
   const [aiInput, setAiInput] = useState("");
+  const [aiQuestion, setAiQuestion] = useState("");
 
   useEffect(() => {
-    const savedProfile = localStorage.getItem(PROFILE_STORAGE_KEY);
-    const savedPlan = localStorage.getItem(PLAN_STORAGE_KEY) as PlanTier | null;
-    const savedSleepHistory = localStorage.getItem(SLEEP_STORAGE_KEY);
-    const savedFoodHistory = localStorage.getItem(FOOD_STORAGE_KEY);
-    const savedCareHistory = localStorage.getItem(CARE_STORAGE_KEY);
+    if (typeof window === "undefined") return;
 
-    if (savedProfile) {
-      try {
+    const params = new URLSearchParams(window.location.search);
+    const q = params.get("q")?.trim() || "";
+    setAiQuestion(q);
+
+    try {
+      const savedProfile = localStorage.getItem(PROFILE_STORAGE_KEY);
+      if (savedProfile) {
         const parsed = JSON.parse(savedProfile) as BabyProfile;
         setProfile(parsed);
-      } catch {
-        // ignore invalid profile
       }
+    } catch {
+      // ignore invalid profile
     }
 
-    if (savedSleepHistory) {
-      try {
+    try {
+      const savedSleepHistory = localStorage.getItem(SLEEP_STORAGE_KEY);
+      if (savedSleepHistory) {
         const parsed = JSON.parse(savedSleepHistory) as SleepEntry[];
         setSleepHistory(Array.isArray(parsed) ? parsed : []);
-      } catch {
-        // ignore invalid sleep history
       }
+    } catch {
+      // ignore invalid sleep history
     }
 
-    if (savedFoodHistory) {
-      try {
+    try {
+      const savedFoodHistory = localStorage.getItem(FOOD_STORAGE_KEY);
+      if (savedFoodHistory) {
         const parsed = JSON.parse(savedFoodHistory) as FoodEntry[];
         setFoodHistory(Array.isArray(parsed) ? parsed : []);
-      } catch {
-        // ignore invalid food history
       }
+    } catch {
+      // ignore invalid food history
     }
 
-    if (savedCareHistory) {
-      try {
+    try {
+      const savedCareHistory = localStorage.getItem(CARE_STORAGE_KEY);
+      if (savedCareHistory) {
         const parsed = JSON.parse(savedCareHistory) as CareEntry[];
         setCareHistory(Array.isArray(parsed) ? parsed : []);
-      } catch {
-        // ignore invalid care history
       }
+    } catch {
+      // ignore invalid care history
     }
 
+    const savedPlan = localStorage.getItem(PLAN_STORAGE_KEY);
     if (savedPlan === "basic" || savedPlan === "premium" || savedPlan === "elite") {
       setSelectedPlan(savedPlan);
     }
@@ -163,12 +165,14 @@ export default function DashboardPage() {
 
   function choosePlan(plan: PlanTier) {
     setSelectedPlan(plan);
-    localStorage.setItem(PLAN_STORAGE_KEY, plan);
+    if (typeof window !== "undefined") {
+      localStorage.setItem(PLAN_STORAGE_KEY, plan);
+    }
   }
 
   function handleAskAgain() {
     const cleanQuestion = aiInput.trim();
-    if (!cleanQuestion) return;
+    if (!cleanQuestion || typeof window === "undefined") return;
     window.location.href = `/dashboard?q=${encodeURIComponent(cleanQuestion)}`;
   }
 
@@ -178,39 +182,34 @@ export default function DashboardPage() {
   const mainConcern = profile?.mainConcern || "Not set";
   const notes = profile?.notes || "No extra notes added yet.";
 
-  const sleepDurations = useMemo(
-    () => sleepHistory.map((entry) => parseDuration(entry.duration)).filter((value) => value > 0),
-    [sleepHistory]
-  );
+  const sleepDurations = useMemo(() => {
+    return sleepHistory
+      .map((entry) => parseDuration(entry.duration))
+      .filter((value) => value > 0);
+  }, [sleepHistory]);
 
-  const averageSleepDuration = useMemo(
-    () => Math.round(average(sleepDurations)),
-    [sleepDurations]
-  );
+  const averageSleepDuration = useMemo(() => {
+    return Math.round(average(sleepDurations));
+  }, [sleepDurations]);
 
-  const sleepQualities = useMemo(
-    () => sleepHistory.map((entry) => entry.quality),
-    [sleepHistory]
-  );
+  const sleepQualities = useMemo(() => {
+    return sleepHistory.map((entry) => entry.quality);
+  }, [sleepHistory]);
 
-  const foodReactions = useMemo(
-    () => foodHistory.map((entry) => extractReactionFromFoodNote(entry.note)),
-    [foodHistory]
-  );
+  const foodReactions = useMemo(() => {
+    return foodHistory.map((entry) => extractReactionFromFoodNote(entry.note));
+  }, [foodHistory]);
 
-  const recentFoods = useMemo(
-    () =>
-      foodHistory
-        .map((entry) => extractFoodFromFoodNote(entry.note))
-        .filter(Boolean)
-        .slice(0, 3),
-    [foodHistory]
-  );
+  const recentFoods = useMemo(() => {
+    return foodHistory
+      .map((entry) => extractFoodFromFoodNote(entry.note))
+      .filter(Boolean)
+      .slice(0, 3);
+  }, [foodHistory]);
 
-  const careStatuses = useMemo(
-    () => careHistory.map((entry) => entry.status),
-    [careHistory]
-  );
+  const careStatuses = useMemo(() => {
+    return careHistory.map((entry) => entry.status);
+  }, [careHistory]);
 
   const sleepInsight = useMemo(() => {
     if (!ageMonths || sleepHistory.length === 0) {
@@ -727,7 +726,8 @@ export default function DashboardPage() {
               <p className="neoDash__label">Central AI Assistant</p>
               <h3>{aiAssistant.title}</h3>
               <p className="neoDash__panelText">
-                Based on your question, the unified dashboard adapted today&apos;s guidance using real module data.
+                Based on your question, the unified dashboard adapted today&apos;s
+                guidance using real module data.
               </p>
             </div>
           </div>
