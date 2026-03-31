@@ -3,8 +3,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import AppModuleLayout from "../../../components/AppModuleLayout";
-import { defaultLocale, getMessages, isValidLocale } from "../../../lib/i18n";
+import { defaultLocale, isValidLocale } from "../../../lib/i18n";
 
+type Locale = "en" | "fr";
 type PlanTier = "basic" | "premium" | "elite";
 
 type BabyProfile = {
@@ -49,9 +50,266 @@ const FOOD_STORAGE_KEY = "sb_food_entries";
 const CARE_STORAGE_KEY = "sb_care_entries";
 const PLAN_STORAGE_KEY = "smartBabyPlanTier";
 
-function getTodayLabel() {
-  const now = new Date();
-  return now.toLocaleDateString("en-GB", {
+const copy = {
+  en: {
+    pageTitle: "Main dashboard",
+    subtitle: "One premium view for sleep, food, care and AI-guided daily clarity.",
+    label: "Unified overview",
+    focusTitle: "Main dashboard",
+    focusText: "Overview, AI guidance and quick access to every module.",
+
+    subscription: "Subscription",
+    currentPlan: "Your current plan",
+    currentPlanText: "Choose a plan to unlock more value across the full ecosystem.",
+    basicDesc: "Essential access and short AI guidance.",
+    premiumDesc: "Unlock full AI action plans across modules.",
+    eliteDesc: "Full plans plus deeper advanced AI insights.",
+    selected: "Selected",
+    chooseBasic: "Choose Basic",
+    choosePremium: "Choose Premium",
+    chooseElite: "Choose Elite",
+
+    mainOverview: "Main overview",
+    dailySystem: "daily system at a glance",
+    currentlyOn: "is currently on the",
+    plan: "plan",
+    totalLogs: "total logs across sleep, food and care",
+    bedtime: "Bedtime",
+    mainConcern: "Main concern",
+    babyAge: "Baby age",
+    months: "months",
+
+    dailyHealthScore: "Daily health score",
+    combinedScore: "Combined score from sleep, food and care consistency.",
+
+    centralAi: "Central AI Assistant",
+    basedOnQuestion:
+      "Based on your question, the unified dashboard adapted today's guidance using real module data.",
+    yourQuestion: "Your question",
+    upgradePremium: "Upgrade to Premium",
+    unlockFullPlan: "Unlock the full AI action plan for this question.",
+    aiActionPlan: "AI action plan",
+    upgradeElite: "Upgrade to Elite",
+    unlockElite: "Unlock advanced AI insights across the full system.",
+    eliteInsights: "Elite insights",
+
+    askAiFromDashboard: "Ask AI from dashboard",
+    refineContext: "Refine today's context",
+    askAiText: "Ask about sleep, food or care to adapt the whole system.",
+    yourQuestionInput: "Your question",
+    askAiPlaceholder: "e.g. Why is my baby not sleeping well?",
+    askAi: "Ask AI",
+
+    sleepScore: "Sleep score",
+    foodScore: "Food score",
+    careScore: "Care score",
+
+    sleepModule: "Sleep module",
+    foodModule: "Food module",
+    careModule: "Care module",
+    rhythm: "Rhythm",
+    reactionSignal: "Reaction signal",
+    consistency: "Consistency",
+    openSleep: "Open Sleep →",
+    openFood: "Open Food →",
+    openCare: "Open Care →",
+
+    profileSummary: "Profile summary",
+    currentProfileContext: "Current profile context",
+    parentNotes: "Parent notes",
+    savedContext: "Saved context",
+
+    noProfileName: "Your baby",
+    notSet: "Not set",
+    noNotes: "No extra notes added yet.",
+
+    aiAskSomething: "Ask something to unlock AI guidance",
+    aiAskMessage:
+      "Ask about sleep, food or care and the dashboard will adapt today's guidance using your real logs.",
+
+    sleepDataBuilding: "Sleep data is still building",
+    sleepDataBuildingText: "Add recent naps to unlock stronger sleep predictions.",
+    noRhythm: "No rhythm detected yet",
+    nextLikelySleep: "Next likely sleep around",
+    sleepPredicted: "Predicted from recent nap history and age-based wake windows.",
+    stable: "Stable",
+    slightlyVaried: "Slightly varied",
+    irregular: "Irregular",
+
+    foodDataBuilding: "Food data is still building",
+    foodDataBuildingText: "Add meals and reactions to unlock clearer feeding patterns.",
+    noDataYet: "No data yet",
+    mostlyPositive: "Mostly positive",
+    sensitivityDetected: "Sensitivity pattern detected",
+    mixedReactions: "Mixed reactions",
+    mealRhythmClearer: "Meal rhythm is becoming clearer",
+    foodTrendText: "Recent food logs help reveal consistency and reaction trends.",
+
+    careDataBuilding: "Care data is still building",
+    careDataBuildingText: "Add care actions to reveal routine consistency.",
+    mostlyConsistent: "Mostly consistent",
+    repeatedDifficulty: "Repeated difficulty detected",
+    mixedConsistency: "Mixed consistency",
+    routineConsistencyClearer: "Routine consistency is getting clearer",
+    careTrendText: "Recent care logs show how stable daily routines feel.",
+
+    sleepGuidance: "Sleep guidance based on real logs",
+    foodGuidance: "Food guidance based on real logs",
+    careGuidance: "Care guidance based on real logs",
+    smartGuidance: "Smart guidance based on your real dashboard data",
+
+    noSleepLogs: "There are no saved sleep logs yet, so the advice is still general.",
+    noFoodLogs: "There are no saved food logs yet, so the advice is still general.",
+    noCareLogs: "There are no saved care logs yet, so the advice is still general.",
+
+    sleepWeak: "Recent sleep quality looks weak, so overtiredness may be building.",
+    sleepLight: "Recent naps look light, which can make rhythm less restorative.",
+    sleepShort: "Average naps are shorter than ideal for stability today.",
+    sleepUsable: "Recent sleep data looks fairly usable and rhythm appears more stable.",
+
+    foodSensitive: "Recent logs show repeated sensitive reactions.",
+    foodMixed: "Recent reactions look mixed or unclear.",
+    foodStable: "Recent food data looks calmer and more stable.",
+
+    careDifficult: "Recent care logs show repeated difficult routine moments.",
+    careMixed: "Recent care consistency looks mixed.",
+    careStable: "Recent care logs look mostly stable.",
+
+    usingRealData:
+      "The system is using real module data to guide today's decisions.",
+  },
+  fr: {
+    pageTitle: "Tableau principal",
+    subtitle: "Une vue premium unifiée pour le sommeil, l’alimentation, les soins et une clarté guidée par l’IA.",
+    label: "Vue unifiée",
+    focusTitle: "Tableau principal",
+    focusText: "Aperçu, guidance IA et accès rapide à chaque module.",
+
+    subscription: "Abonnement",
+    currentPlan: "Votre formule actuelle",
+    currentPlanText: "Choisissez une formule pour débloquer plus de valeur dans tout l’écosystème.",
+    basicDesc: "Accès essentiel et guidance IA courte.",
+    premiumDesc: "Débloquez des plans d’action IA complets sur tous les modules.",
+    eliteDesc: "Plans complets plus insights IA avancés.",
+    selected: "Sélectionné",
+    chooseBasic: "Choisir Basic",
+    choosePremium: "Choisir Premium",
+    chooseElite: "Choisir Elite",
+
+    mainOverview: "Vue principale",
+    dailySystem: "système quotidien en un coup d’œil",
+    currentlyOn: "est actuellement sur la formule",
+    plan: "",
+    totalLogs: "logs au total sur le sommeil, l’alimentation et les soins",
+    bedtime: "Heure du coucher",
+    mainConcern: "Préoccupation principale",
+    babyAge: "Âge du bébé",
+    months: "mois",
+
+    dailyHealthScore: "Score santé du jour",
+    combinedScore: "Score combiné du sommeil, de l’alimentation et de la cohérence des soins.",
+
+    centralAi: "Assistant IA central",
+    basedOnQuestion:
+      "En fonction de votre question, le tableau de bord unifié a adapté la guidance du jour à partir des données réelles des modules.",
+    yourQuestion: "Votre question",
+    upgradePremium: "Passez à Premium",
+    unlockFullPlan: "Débloquez le plan d’action IA complet pour cette question.",
+    aiActionPlan: "Plan d’action IA",
+    upgradeElite: "Passez à Elite",
+    unlockElite: "Débloquez des insights IA avancés sur tout le système.",
+    eliteInsights: "Insights Elite",
+
+    askAiFromDashboard: "Demander à l’IA depuis le dashboard",
+    refineContext: "Affinez le contexte du jour",
+    askAiText: "Posez une question sur le sommeil, l’alimentation ou les soins pour adapter tout le système.",
+    yourQuestionInput: "Votre question",
+    askAiPlaceholder: "ex. Pourquoi mon bébé dort-il mal ?",
+    askAi: "Demander à l’IA",
+
+    sleepScore: "Score sommeil",
+    foodScore: "Score alimentation",
+    careScore: "Score soins",
+
+    sleepModule: "Module sommeil",
+    foodModule: "Module alimentation",
+    careModule: "Module soins",
+    rhythm: "Rythme",
+    reactionSignal: "Signal de réaction",
+    consistency: "Cohérence",
+    openSleep: "Ouvrir Sommeil →",
+    openFood: "Ouvrir Alimentation →",
+    openCare: "Ouvrir Soins →",
+
+    profileSummary: "Résumé du profil",
+    currentProfileContext: "Contexte actuel du profil",
+    parentNotes: "Notes parentales",
+    savedContext: "Contexte enregistré",
+
+    noProfileName: "Votre bébé",
+    notSet: "Non défini",
+    noNotes: "Aucune note supplémentaire enregistrée.",
+
+    aiAskSomething: "Posez une question pour débloquer la guidance IA",
+    aiAskMessage:
+      "Posez une question sur le sommeil, l’alimentation ou les soins et le dashboard adaptera la guidance du jour à partir de vos vrais logs.",
+
+    sleepDataBuilding: "Les données sommeil sont encore en cours de construction",
+    sleepDataBuildingText: "Ajoutez des siestes récentes pour débloquer de meilleures prédictions sommeil.",
+    noRhythm: "Aucun rythme détecté pour le moment",
+    nextLikelySleep: "Prochain sommeil probable vers",
+    sleepPredicted: "Prévu à partir de l’historique récent des siestes et des fenêtres d’éveil selon l’âge.",
+    stable: "Stable",
+    slightlyVaried: "Légèrement variable",
+    irregular: "Irrégulier",
+
+    foodDataBuilding: "Les données alimentation sont encore en cours de construction",
+    foodDataBuildingText: "Ajoutez des repas et des réactions pour débloquer des tendances alimentaires plus claires.",
+    noDataYet: "Pas encore de données",
+    mostlyPositive: "Globalement positif",
+    sensitivityDetected: "Sensibilité détectée",
+    mixedReactions: "Réactions mixtes",
+    mealRhythmClearer: "Le rythme des repas devient plus clair",
+    foodTrendText: "Les logs récents aident à révéler la cohérence et les tendances de réaction.",
+
+    careDataBuilding: "Les données soins sont encore en cours de construction",
+    careDataBuildingText: "Ajoutez des actions de soin pour révéler la cohérence de la routine.",
+    mostlyConsistent: "Globalement cohérent",
+    repeatedDifficulty: "Difficulté répétée détectée",
+    mixedConsistency: "Cohérence mixte",
+    routineConsistencyClearer: "La cohérence de la routine devient plus claire",
+    careTrendText: "Les logs récents montrent à quel point les routines quotidiennes sont stables.",
+
+    sleepGuidance: "Guidance sommeil basée sur les vrais logs",
+    foodGuidance: "Guidance alimentation basée sur les vrais logs",
+    careGuidance: "Guidance soins basée sur les vrais logs",
+    smartGuidance: "Guidance intelligente basée sur vos vraies données dashboard",
+
+    noSleepLogs: "Aucun log sommeil enregistré pour le moment, donc le conseil reste général.",
+    noFoodLogs: "Aucun log alimentation enregistré pour le moment, donc le conseil reste général.",
+    noCareLogs: "Aucun log soins enregistré pour le moment, donc le conseil reste général.",
+
+    sleepWeak: "La qualité récente du sommeil semble faible, la fatigue pourrait augmenter.",
+    sleepLight: "Les siestes récentes semblent légères, ce qui peut rendre le rythme moins réparateur.",
+    sleepShort: "Les siestes moyennes sont plus courtes que l’idéal pour la stabilité aujourd’hui.",
+    sleepUsable: "Les données récentes du sommeil semblent plutôt utilisables et le rythme paraît plus stable.",
+
+    foodSensitive: "Les logs récents montrent des réactions sensibles répétées.",
+    foodMixed: "Les réactions récentes semblent mixtes ou peu claires.",
+    foodStable: "Les données récentes d’alimentation semblent plus calmes et plus stables.",
+
+    careDifficult: "Les logs récents montrent des moments de routine difficiles répétés.",
+    careMixed: "La cohérence récente des soins semble mixte.",
+    careStable: "Les logs récents des soins semblent globalement stables.",
+
+    usingRealData:
+      "Le système utilise les données réelles des modules pour guider les décisions du jour.",
+  },
+} as const;
+
+function getTodayLabel(locale: Locale) {
+  const format = locale === "fr" ? "fr-BE" : "en-GB";
+  return new Date().toLocaleDateString(format, {
     weekday: "long",
     day: "numeric",
     month: "long",
@@ -85,9 +343,9 @@ function parseDuration(value: string) {
   return Number.isFinite(numeric) ? numeric : 0;
 }
 
-function extractReactionFromFoodNote(note: string) {
+function extractReactionFromFoodNote(note: string, fallback: string) {
   const match = note.match(/Reaction:\s*([^|]+)/i);
-  return match ? match[1].trim() : "Unknown";
+  return match ? match[1].trim() : fallback;
 }
 
 function extractFoodFromFoodNote(note: string) {
@@ -103,8 +361,8 @@ function average(numbers: number[]) {
 export default function DashboardPage() {
   const params = useParams();
   const rawLocale = typeof params.locale === "string" ? params.locale : defaultLocale;
-  const locale = isValidLocale(rawLocale) ? rawLocale : defaultLocale;
-  const t = getMessages(locale);
+  const locale: Locale = isValidLocale(rawLocale) ? (rawLocale as Locale) : "en";
+  const t = copy[locale];
 
   const [profile, setProfile] = useState<BabyProfile | null>(null);
   const [todayLabel, setTodayLabel] = useState("");
@@ -118,8 +376,8 @@ export default function DashboardPage() {
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    const params = new URLSearchParams(window.location.search);
-    const q = params.get("q")?.trim() || "";
+    const urlParams = new URLSearchParams(window.location.search);
+    const q = urlParams.get("q")?.trim() || "";
     setAiQuestion(q);
 
     try {
@@ -128,9 +386,7 @@ export default function DashboardPage() {
         const parsed = JSON.parse(savedProfile) as BabyProfile;
         setProfile(parsed);
       }
-    } catch {
-      // ignore invalid profile
-    }
+    } catch {}
 
     try {
       const savedSleepHistory = localStorage.getItem(SLEEP_STORAGE_KEY);
@@ -138,9 +394,7 @@ export default function DashboardPage() {
         const parsed = JSON.parse(savedSleepHistory) as SleepEntry[];
         setSleepHistory(Array.isArray(parsed) ? parsed : []);
       }
-    } catch {
-      // ignore invalid sleep history
-    }
+    } catch {}
 
     try {
       const savedFoodHistory = localStorage.getItem(FOOD_STORAGE_KEY);
@@ -148,9 +402,7 @@ export default function DashboardPage() {
         const parsed = JSON.parse(savedFoodHistory) as FoodEntry[];
         setFoodHistory(Array.isArray(parsed) ? parsed : []);
       }
-    } catch {
-      // ignore invalid food history
-    }
+    } catch {}
 
     try {
       const savedCareHistory = localStorage.getItem(CARE_STORAGE_KEY);
@@ -158,17 +410,15 @@ export default function DashboardPage() {
         const parsed = JSON.parse(savedCareHistory) as CareEntry[];
         setCareHistory(Array.isArray(parsed) ? parsed : []);
       }
-    } catch {
-      // ignore invalid care history
-    }
+    } catch {}
 
     const savedPlan = localStorage.getItem(PLAN_STORAGE_KEY);
     if (savedPlan === "basic" || savedPlan === "premium" || savedPlan === "elite") {
       setSelectedPlan(savedPlan);
     }
 
-    setTodayLabel(getTodayLabel());
-  }, []);
+    setTodayLabel(getTodayLabel(locale));
+  }, [locale]);
 
   function choosePlan(plan: PlanTier) {
     setSelectedPlan(plan);
@@ -183,11 +433,11 @@ export default function DashboardPage() {
     window.location.href = `/${locale}/dashboard?q=${encodeURIComponent(cleanQuestion)}`;
   }
 
-  const babyName = profile?.babyName || "Your baby";
+  const babyName = profile?.babyName || t.noProfileName;
   const ageMonths = Number(profile?.ageMonths || 0);
   const bedtime = profile?.bedtime || "-";
-  const mainConcern = profile?.mainConcern || "Not set";
-  const notes = profile?.notes || "No extra notes added yet.";
+  const mainConcern = profile?.mainConcern || t.notSet;
+  const notes = profile?.notes || t.noNotes;
 
   const sleepDurations = useMemo(() => {
     return sleepHistory
@@ -204,8 +454,9 @@ export default function DashboardPage() {
   }, [sleepHistory]);
 
   const foodReactions = useMemo(() => {
-    return foodHistory.map((entry) => extractReactionFromFoodNote(entry.note));
-  }, [foodHistory]);
+    const fallback = locale === "fr" ? "Bonne" : "Good";
+    return foodHistory.map((entry) => extractReactionFromFoodNote(entry.note, fallback));
+  }, [foodHistory, locale]);
 
   const recentFoods = useMemo(() => {
     return foodHistory
@@ -221,10 +472,10 @@ export default function DashboardPage() {
   const sleepInsight = useMemo(() => {
     if (!ageMonths || sleepHistory.length === 0) {
       return {
-        title: "Sleep data is still building",
-        subtitle: "Add recent naps to unlock stronger sleep predictions.",
+        title: t.sleepDataBuilding,
+        subtitle: t.sleepDataBuildingText,
         nextSleepTime: "-",
-        rhythm: "No rhythm detected yet",
+        rhythm: t.noRhythm,
       };
     }
 
@@ -240,17 +491,17 @@ export default function DashboardPage() {
     const maxStart = Math.max(...napStartTimes);
     const spread = maxStart - minStart;
 
-    let rhythm = "Stable";
-    if (spread > 90) rhythm = "Irregular";
-    else if (spread > 45) rhythm = "Slightly varied";
+    let rhythm = t.stable;
+    if (spread > 90) rhythm = t.irregular;
+    else if (spread > 45) rhythm = t.slightlyVaried;
 
     return {
-      title: `Next likely sleep around ${nextSleepTime}`,
-      subtitle: "Predicted from recent nap history and age-based wake windows.",
+      title: `${t.nextLikelySleep} ${nextSleepTime}`,
+      subtitle: t.sleepPredicted,
       nextSleepTime,
       rhythm,
     };
-  }, [sleepHistory, ageMonths]);
+  }, [sleepHistory, ageMonths, t]);
 
   const sleepScore = useMemo(() => {
     if (sleepHistory.length === 0) return 0;
@@ -262,10 +513,15 @@ export default function DashboardPage() {
     else if (avgDuration >= 45) score += 12;
     else score -= 8;
 
-    const excellentCount = sleepHistory.filter((entry) => entry.quality === "Excellent").length;
-    const goodCount = sleepHistory.filter((entry) => entry.quality === "Good").length;
-    const lightCount = sleepHistory.filter((entry) => entry.quality === "Light").length;
-    const poorCount = sleepHistory.filter((entry) => entry.quality === "Poor").length;
+    const excellentLabels = locale === "fr" ? ["Excellent"] : ["Excellent"];
+    const goodLabels = locale === "fr" ? ["Bon", "Good"] : ["Good"];
+    const lightLabels = locale === "fr" ? ["Léger", "Light"] : ["Light"];
+    const poorLabels = locale === "fr" ? ["Faible", "Poor"] : ["Poor"];
+
+    const excellentCount = sleepHistory.filter((entry) => excellentLabels.includes(entry.quality)).length;
+    const goodCount = sleepHistory.filter((entry) => goodLabels.includes(entry.quality)).length;
+    const lightCount = sleepHistory.filter((entry) => lightLabels.includes(entry.quality)).length;
+    const poorCount = sleepHistory.filter((entry) => poorLabels.includes(entry.quality)).length;
 
     score += excellentCount * 8;
     score += goodCount * 5;
@@ -276,39 +532,46 @@ export default function DashboardPage() {
     if (score < 0) score = 0;
 
     return Math.round(score);
-  }, [sleepHistory, sleepDurations]);
+  }, [sleepHistory, sleepDurations, locale]);
 
   const foodInsight = useMemo(() => {
     if (foodHistory.length === 0) {
       return {
-        title: "Food data is still building",
-        subtitle: "Add meals and reactions to unlock clearer feeding patterns.",
-        reactionSignal: "No data yet",
+        title: t.foodDataBuilding,
+        subtitle: t.foodDataBuildingText,
+        reactionSignal: t.noDataYet,
       };
     }
 
-    const sensitiveCount = foodReactions.filter((entry) => entry === "Sensitive").length;
-    const unsureCount = foodReactions.filter((entry) => entry === "Unsure").length;
+    const sensitiveLabel = locale === "fr" ? "Sensible" : "Sensitive";
+    const unsureLabel = locale === "fr" ? "Incertaine" : "Unsure";
 
-    let reactionSignal = "Mostly positive";
-    if (sensitiveCount >= 2) reactionSignal = "Sensitivity pattern detected";
-    else if (unsureCount >= 2) reactionSignal = "Mixed reactions";
+    const sensitiveCount = foodReactions.filter((entry) => entry === sensitiveLabel).length;
+    const unsureCount = foodReactions.filter((entry) => entry === unsureLabel).length;
+
+    let reactionSignal = t.mostlyPositive;
+    if (sensitiveCount >= 2) reactionSignal = t.sensitivityDetected;
+    else if (unsureCount >= 2) reactionSignal = t.mixedReactions;
 
     return {
-      title: "Meal rhythm is becoming clearer",
-      subtitle: "Recent food logs help reveal consistency and reaction trends.",
+      title: t.mealRhythmClearer,
+      subtitle: t.foodTrendText,
       reactionSignal,
     };
-  }, [foodHistory, foodReactions]);
+  }, [foodHistory, foodReactions, locale, t]);
 
   const foodScore = useMemo(() => {
     if (foodHistory.length === 0) return 0;
 
     let score = 60;
 
-    const goodCount = foodReactions.filter((entry) => entry === "Good").length;
-    const unsureCount = foodReactions.filter((entry) => entry === "Unsure").length;
-    const sensitiveCount = foodReactions.filter((entry) => entry === "Sensitive").length;
+    const goodLabel = locale === "fr" ? "Bonne" : "Good";
+    const unsureLabel = locale === "fr" ? "Incertaine" : "Unsure";
+    const sensitiveLabel = locale === "fr" ? "Sensible" : "Sensitive";
+
+    const goodCount = foodReactions.filter((entry) => entry === goodLabel).length;
+    const unsureCount = foodReactions.filter((entry) => entry === unsureLabel).length;
+    const sensitiveCount = foodReactions.filter((entry) => entry === sensitiveLabel).length;
 
     score += goodCount * 7;
     score -= unsureCount * 4;
@@ -321,38 +584,46 @@ export default function DashboardPage() {
     if (score < 0) score = 0;
 
     return Math.round(score);
-  }, [foodHistory, foodReactions]);
+  }, [foodHistory, foodReactions, locale]);
 
   const careInsight = useMemo(() => {
     if (careHistory.length === 0) {
       return {
-        title: "Care data is still building",
-        subtitle: "Add care actions to reveal routine consistency.",
-        consistencySignal: "No data yet",
+        title: t.careDataBuilding,
+        subtitle: t.careDataBuildingText,
+        consistencySignal: t.noDataYet,
       };
     }
 
-    const difficultCount = careHistory.filter((entry) => entry.status === "Difficult").length;
-    const partialCount = careHistory.filter((entry) => entry.status === "Partial").length;
+    const difficultLabel = locale === "fr" ? "Difficile" : "Difficult";
+    const partialLabel = locale === "fr" ? "Partiel" : "Partial";
 
-    let consistencySignal = "Mostly consistent";
-    if (difficultCount >= 2) consistencySignal = "Repeated difficulty detected";
-    else if (partialCount >= 2) consistencySignal = "Mixed consistency";
+    const difficultCount = careHistory.filter((entry) => entry.status === difficultLabel).length;
+    const partialCount = careHistory.filter((entry) => entry.status === partialLabel).length;
+
+    let consistencySignal = t.mostlyConsistent;
+    if (difficultCount >= 2) consistencySignal = t.repeatedDifficulty;
+    else if (partialCount >= 2) consistencySignal = t.mixedConsistency;
 
     return {
-      title: "Routine consistency is getting clearer",
-      subtitle: "Recent care logs show how stable daily routines feel.",
+      title: t.routineConsistencyClearer,
+      subtitle: t.careTrendText,
       consistencySignal,
     };
-  }, [careHistory]);
+  }, [careHistory, locale, t]);
 
   const careScore = useMemo(() => {
     if (careHistory.length === 0) return 0;
 
     let score = 60;
-    const completedCount = careHistory.filter((entry) => entry.status === "Completed").length;
-    const partialCount = careHistory.filter((entry) => entry.status === "Partial").length;
-    const difficultCount = careHistory.filter((entry) => entry.status === "Difficult").length;
+
+    const completedLabel = locale === "fr" ? "Terminé" : "Completed";
+    const partialLabel = locale === "fr" ? "Partiel" : "Partial";
+    const difficultLabel = locale === "fr" ? "Difficile" : "Difficult";
+
+    const completedCount = careHistory.filter((entry) => entry.status === completedLabel).length;
+    const partialCount = careHistory.filter((entry) => entry.status === partialLabel).length;
+    const difficultCount = careHistory.filter((entry) => entry.status === difficultLabel).length;
 
     score += completedCount * 6;
     score -= partialCount * 3;
@@ -365,14 +636,13 @@ export default function DashboardPage() {
     if (score < 0) score = 0;
 
     return Math.round(score);
-  }, [careHistory]);
+  }, [careHistory, locale]);
 
   const aiAssistant = useMemo(() => {
     if (!aiQuestion) {
       return {
-        title: "Ask something to unlock AI guidance",
-        message:
-          "Ask about sleep, food or care and the dashboard will adapt today’s guidance using your real logs.",
+        title: t.aiAskSomething,
+        message: t.aiAskMessage,
         plan: null as string[] | null,
         eliteInsights: null as string[] | null,
       };
@@ -380,117 +650,197 @@ export default function DashboardPage() {
 
     const q = aiQuestion.toLowerCase();
 
-    const poorSleepCount = sleepQualities.filter((entry) => entry === "Poor").length;
-    const lightSleepCount = sleepQualities.filter((entry) => entry === "Light").length;
-    const sensitiveFoodCount = foodReactions.filter((entry) => entry === "Sensitive").length;
-    const unsureFoodCount = foodReactions.filter((entry) => entry === "Unsure").length;
-    const difficultCareCount = careStatuses.filter((entry) => entry === "Difficult").length;
-    const partialCareCount = careStatuses.filter((entry) => entry === "Partial").length;
+    const poorLabels = locale === "fr" ? ["Faible", "Poor"] : ["Poor"];
+    const lightLabels = locale === "fr" ? ["Léger", "Light"] : ["Light"];
+    const sensitiveLabels = locale === "fr" ? ["Sensible", "Sensitive"] : ["Sensitive"];
+    const unsureLabels = locale === "fr" ? ["Incertaine", "Unsure"] : ["Unsure"];
+    const difficultLabels = locale === "fr" ? ["Difficile", "Difficult"] : ["Difficult"];
+    const partialLabels = locale === "fr" ? ["Partiel", "Partial"] : ["Partial"];
+
+    const poorSleepCount = sleepQualities.filter((entry) => poorLabels.includes(entry)).length;
+    const lightSleepCount = sleepQualities.filter((entry) => lightLabels.includes(entry)).length;
+    const sensitiveFoodCount = foodReactions.filter((entry) => sensitiveLabels.includes(entry)).length;
+    const unsureFoodCount = foodReactions.filter((entry) => unsureLabels.includes(entry)).length;
+    const difficultCareCount = careStatuses.filter((entry) => difficultLabels.includes(entry)).length;
+    const partialCareCount = careStatuses.filter((entry) => partialLabels.includes(entry)).length;
 
     const profileContext = [
-      `${babyName} is ${ageMonths || "unknown"} months old`,
-      bedtime !== "-" ? `usual bedtime is ${bedtime}` : null,
-      mainConcern !== "Not set" ? `main concern is ${mainConcern}` : null,
+      locale === "fr"
+        ? `${babyName} a ${ageMonths || "un âge inconnu"} mois`
+        : `${babyName} is ${ageMonths || "unknown"} months old`,
+      bedtime !== "-" ? (locale === "fr" ? `heure habituelle du coucher ${bedtime}` : `usual bedtime is ${bedtime}`) : null,
+      mainConcern !== t.notSet
+        ? locale === "fr"
+          ? `préoccupation principale : ${mainConcern}`
+          : `main concern is ${mainConcern}`
+        : null,
     ]
       .filter(Boolean)
       .join(", ");
 
-    if (q.includes("sleep") || q.includes("nap") || q.includes("night")) {
-      let title = "Sleep guidance based on real logs";
+    if (q.includes("sleep") || q.includes("nap") || q.includes("night") || q.includes("sommeil") || q.includes("sieste")) {
+      let title = t.sleepGuidance;
       let message = `${profileContext}. `;
-      let plan = [
-        "Keep the next sleep window calm and predictable",
-        "Reduce stimulation before the next nap or bedtime",
-        "Protect bedtime if daytime sleep remains short",
-      ];
-      let eliteInsights = [
-        "Sleep quality can be more important than clock time on difficult days",
-        "Repeated short naps often affect the whole second half of the day",
-      ];
+      let plan =
+        locale === "fr"
+          ? [
+              "Gardez la prochaine fenêtre de sommeil calme et prévisible",
+              "Réduisez la stimulation avant la prochaine sieste ou le coucher",
+              "Protégez le coucher si le sommeil de journée reste court",
+            ]
+          : [
+              "Keep the next sleep window calm and predictable",
+              "Reduce stimulation before the next nap or bedtime",
+              "Protect bedtime if daytime sleep remains short",
+            ];
+      let eliteInsights =
+        locale === "fr"
+          ? [
+              "La qualité du sommeil peut être plus importante que l’heure lors des journées difficiles",
+              "Des siestes courtes répétées influencent souvent toute la deuxième moitié de la journée",
+            ]
+          : [
+              "Sleep quality can be more important than clock time on difficult days",
+              "Repeated short naps often affect the whole second half of the day",
+            ];
 
       if (sleepHistory.length === 0) {
-        message += "There are no saved sleep logs yet, so the advice is still general.";
+        message += t.noSleepLogs;
       } else {
-        message += `You currently have ${sleepHistory.length} sleep log(s), average nap duration is ${averageSleepDuration || "-"} minutes, and the next likely sleep window is around ${sleepInsight.nextSleepTime}. `;
+        message +=
+          locale === "fr"
+            ? `Vous avez actuellement ${sleepHistory.length} log(s) sommeil, la durée moyenne des siestes est de ${averageSleepDuration || "-"} minutes, et le prochain sommeil probable est vers ${sleepInsight.nextSleepTime}. `
+            : `You currently have ${sleepHistory.length} sleep log(s), average nap duration is ${averageSleepDuration || "-"} minutes, and the next likely sleep window is around ${sleepInsight.nextSleepTime}. `;
 
         if (poorSleepCount >= 2) {
-          message += "Recent sleep quality looks weak, so overtiredness may be building.";
-          plan = [
-            "Start the calming routine earlier today",
-            "Avoid stretching wake windows too much",
-            "Prioritize an earlier bedtime if the day stays difficult",
-          ];
-          eliteInsights = [
-            "Repeated poor-quality naps often suggest the reset should happen earlier, not later",
-            "When sleep quality drops, bedtime protection becomes more important than pushing routine goals",
-          ];
+          message += t.sleepWeak;
+          plan =
+            locale === "fr"
+              ? [
+                  "Commencez la routine apaisante plus tôt aujourd’hui",
+                  "Évitez d’allonger trop les fenêtres d’éveil",
+                  "Priorisez un coucher plus tôt si la journée reste difficile",
+                ]
+              : [
+                  "Start the calming routine earlier today",
+                  "Avoid stretching wake windows too much",
+                  "Prioritize an earlier bedtime if the day stays difficult",
+                ];
         } else if (lightSleepCount >= 2) {
-          message += "Recent naps look light, which can make rhythm less restorative.";
-          plan = [
-            "Watch carefully for early tired cues",
-            "Keep the environment quieter before the next sleep",
-            "Avoid too much stimulation between naps",
-          ];
-          eliteInsights = [
-            "Light naps can look acceptable on paper but still leave sleep pressure unresolved",
-            "A smoother transition may help more than changing the clock drastically",
-          ];
+          message += t.sleepLight;
+          plan =
+            locale === "fr"
+              ? [
+                  "Surveillez attentivement les signes précoces de fatigue",
+                  "Gardez l’environnement plus calme avant le prochain sommeil",
+                  "Évitez trop de stimulation entre les siestes",
+                ]
+              : [
+                  "Watch carefully for early tired cues",
+                  "Keep the environment quieter before the next sleep",
+                  "Avoid too much stimulation between naps",
+                ];
         } else if (averageSleepDuration > 0 && averageSleepDuration < 45) {
-          message += "Average naps are shorter than ideal for stability today.";
-          plan = [
-            "Protect bedtime strongly tonight",
-            "Keep the day rhythm simpler",
-            "Avoid stacking too many stimulating moments late in the day",
-          ];
+          message += t.sleepShort;
+          plan =
+            locale === "fr"
+              ? [
+                  "Protégez fortement le coucher ce soir",
+                  "Gardez un rythme de journée plus simple",
+                  "Évitez d’ajouter trop de moments stimulants tard dans la journée",
+                ]
+              : [
+                  "Protect bedtime strongly tonight",
+                  "Keep the day rhythm simpler",
+                  "Avoid stacking too many stimulating moments late in the day",
+                ];
         } else {
-          message += "Recent sleep data looks fairly usable and rhythm appears more stable.";
+          message += t.sleepUsable;
         }
       }
 
       return { title, message, plan, eliteInsights };
     }
 
-    if (q.includes("food") || q.includes("eat") || q.includes("meal") || q.includes("hungry")) {
-      let title = "Food guidance based on real logs";
+    if (
+      q.includes("food") ||
+      q.includes("eat") ||
+      q.includes("meal") ||
+      q.includes("hungry") ||
+      q.includes("manger") ||
+      q.includes("repas") ||
+      q.includes("alimentation")
+    ) {
+      let title = t.foodGuidance;
       let message = `${profileContext}. `;
-      let plan = [
-        "Keep meals predictable today",
-        "Avoid introducing too many new foods at once",
-        "Track reactions calmly after meals",
-      ];
-      let eliteInsights = [
-        "Simple meals make patterns easier to understand",
-        "Meal rhythm often reduces stress more than adding variety too fast",
-      ];
+      let plan =
+        locale === "fr"
+          ? [
+              "Gardez les repas prévisibles aujourd’hui",
+              "Évitez d’introduire trop de nouveaux aliments en même temps",
+              "Suivez les réactions calmement après les repas",
+            ]
+          : [
+              "Keep meals predictable today",
+              "Avoid introducing too many new foods at once",
+              "Track reactions calmly after meals",
+            ];
+      let eliteInsights =
+        locale === "fr"
+          ? [
+              "Des repas simples rendent les schémas plus faciles à comprendre",
+              "Le rythme des repas réduit souvent plus le stress qu’une variété trop rapide",
+            ]
+          : [
+              "Simple meals make patterns easier to understand",
+              "Meal rhythm often reduces stress more than adding variety too fast",
+            ];
 
       if (foodHistory.length === 0) {
-        message += "There are no saved food logs yet, so the advice is still general.";
+        message += t.noFoodLogs;
       } else {
-        message += `You currently have ${foodHistory.length} food log(s). `;
+        message +=
+          locale === "fr"
+            ? `Vous avez actuellement ${foodHistory.length} log(s) alimentation. `
+            : `You currently have ${foodHistory.length} food log(s). `;
+
         if (recentFoods.length > 0) {
-          message += `Recent foods include ${recentFoods.join(", ")}. `;
+          message +=
+            locale === "fr"
+              ? `Les aliments récents incluent ${recentFoods.join(", ")}. `
+              : `Recent foods include ${recentFoods.join(", ")}. `;
         }
 
         if (sensitiveFoodCount >= 2) {
-          message += "Recent logs show repeated sensitive reactions.";
-          plan = [
-            "Keep meals simpler today",
-            "Avoid stacking multiple uncertain foods",
-            "Log timing and reaction carefully after meals",
-          ];
-          eliteInsights = [
-            "Repeated sensitive reactions are easier to interpret when meal variety is reduced",
-            "Reaction timing can be as important as the specific food itself",
-          ];
+          message += t.foodSensitive;
+          plan =
+            locale === "fr"
+              ? [
+                  "Gardez les repas plus simples aujourd’hui",
+                  "Évitez d’empiler plusieurs aliments incertains",
+                  "Notez précisément le timing et la réaction après les repas",
+                ]
+              : [
+                  "Keep meals simpler today",
+                  "Avoid stacking multiple uncertain foods",
+                  "Log timing and reaction carefully after meals",
+                ];
         } else if (unsureFoodCount >= 2) {
-          message += "Recent reactions look mixed or unclear.";
-          plan = [
-            "Keep food choices more predictable today",
-            "Use smaller portions if needed",
-            "Track whether the same foods repeat unclear reactions",
-          ];
+          message += t.foodMixed;
+          plan =
+            locale === "fr"
+              ? [
+                  "Gardez des choix alimentaires plus prévisibles aujourd’hui",
+                  "Utilisez de plus petites portions si besoin",
+                  "Surveillez si les mêmes aliments répètent des réactions peu claires",
+                ]
+              : [
+                  "Keep food choices more predictable today",
+                  "Use smaller portions if needed",
+                  "Track whether the same foods repeat unclear reactions",
+                ];
         } else {
-          message += "Recent food data looks calmer and more stable.";
+          message += t.foodStable;
         }
       }
 
@@ -501,45 +851,74 @@ export default function DashboardPage() {
       q.includes("care") ||
       q.includes("routine") ||
       q.includes("bath") ||
-      q.includes("diaper")
+      q.includes("diaper") ||
+      q.includes("soin") ||
+      q.includes("bain") ||
+      q.includes("couche")
     ) {
-      let title = "Care guidance based on real logs";
+      let title = t.careGuidance;
       let message = `${profileContext}. `;
-      let plan = [
-        "Keep the order of routine steps predictable today",
-        "Reduce unnecessary variation between care moments",
-        "Use calmer transitions around more difficult moments",
-      ];
-      let eliteInsights = [
-        "Consistency usually helps more than adding more complexity",
-        "Repeated care friction often appears when the whole day feels overloaded",
-      ];
+      let plan =
+        locale === "fr"
+          ? [
+              "Gardez l’ordre des étapes de routine prévisible aujourd’hui",
+              "Réduisez les variations inutiles entre les moments de soins",
+              "Utilisez des transitions plus calmes autour des moments difficiles",
+            ]
+          : [
+              "Keep the order of routine steps predictable today",
+              "Reduce unnecessary variation between care moments",
+              "Use calmer transitions around more difficult moments",
+            ];
+      let eliteInsights =
+        locale === "fr"
+          ? [
+              "La cohérence aide généralement plus que l’ajout de complexité",
+              "Les frictions répétées apparaissent souvent quand la journée est surchargée",
+            ]
+          : [
+              "Consistency usually helps more than adding more complexity",
+              "Repeated care friction often appears when the whole day feels overloaded",
+            ];
 
       if (careHistory.length === 0) {
-        message += "There are no saved care logs yet, so the advice is still general.";
+        message += t.noCareLogs;
       } else {
-        message += `You currently have ${careHistory.length} care log(s). `;
+        message +=
+          locale === "fr"
+            ? `Vous avez actuellement ${careHistory.length} log(s) soins. `
+            : `You currently have ${careHistory.length} care log(s). `;
 
         if (difficultCareCount >= 2) {
-          message += "Recent care logs show repeated difficult routine moments.";
-          plan = [
-            "Simplify routines today",
-            "Prepare each care step before starting",
-            "Slow transitions down instead of rushing through them",
-          ];
-          eliteInsights = [
-            "Repeated difficult moments often reflect fatigue, overstimulation or timing issues",
-            "Routine simplification is often more effective than trying to perfect every step",
-          ];
+          message += t.careDifficult;
+          plan =
+            locale === "fr"
+              ? [
+                  "Simplifiez les routines aujourd’hui",
+                  "Préparez chaque étape de soin avant de commencer",
+                  "Ralentissez les transitions au lieu de les précipiter",
+                ]
+              : [
+                  "Simplify routines today",
+                  "Prepare each care step before starting",
+                  "Slow transitions down instead of rushing through them",
+                ];
         } else if (partialCareCount >= 2) {
-          message += "Recent care consistency looks mixed.";
-          plan = [
-            "Keep the same routine order today",
-            "Reduce optional changes in the schedule",
-            "Focus on one calmer repeated structure",
-          ];
+          message += t.careMixed;
+          plan =
+            locale === "fr"
+              ? [
+                  "Gardez le même ordre de routine aujourd’hui",
+                  "Réduisez les changements optionnels dans le planning",
+                  "Concentrez-vous sur une structure plus calme et répétée",
+                ]
+              : [
+                  "Keep the same routine order today",
+                  "Reduce optional changes in the schedule",
+                  "Focus on one calmer repeated structure",
+                ];
         } else {
-          message += "Recent care logs look mostly stable.";
+          message += t.careStable;
         }
       }
 
@@ -547,17 +926,33 @@ export default function DashboardPage() {
     }
 
     return {
-      title: "Smart guidance based on your real dashboard data",
-      message: `${profileContext}. Sleep logs: ${sleepHistory.length}, food logs: ${foodHistory.length}, care logs: ${careHistory.length}. The system is using real module data to guide today’s decisions.`,
-      plan: [
-        "Keep current routines stable",
-        "Watch for repeating patterns across modules",
-        "Avoid changing too many things on the same day",
-      ],
-      eliteInsights: [
-        "Cross-module patterns are often more useful than one isolated log",
-        "A calmer repeatable system beats a perfect but complicated one",
-      ],
+      title: t.smartGuidance,
+      message:
+        locale === "fr"
+          ? `${profileContext}. Logs sommeil : ${sleepHistory.length}, logs alimentation : ${foodHistory.length}, logs soins : ${careHistory.length}. ${t.usingRealData}`
+          : `${profileContext}. Sleep logs: ${sleepHistory.length}, food logs: ${foodHistory.length}, care logs: ${careHistory.length}. ${t.usingRealData}`,
+      plan:
+        locale === "fr"
+          ? [
+              "Gardez les routines actuelles stables",
+              "Surveillez les schémas qui se répètent entre les modules",
+              "Évitez de changer trop de choses le même jour",
+            ]
+          : [
+              "Keep current routines stable",
+              "Watch for repeating patterns across modules",
+              "Avoid changing too many things on the same day",
+            ],
+      eliteInsights:
+        locale === "fr"
+          ? [
+              "Les schémas croisés entre modules sont souvent plus utiles qu’un log isolé",
+              "Un système calme et répétable vaut mieux qu’un système parfait mais compliqué",
+            ]
+          : [
+              "Cross-module patterns are often more useful than one isolated log",
+              "A calmer repeatable system beats a perfect but complicated one",
+            ],
     };
   }, [
     aiQuestion,
@@ -574,6 +969,8 @@ export default function DashboardPage() {
     foodReactions,
     careStatuses,
     recentFoods,
+    locale,
+    t,
   ]);
 
   const planAccess = {
@@ -598,19 +995,19 @@ export default function DashboardPage() {
   return (
     <AppModuleLayout
       active="dashboard"
-      title={`${t.dashboard.welcomeBack}, ${babyName}`}
-      subtitle="One premium view for sleep, food, care and AI-guided daily clarity."
-      label={t.dashboard.unifiedOverview}
-      currentFocusTitle={t.dashboard.mainDashboard}
-      currentFocusText={t.dashboard.overviewText}
-      dateLabel={todayLabel || "Loading..."}
+      title={`${babyName}`}
+      subtitle={t.subtitle}
+      label={t.label}
+      currentFocusTitle={t.focusTitle}
+      currentFocusText={t.focusText}
+      dateLabel={todayLabel || "..."}
     >
       <section className="neoDash__panel">
         <div className="neoDash__panelHeader">
           <div>
-            <p className="neoDash__label">Subscription</p>
-            <h3>{t.dashboard.currentPlan}</h3>
-            <p className="neoDash__panelText">{t.dashboard.choosePlan}</p>
+            <p className="neoDash__label">{t.subscription}</p>
+            <h3>{t.currentPlan}</h3>
+            <p className="neoDash__panelText">{t.currentPlanText}</p>
           </div>
         </div>
 
@@ -632,14 +1029,14 @@ export default function DashboardPage() {
           >
             <p className="neoDash__label">Basic</p>
             <h3>€7 / month</h3>
-            <p>Essential access and short AI guidance.</p>
+            <p>{t.basicDesc}</p>
             <button
               type="button"
               className="neoDash__secondaryBtn"
               onClick={() => choosePlan("basic")}
               style={{ marginTop: "12px" }}
             >
-              {selectedPlan === "basic" ? "Selected" : "Choose Basic"}
+              {selectedPlan === "basic" ? t.selected : t.chooseBasic}
             </button>
           </div>
 
@@ -654,14 +1051,14 @@ export default function DashboardPage() {
           >
             <p className="neoDash__label">Premium</p>
             <h3>€11 / month</h3>
-            <p>Unlock full AI action plans across modules.</p>
+            <p>{t.premiumDesc}</p>
             <button
               type="button"
               className="neoDash__primaryBtn"
               onClick={() => choosePlan("premium")}
               style={{ marginTop: "12px" }}
             >
-              {selectedPlan === "premium" ? "Selected" : "Choose Premium"}
+              {selectedPlan === "premium" ? t.selected : t.choosePremium}
             </button>
           </div>
 
@@ -676,14 +1073,14 @@ export default function DashboardPage() {
           >
             <p className="neoDash__label">Elite</p>
             <h3>€15 / month</h3>
-            <p>Full plans plus deeper advanced AI insights.</p>
+            <p>{t.eliteDesc}</p>
             <button
               type="button"
               className="neoDash__secondaryBtn"
               onClick={() => choosePlan("elite")}
               style={{ marginTop: "12px" }}
             >
-              {selectedPlan === "elite" ? "Selected" : "Choose Elite"}
+              {selectedPlan === "elite" ? t.selected : t.chooseElite}
             </button>
           </div>
         </div>
@@ -691,36 +1088,38 @@ export default function DashboardPage() {
 
       <div className="neoDash__heroGrid">
         <article className="neoDash__heroCard">
-          <p className="neoDash__label">Main overview</p>
-          <h2>{babyName}&apos;s daily system at a glance</h2>
+          <p className="neoDash__label">{t.mainOverview}</p>
+          <h2>
+            {babyName}&apos;s {t.dailySystem}
+          </h2>
           <p>
-            {babyName} is currently on the{" "}
-            <strong style={{ textTransform: "capitalize" }}>{selectedPlan}</strong> plan.
-            You have <strong>{totalLogs}</strong> total logs across sleep, food and care.
+            {babyName} {t.currentlyOn}{" "}
+            <strong style={{ textTransform: "capitalize" }}>{selectedPlan}</strong> {t.plan}
+            . You have <strong>{totalLogs}</strong> {t.totalLogs}.
           </p>
 
           <div className="neoDash__miniStats">
             <div className="neoDash__miniStat">
-              <span>Bedtime</span>
+              <span>{t.bedtime}</span>
               <strong>{bedtime}</strong>
             </div>
             <div className="neoDash__miniStat">
-              <span>Main concern</span>
+              <span>{t.mainConcern}</span>
               <strong>{mainConcern}</strong>
             </div>
             <div className="neoDash__miniStat">
-              <span>Baby age</span>
-              <strong>{ageMonths || "-"} months</strong>
+              <span>{t.babyAge}</span>
+              <strong>
+                {ageMonths || "-"} {t.months}
+              </strong>
             </div>
           </div>
         </article>
 
         <article className="neoDash__scoreCard">
-          <p className="neoDash__label">Daily health score</p>
+          <p className="neoDash__label">{t.dailyHealthScore}</p>
           <div className="neoDash__scoreNumber">{combinedScore}</div>
-          <p className="neoDash__scoreText">
-            Combined score from sleep, food and care consistency.
-          </p>
+          <p className="neoDash__scoreText">{t.combinedScore}</p>
         </article>
       </div>
 
@@ -728,17 +1127,14 @@ export default function DashboardPage() {
         <section className="neoDash__panel">
           <div className="neoDash__panelHeader">
             <div>
-              <p className="neoDash__label">Central AI Assistant</p>
+              <p className="neoDash__label">{t.centralAi}</p>
               <h3>{aiAssistant.title}</h3>
-              <p className="neoDash__panelText">
-                Based on your question, the unified dashboard adapted today&apos;s guidance
-                using real module data.
-              </p>
+              <p className="neoDash__panelText">{t.basedOnQuestion}</p>
             </div>
           </div>
 
           <div className="neoDash__card" style={{ marginTop: 0 }}>
-            <p className="neoDash__label">Your question</p>
+            <p className="neoDash__label">{t.yourQuestion}</p>
             <h3>{aiQuestion}</h3>
             <p>{aiAssistant.message}</p>
 
@@ -752,16 +1148,14 @@ export default function DashboardPage() {
                   border: "1px solid rgba(148,163,184,0.2)",
                 }}
               >
-                <strong>Upgrade to Premium</strong>
-                <p style={{ marginTop: "6px" }}>
-                  Unlock the full AI action plan for this question.
-                </p>
+                <strong>{t.upgradePremium}</strong>
+                <p style={{ marginTop: "6px" }}>{t.unlockFullPlan}</p>
               </div>
             )}
 
             {planAccess.canSeePlan && aiAssistant.plan && (
               <div style={{ marginTop: "16px" }}>
-                <p className="neoDash__label">AI action plan</p>
+                <p className="neoDash__label">{t.aiActionPlan}</p>
                 <div style={{ display: "grid", gap: "8px", marginTop: "8px" }}>
                   {aiAssistant.plan.map((step, i) => (
                     <div key={i}>• {step}</div>
@@ -780,16 +1174,14 @@ export default function DashboardPage() {
                   border: "1px solid rgba(148,163,184,0.2)",
                 }}
               >
-                <strong>Upgrade to Elite</strong>
-                <p style={{ marginTop: "6px" }}>
-                  Unlock advanced AI insights across the full system.
-                </p>
+                <strong>{t.upgradeElite}</strong>
+                <p style={{ marginTop: "6px" }}>{t.unlockElite}</p>
               </div>
             )}
 
             {planAccess.canSeeEliteInsights && aiAssistant.eliteInsights && (
               <div style={{ marginTop: "16px" }}>
-                <p className="neoDash__label">Elite insights</p>
+                <p className="neoDash__label">{t.eliteInsights}</p>
                 <div style={{ display: "grid", gap: "8px", marginTop: "8px" }}>
                   {aiAssistant.eliteInsights.map((item, i) => (
                     <div key={i}>✦ {item}</div>
@@ -804,18 +1196,16 @@ export default function DashboardPage() {
       <section className="neoDash__panel">
         <div className="neoDash__panelHeader">
           <div>
-            <p className="neoDash__label">Ask AI from dashboard</p>
-            <h3>Refine today&apos;s context</h3>
-            <p className="neoDash__panelText">
-              Ask about sleep, food or care to adapt the whole system.
-            </p>
+            <p className="neoDash__label">{t.askAiFromDashboard}</p>
+            <h3>{t.refineContext}</h3>
+            <p className="neoDash__panelText">{t.askAiText}</p>
           </div>
         </div>
 
         <div className="neoDash__form">
           <div className="neoDash__formGrid">
             <label style={{ gridColumn: "1 / -1" }}>
-              <span>Your question</span>
+              <span>{t.yourQuestionInput}</span>
               <input
                 type="text"
                 value={aiInput}
@@ -823,14 +1213,14 @@ export default function DashboardPage() {
                 onKeyDown={(e) => {
                   if (e.key === "Enter") handleAskAgain();
                 }}
-                placeholder="e.g. Why is my baby not sleeping well?"
+                placeholder={t.askAiPlaceholder}
               />
             </label>
           </div>
 
           <div className="neoDash__formActions">
             <button type="button" className="neoDash__primaryBtn" onClick={handleAskAgain}>
-              Ask AI
+              {t.askAi}
             </button>
           </div>
         </div>
@@ -838,19 +1228,19 @@ export default function DashboardPage() {
 
       <div className="neoDash__summaryGrid">
         <article className="neoDash__summaryCard">
-          <p className="neoDash__label">Sleep score</p>
+          <p className="neoDash__label">{t.sleepScore}</p>
           <strong>{sleepScore}</strong>
           <span>{sleepInsight.title}</span>
         </article>
 
         <article className="neoDash__summaryCard">
-          <p className="neoDash__label">Food score</p>
+          <p className="neoDash__label">{t.foodScore}</p>
           <strong>{foodScore}</strong>
           <span>{foodInsight.reactionSignal}</span>
         </article>
 
         <article className="neoDash__summaryCard">
-          <p className="neoDash__label">Care score</p>
+          <p className="neoDash__label">{t.careScore}</p>
           <strong>{careScore}</strong>
           <span>{careInsight.consistencySignal}</span>
         </article>
@@ -868,14 +1258,14 @@ export default function DashboardPage() {
           className="neoDash__card"
           style={{ textDecoration: "none", color: "inherit" }}
         >
-          <p className="neoDash__label">Sleep module</p>
+          <p className="neoDash__label">{t.sleepModule}</p>
           <h3>🌙 {sleepInsight.title}</h3>
           <p>{sleepInsight.subtitle}</p>
           <div style={{ marginTop: "12px" }}>
-            <strong>Rhythm:</strong> {sleepInsight.rhythm}
+            <strong>{t.rhythm}:</strong> {sleepInsight.rhythm}
           </div>
           <div style={{ marginTop: "10px", color: "#2563eb", fontWeight: 600 }}>
-            Open Sleep →
+            {t.openSleep}
           </div>
         </a>
 
@@ -884,14 +1274,14 @@ export default function DashboardPage() {
           className="neoDash__card"
           style={{ textDecoration: "none", color: "inherit" }}
         >
-          <p className="neoDash__label">Food module</p>
+          <p className="neoDash__label">{t.foodModule}</p>
           <h3>🍼 {foodInsight.title}</h3>
           <p>{foodInsight.subtitle}</p>
           <div style={{ marginTop: "12px" }}>
-            <strong>Reaction signal:</strong> {foodInsight.reactionSignal}
+            <strong>{t.reactionSignal}:</strong> {foodInsight.reactionSignal}
           </div>
           <div style={{ marginTop: "10px", color: "#2563eb", fontWeight: 600 }}>
-            Open Food →
+            {t.openFood}
           </div>
         </a>
 
@@ -900,32 +1290,36 @@ export default function DashboardPage() {
           className="neoDash__card"
           style={{ textDecoration: "none", color: "inherit" }}
         >
-          <p className="neoDash__label">Care module</p>
+          <p className="neoDash__label">{t.careModule}</p>
           <h3>💙 {careInsight.title}</h3>
           <p>{careInsight.subtitle}</p>
           <div style={{ marginTop: "12px" }}>
-            <strong>Consistency:</strong> {careInsight.consistencySignal}
+            <strong>{t.consistency}:</strong> {careInsight.consistencySignal}
           </div>
           <div style={{ marginTop: "10px", color: "#2563eb", fontWeight: 600 }}>
-            Open Care →
+            {t.openCare}
           </div>
         </a>
       </div>
 
       <div className="neoDash__contentGrid" style={{ marginTop: "20px" }}>
         <article className="neoDash__card">
-          <p className="neoDash__label">Profile summary</p>
-          <h3>Current profile context</h3>
+          <p className="neoDash__label">{t.profileSummary}</p>
+          <h3>{t.currentProfileContext}</h3>
           <p>
             Plan: <strong style={{ textTransform: "capitalize" }}>{selectedPlan}</strong>
           </p>
-          <p>Bedtime: {bedtime}</p>
-          <p>Main concern: {mainConcern}</p>
+          <p>
+            {t.bedtime}: {bedtime}
+          </p>
+          <p>
+            {t.mainConcern}: {mainConcern}
+          </p>
         </article>
 
         <article className="neoDash__card">
-          <p className="neoDash__label">Parent notes</p>
-          <h3>Saved context</h3>
+          <p className="neoDash__label">{t.parentNotes}</p>
+          <h3>{t.savedContext}</h3>
           <p>{notes}</p>
         </article>
       </div>
