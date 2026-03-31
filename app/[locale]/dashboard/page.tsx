@@ -52,7 +52,6 @@ const PLAN_STORAGE_KEY = "smartBabyPlanTier";
 
 const copy = {
   en: {
-    pageTitle: "Main dashboard",
     subtitle: "One premium view for sleep, food, care and AI-guided daily clarity.",
     label: "Unified overview",
     focusTitle: "Main dashboard",
@@ -179,8 +178,8 @@ const copy = {
       "The system is using real module data to guide today's decisions.",
   },
   fr: {
-    pageTitle: "Tableau principal",
-    subtitle: "Une vue premium unifiée pour le sommeil, l’alimentation, les soins et une clarté guidée par l’IA.",
+    subtitle:
+      "Une vue premium unifiée pour le sommeil, l’alimentation, les soins et une clarté guidée par l’IA.",
     label: "Vue unifiée",
     focusTitle: "Tableau principal",
     focusText: "Aperçu, guidance IA et accès rapide à chaque module.",
@@ -222,7 +221,8 @@ const copy = {
 
     askAiFromDashboard: "Demander à l’IA depuis le dashboard",
     refineContext: "Affinez le contexte du jour",
-    askAiText: "Posez une question sur le sommeil, l’alimentation ou les soins pour adapter tout le système.",
+    askAiText:
+      "Posez une question sur le sommeil, l’alimentation ou les soins pour adapter tout le système.",
     yourQuestionInput: "Votre question",
     askAiPlaceholder: "ex. Pourquoi mon bébé dort-il mal ?",
     askAi: "Demander à l’IA",
@@ -255,50 +255,65 @@ const copy = {
       "Posez une question sur le sommeil, l’alimentation ou les soins et le dashboard adaptera la guidance du jour à partir de vos vrais logs.",
 
     sleepDataBuilding: "Les données sommeil sont encore en cours de construction",
-    sleepDataBuildingText: "Ajoutez des siestes récentes pour débloquer de meilleures prédictions sommeil.",
+    sleepDataBuildingText:
+      "Ajoutez des siestes récentes pour débloquer de meilleures prédictions sommeil.",
     noRhythm: "Aucun rythme détecté pour le moment",
     nextLikelySleep: "Prochain sommeil probable vers",
-    sleepPredicted: "Prévu à partir de l’historique récent des siestes et des fenêtres d’éveil selon l’âge.",
+    sleepPredicted:
+      "Prévu à partir de l’historique récent des siestes et des fenêtres d’éveil selon l’âge.",
     stable: "Stable",
     slightlyVaried: "Légèrement variable",
     irregular: "Irrégulier",
 
     foodDataBuilding: "Les données alimentation sont encore en cours de construction",
-    foodDataBuildingText: "Ajoutez des repas et des réactions pour débloquer des tendances alimentaires plus claires.",
+    foodDataBuildingText:
+      "Ajoutez des repas et des réactions pour débloquer des tendances alimentaires plus claires.",
     noDataYet: "Pas encore de données",
     mostlyPositive: "Globalement positif",
     sensitivityDetected: "Sensibilité détectée",
     mixedReactions: "Réactions mixtes",
     mealRhythmClearer: "Le rythme des repas devient plus clair",
-    foodTrendText: "Les logs récents aident à révéler la cohérence et les tendances de réaction.",
+    foodTrendText:
+      "Les logs récents aident à révéler la cohérence et les tendances de réaction.",
 
     careDataBuilding: "Les données soins sont encore en cours de construction",
-    careDataBuildingText: "Ajoutez des actions de soin pour révéler la cohérence de la routine.",
+    careDataBuildingText:
+      "Ajoutez des actions de soin pour révéler la cohérence de la routine.",
     mostlyConsistent: "Globalement cohérent",
     repeatedDifficulty: "Difficulté répétée détectée",
     mixedConsistency: "Cohérence mixte",
     routineConsistencyClearer: "La cohérence de la routine devient plus claire",
-    careTrendText: "Les logs récents montrent à quel point les routines quotidiennes sont stables.",
+    careTrendText:
+      "Les logs récents montrent à quel point les routines quotidiennes sont stables.",
 
     sleepGuidance: "Guidance sommeil basée sur les vrais logs",
     foodGuidance: "Guidance alimentation basée sur les vrais logs",
     careGuidance: "Guidance soins basée sur les vrais logs",
     smartGuidance: "Guidance intelligente basée sur vos vraies données dashboard",
 
-    noSleepLogs: "Aucun log sommeil enregistré pour le moment, donc le conseil reste général.",
-    noFoodLogs: "Aucun log alimentation enregistré pour le moment, donc le conseil reste général.",
-    noCareLogs: "Aucun log soins enregistré pour le moment, donc le conseil reste général.",
+    noSleepLogs:
+      "Aucun log sommeil enregistré pour le moment, donc le conseil reste général.",
+    noFoodLogs:
+      "Aucun log alimentation enregistré pour le moment, donc le conseil reste général.",
+    noCareLogs:
+      "Aucun log soins enregistré pour le moment, donc le conseil reste général.",
 
-    sleepWeak: "La qualité récente du sommeil semble faible, la fatigue pourrait augmenter.",
-    sleepLight: "Les siestes récentes semblent légères, ce qui peut rendre le rythme moins réparateur.",
-    sleepShort: "Les siestes moyennes sont plus courtes que l’idéal pour la stabilité aujourd’hui.",
-    sleepUsable: "Les données récentes du sommeil semblent plutôt utilisables et le rythme paraît plus stable.",
+    sleepWeak:
+      "La qualité récente du sommeil semble faible, la fatigue pourrait augmenter.",
+    sleepLight:
+      "Les siestes récentes semblent légères, ce qui peut rendre le rythme moins réparateur.",
+    sleepShort:
+      "Les siestes moyennes sont plus courtes que l’idéal pour la stabilité aujourd’hui.",
+    sleepUsable:
+      "Les données récentes du sommeil semblent plutôt utilisables et le rythme paraît plus stable.",
 
     foodSensitive: "Les logs récents montrent des réactions sensibles répétées.",
     foodMixed: "Les réactions récentes semblent mixtes ou peu claires.",
-    foodStable: "Les données récentes d’alimentation semblent plus calmes et plus stables.",
+    foodStable:
+      "Les données récentes d’alimentation semblent plus calmes et plus stables.",
 
-    careDifficult: "Les logs récents montrent des moments de routine difficiles répétés.",
+    careDifficult:
+      "Les logs récents montrent des moments de routine difficiles répétés.",
     careMixed: "La cohérence récente des soins semble mixte.",
     careStable: "Les logs récents des soins semblent globalement stables.",
 
@@ -491,7 +506,7 @@ export default function DashboardPage() {
     const maxStart = Math.max(...napStartTimes);
     const spread = maxStart - minStart;
 
-    let rhythm = t.stable;
+    let rhythm: string = t.stable;
     if (spread > 90) rhythm = t.irregular;
     else if (spread > 45) rhythm = t.slightlyVaried;
 
@@ -513,12 +528,14 @@ export default function DashboardPage() {
     else if (avgDuration >= 45) score += 12;
     else score -= 8;
 
-    const excellentLabels = locale === "fr" ? ["Excellent"] : ["Excellent"];
+    const excellentLabels = ["Excellent"];
     const goodLabels = locale === "fr" ? ["Bon", "Good"] : ["Good"];
     const lightLabels = locale === "fr" ? ["Léger", "Light"] : ["Light"];
     const poorLabels = locale === "fr" ? ["Faible", "Poor"] : ["Poor"];
 
-    const excellentCount = sleepHistory.filter((entry) => excellentLabels.includes(entry.quality)).length;
+    const excellentCount = sleepHistory.filter((entry) =>
+      excellentLabels.includes(entry.quality)
+    ).length;
     const goodCount = sleepHistory.filter((entry) => goodLabels.includes(entry.quality)).length;
     const lightCount = sleepHistory.filter((entry) => lightLabels.includes(entry.quality)).length;
     const poorCount = sleepHistory.filter((entry) => poorLabels.includes(entry.quality)).length;
@@ -549,7 +566,7 @@ export default function DashboardPage() {
     const sensitiveCount = foodReactions.filter((entry) => entry === sensitiveLabel).length;
     const unsureCount = foodReactions.filter((entry) => entry === unsureLabel).length;
 
-    let reactionSignal = t.mostlyPositive;
+    let reactionSignal: string = t.mostlyPositive;
     if (sensitiveCount >= 2) reactionSignal = t.sensitivityDetected;
     else if (unsureCount >= 2) reactionSignal = t.mixedReactions;
 
@@ -601,7 +618,7 @@ export default function DashboardPage() {
     const difficultCount = careHistory.filter((entry) => entry.status === difficultLabel).length;
     const partialCount = careHistory.filter((entry) => entry.status === partialLabel).length;
 
-    let consistencySignal = t.mostlyConsistent;
+    let consistencySignal: string = t.mostlyConsistent;
     if (difficultCount >= 2) consistencySignal = t.repeatedDifficulty;
     else if (partialCount >= 2) consistencySignal = t.mixedConsistency;
 
@@ -668,7 +685,11 @@ export default function DashboardPage() {
       locale === "fr"
         ? `${babyName} a ${ageMonths || "un âge inconnu"} mois`
         : `${babyName} is ${ageMonths || "unknown"} months old`,
-      bedtime !== "-" ? (locale === "fr" ? `heure habituelle du coucher ${bedtime}` : `usual bedtime is ${bedtime}`) : null,
+      bedtime !== "-"
+        ? locale === "fr"
+          ? `heure habituelle du coucher ${bedtime}`
+          : `usual bedtime is ${bedtime}`
+        : null,
       mainConcern !== t.notSet
         ? locale === "fr"
           ? `préoccupation principale : ${mainConcern}`
@@ -678,7 +699,13 @@ export default function DashboardPage() {
       .filter(Boolean)
       .join(", ");
 
-    if (q.includes("sleep") || q.includes("nap") || q.includes("night") || q.includes("sommeil") || q.includes("sieste")) {
+    if (
+      q.includes("sleep") ||
+      q.includes("nap") ||
+      q.includes("night") ||
+      q.includes("sommeil") ||
+      q.includes("sieste")
+    ) {
       let title = t.sleepGuidance;
       let message = `${profileContext}. `;
       let plan =
@@ -995,7 +1022,7 @@ export default function DashboardPage() {
   return (
     <AppModuleLayout
       active="dashboard"
-      title={`${babyName}`}
+      title={babyName}
       subtitle={t.subtitle}
       label={t.label}
       currentFocusTitle={t.focusTitle}
@@ -1094,8 +1121,8 @@ export default function DashboardPage() {
           </h2>
           <p>
             {babyName} {t.currentlyOn}{" "}
-            <strong style={{ textTransform: "capitalize" }}>{selectedPlan}</strong> {t.plan}
-            . You have <strong>{totalLogs}</strong> {t.totalLogs}.
+            <strong style={{ textTransform: "capitalize" }}>{selectedPlan}</strong> {t.plan}.
+            You have <strong>{totalLogs}</strong> {t.totalLogs}.
           </p>
 
           <div className="neoDash__miniStats">
