@@ -1,129 +1,164 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import AppModuleLayout from "../../../components/AppModuleLayout";
 import { defaultLocale, isValidLocale } from "../../../lib/i18n";
+import { createClient as createSupabaseClient } from "../../../lib/supabase/client";
+import {
+  getFoodEntries,
+  addFoodEntry,
+  deleteFoodEntry,
+  importLocalStorageToSupabase,
+  type FoodEntry,
+} from "../../../lib/supabase/app-data";
 
 type Locale = "en" | "fr";
-type PlanTier = "basic" | "premium" | "elite";
-
-type FoodEntry = {
-  id: number;
-  time: string;
-  type: string;
-  amount: string;
-  note: string;
-  createdAt: string;
-};
-
-const FOOD_STORAGE_KEY = "sb_food_entries";
-const PLAN_STORAGE_KEY = "smartBabyPlanTier";
 
 const copy = {
   en: {
-    title: "Food module",
-    subtitle:
-      "Track meals, reactions and feeding patterns to make daily nutrition decisions clearer.",
-    label: "Food intelligence",
-    focusTitle: "Food tracking",
-    focusText: "Meals, reactions and calmer feeding visibility.",
-    addLabel: "Add food log",
-    addTitle: "Log a meal",
-    addText: "Save meals and reactions so the system can reveal patterns more clearly.",
+    subtitle: "Track meals, quantities and reactions securely with Supabase-backed storage.",
+    label: "Food tracking",
+    focusTitle: "Food module",
+    focusText: "Log meals and reactions to reveal patterns and support calmer feeding decisions.",
+
+    pageLabel: "Food",
+    pageTitle: "Food log",
+    pageText:
+      "Save each meal to build stronger feeding insights and smarter dashboard guidance.",
+
     time: "Meal time",
     type: "Meal type",
     amount: "Amount",
     reaction: "Reaction",
     food: "Food",
-    note: "Notes",
-    save: "Save food log",
-    breakfast: "Breakfast",
-    lunch: "Lunch",
-    dinner: "Dinner",
-    snack: "Snack",
+    notes: "Notes",
+    foodPlaceholder: "e.g. banana puree",
+    amountPlaceholder: "e.g. 120 ml / half bowl / small portion",
+    notesPlaceholder:
+      "Add useful context, for example: Food: banana puree | Reaction: Good | Notes: finished calmly",
+    addEntry: "Add food entry",
+    adding: "Saving...",
+    loading: "Loading food data...",
+    noEntries: "No food entries yet.",
+    deleteEntry: "Delete",
+    deletingError: "Failed to delete food entry.",
+    saveError: "Failed to save food entry.",
+    loadError: "Failed to load food data.",
+    secureStorage: "Your food logs are stored securely in Supabase.",
+    aiMedicalNote: "AI suggestions are not medical advice.",
+
     bottle: "Bottle",
+    puree: "Puree",
+    solids: "Solids",
+    snack: "Snack",
+    breastmilk: "Breastmilk",
+
     good: "Good",
     unsure: "Unsure",
     sensitive: "Sensitive",
-    totalLogs: "Total logs",
-    recentReaction: "Recent reaction",
-    mealVariety: "Meal variety",
-    premiumTitle: "Premium food insights",
-    premiumText:
-      "Premium and Elite plans help parents understand repetition, sensitivity signals and calmer meal structure.",
-    premiumLocked: "Upgrade to Premium to unlock better food pattern analysis.",
-    eliteLocked: "Upgrade to Elite for deeper feeding insights.",
-    insightTitle: "Food overview",
-    insightText: "Simple food tracking makes reactions easier to understand.",
-    recentLogs: "Recent food logs",
-    noLogs: "No food logs yet.",
-    delete: "Delete",
-    placeholderFood: "e.g. banana, porridge, yogurt",
-    placeholderNotes: "Short note about reaction, context or appetite..."
+
+    lastEntries: "Recent food entries",
+    typeLabel: "Type",
+    amountLabel: "Amount",
+    savedAt: "Saved",
+    mealSummary: "Meal summary",
   },
   fr: {
-    title: "Module alimentation",
     subtitle:
-      "Suivez les repas, les réactions et les habitudes alimentaires pour rendre les décisions nutritionnelles quotidiennes plus claires.",
-    label: "Intelligence alimentation",
-    focusTitle: "Suivi de l’alimentation",
-    focusText: "Repas, réactions et meilleure visibilité alimentaire.",
-    addLabel: "Ajouter un log repas",
-    addTitle: "Enregistrer un repas",
-    addText:
-      "Enregistrez les repas et les réactions afin que le système révèle plus clairement les schémas.",
+      "Suivez les repas, quantités et réactions avec un stockage sécurisé sur Supabase.",
+    label: "Suivi alimentation",
+    focusTitle: "Module alimentation",
+    focusText:
+      "Enregistrez les repas et réactions pour révéler des schémas et soutenir des décisions plus calmes autour de l’alimentation.",
+
+    pageLabel: "Alimentation",
+    pageTitle: "Journal alimentaire",
+    pageText:
+      "Enregistrez chaque repas pour créer de meilleurs insights alimentaires et une guidance dashboard plus intelligente.",
+
     time: "Heure du repas",
     type: "Type de repas",
     amount: "Quantité",
     reaction: "Réaction",
     food: "Aliment",
-    note: "Notes",
-    save: "Enregistrer le log repas",
-    breakfast: "Petit-déjeuner",
-    lunch: "Déjeuner",
-    dinner: "Dîner",
-    snack: "Collation",
+    notes: "Notes",
+    foodPlaceholder: "ex. purée de banane",
+    amountPlaceholder: "ex. 120 ml / demi-bol / petite portion",
+    notesPlaceholder:
+      "Ajoutez un contexte utile, par exemple : Food: purée de banane | Reaction: Bonne | Notes: terminé calmement",
+    addEntry: "Ajouter une entrée alimentation",
+    adding: "Enregistrement...",
+    loading: "Chargement des données alimentation...",
+    noEntries: "Aucune entrée alimentation pour le moment.",
+    deleteEntry: "Supprimer",
+    deletingError: "Impossible de supprimer l’entrée alimentation.",
+    saveError: "Impossible d’enregistrer l’entrée alimentation.",
+    loadError: "Impossible de charger les données alimentation.",
+    secureStorage: "Vos logs alimentation sont stockés en toute sécurité dans Supabase.",
+    aiMedicalNote: "Les suggestions IA ne constituent pas un avis médical.",
+
     bottle: "Biberon",
+    puree: "Purée",
+    solids: "Solides",
+    snack: "Collation",
+    breastmilk: "Lait maternel",
+
     good: "Bonne",
     unsure: "Incertaine",
     sensitive: "Sensible",
-    totalLogs: "Nombre de logs",
-    recentReaction: "Réaction récente",
-    mealVariety: "Variété des repas",
-    premiumTitle: "Insights alimentation Premium",
-    premiumText:
-      "Les plans Premium et Elite aident les parents à comprendre la répétition, les signaux de sensibilité et une structure de repas plus calme.",
-    premiumLocked:
-      "Passez à Premium pour débloquer une meilleure analyse des schémas alimentaires.",
-    eliteLocked: "Passez à Elite pour des insights alimentaires plus poussés.",
-    insightTitle: "Vue d’ensemble de l’alimentation",
-    insightText:
-      "Un suivi alimentaire simple rend les réactions plus faciles à comprendre.",
-    recentLogs: "Logs alimentation récents",
-    noLogs: "Aucun log alimentation pour le moment.",
-    delete: "Supprimer",
-    placeholderFood: "ex. banane, porridge, yaourt",
-    placeholderNotes: "Courte note sur la réaction, le contexte ou l’appétit..."
+
+    lastEntries: "Entrées alimentation récentes",
+    typeLabel: "Type",
+    amountLabel: "Quantité",
+    savedAt: "Enregistré",
+    mealSummary: "Résumé du repas",
   },
 } as const;
 
 function getTodayLabel(locale: Locale) {
-  return new Date().toLocaleDateString(locale === "fr" ? "fr-BE" : "en-GB", {
+  const format = locale === "fr" ? "fr-BE" : "en-GB";
+  return new Date().toLocaleDateString(format, {
     weekday: "long",
     day: "numeric",
     month: "long",
   });
 }
 
-function extractReaction(note: string, fallbackGood: string) {
-  const match = note.match(/Reaction:\s*([^|]+)/i);
-  return match ? match[1].trim() : fallbackGood;
+function formatSavedDate(value: string, locale: Locale) {
+  const format = locale === "fr" ? "fr-BE" : "en-GB";
+
+  try {
+    return new Date(value).toLocaleString(format, {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  } catch {
+    return value;
+  }
 }
 
-function extractFood(note: string) {
-  const match = note.match(/Food:\s*([^|]+)/i);
-  return match ? match[1].trim() : "";
+function buildFoodNote(food: string, reaction: string, notes: string) {
+  const parts = [`Food: ${food}`, `Reaction: ${reaction}`];
+  if (notes.trim()) {
+    parts.push(`Notes: ${notes.trim()}`);
+  }
+  return parts.join(" | ");
+}
+
+function parseFoodNote(note: string) {
+  const foodMatch = note.match(/Food:\s*([^|]+)/i);
+  const reactionMatch = note.match(/Reaction:\s*([^|]+)/i);
+  const notesMatch = note.match(/Notes:\s*(.+)$/i);
+
+  return {
+    food: foodMatch ? foodMatch[1].trim() : "",
+    reaction: reactionMatch ? reactionMatch[1].trim() : "",
+    notes: notesMatch ? notesMatch[1].trim() : "",
+  };
 }
 
 export default function FoodPage() {
@@ -132,133 +167,179 @@ export default function FoodPage() {
   const locale: Locale = isValidLocale(rawLocale) ? (rawLocale as Locale) : "en";
   const t = copy[locale];
 
-  const [dateLabel, setDateLabel] = useState("");
-  const [selectedPlan, setSelectedPlan] = useState<PlanTier>("basic");
-  const [foodHistory, setFoodHistory] = useState<FoodEntry[]>([]);
+  const supabase = useMemo(() => createSupabaseClient(), []);
+
+  const [todayLabel, setTodayLabel] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [foodEntries, setFoodEntries] = useState<FoodEntry[]>([]);
+  const [statusMessage, setStatusMessage] = useState("");
+  const [statusType, setStatusType] = useState<"success" | "error" | "">("");
+
   const [form, setForm] = useState({
     time: "",
-    type: locale === "fr" ? "Petit-déjeuner" : "Breakfast",
+    type: locale === "fr" ? "Biberon" : "Bottle",
     amount: "",
     food: "",
     reaction: locale === "fr" ? "Bonne" : "Good",
-    note: "",
+    notes: "",
   });
 
   useEffect(() => {
-    setDateLabel(getTodayLabel(locale));
-
-    const savedPlan = localStorage.getItem(PLAN_STORAGE_KEY);
-    if (savedPlan === "basic" || savedPlan === "premium" || savedPlan === "elite") {
-      setSelectedPlan(savedPlan);
-    }
-
-    try {
-      const saved = localStorage.getItem(FOOD_STORAGE_KEY);
-      if (saved) {
-        const parsed = JSON.parse(saved) as FoodEntry[];
-        setFoodHistory(Array.isArray(parsed) ? parsed : []);
-      }
-    } catch {
-      // ignore invalid storage
-    }
+    setForm((prev) => ({
+      ...prev,
+      type: locale === "fr" ? "Biberon" : "Bottle",
+      reaction: locale === "fr" ? "Bonne" : "Good",
+    }));
   }, [locale]);
 
-  function persist(entries: FoodEntry[]) {
-    setFoodHistory(entries);
-    localStorage.setItem(FOOD_STORAGE_KEY, JSON.stringify(entries));
-  }
+  useEffect(() => {
+    let isMounted = true;
 
-  function handleSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+    async function loadFoodData() {
+      setIsLoading(true);
+      setTodayLabel(getTodayLabel(locale));
+      setStatusMessage("");
+      setStatusType("");
 
-    if (!form.time || !form.type || !form.amount || !form.food) return;
+      try {
+        await importLocalStorageToSupabase(supabase);
 
-    const combinedNote = `Food: ${form.food} | Reaction: ${form.reaction}${form.note ? ` | ${form.note}` : ""}`;
+        const rows = await getFoodEntries(supabase);
 
-    const entry: FoodEntry = {
-      id: Date.now(),
-      time: form.time,
-      type: form.type,
-      amount: form.amount,
-      note: combinedNote,
-      createdAt: new Date().toISOString(),
+        if (!isMounted) return;
+        setFoodEntries(rows);
+      } catch (error) {
+        console.error("Failed to load food entries:", error);
+        if (isMounted) {
+          setStatusMessage(t.loadError);
+          setStatusType("error");
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      }
+    }
+
+    loadFoodData();
+
+    return () => {
+      isMounted = false;
     };
+  }, [locale, supabase, t.loadError]);
 
-    persist([entry, ...foodHistory]);
-
-    setForm({
-      time: "",
-      type: locale === "fr" ? "Petit-déjeuner" : "Breakfast",
-      amount: "",
-      food: "",
-      reaction: locale === "fr" ? "Bonne" : "Good",
-      note: "",
-    });
+  function updateField(field: keyof typeof form, value: string) {
+    setForm((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
   }
 
-  function deleteEntry(id: number) {
-    persist(foodHistory.filter((entry) => entry.id !== id));
+  async function handleAddFoodEntry() {
+    if (!form.time || !form.type || !form.amount || !form.food || !form.reaction) {
+      setStatusMessage(t.saveError);
+      setStatusType("error");
+      return;
+    }
+
+    setIsSaving(true);
+    setStatusMessage("");
+    setStatusType("");
+
+    try {
+      const saved = await addFoodEntry(supabase, {
+        time: form.time.trim(),
+        type: form.type.trim(),
+        amount: form.amount.trim(),
+        note: buildFoodNote(form.food.trim(), form.reaction.trim(), form.notes.trim()),
+        createdAt: new Date().toISOString(),
+      });
+
+      setFoodEntries((prev) => [saved, ...prev]);
+      setForm({
+        time: "",
+        type: locale === "fr" ? "Biberon" : "Bottle",
+        amount: "",
+        food: "",
+        reaction: locale === "fr" ? "Bonne" : "Good",
+        notes: "",
+      });
+    } catch (error) {
+      console.error("Failed to save food entry:", error);
+      setStatusMessage(t.saveError);
+      setStatusType("error");
+    } finally {
+      setIsSaving(false);
+    }
   }
 
-  const reactions = useMemo(
-    () => foodHistory.map((entry) => extractReaction(entry.note, t.good)),
-    [foodHistory, t.good]
-  );
-
-  const recentReaction = reactions[0] ?? "-";
-  const mealVariety = new Set(foodHistory.map((entry) => entry.type)).size;
-
-  const premiumUnlocked = selectedPlan === "premium" || selectedPlan === "elite";
-  const eliteUnlocked = selectedPlan === "elite";
-
-  const advancedSignal = useMemo(() => {
-    const sensitiveCount = reactions.filter((r) => r === t.sensitive).length;
-    const unsureCount = reactions.filter((r) => r === t.unsure).length;
-
-    if (sensitiveCount >= 2) {
-      return locale === "fr"
-        ? "Sensibilité répétée détectée — simplifier les repas."
-        : "Repeated sensitivity detected — simplify meals.";
+  async function handleDeleteFoodEntry(id: number) {
+    try {
+      await deleteFoodEntry(supabase, id);
+      setFoodEntries((prev) => prev.filter((item) => item.id !== id));
+    } catch (error) {
+      console.error("Failed to delete food entry:", error);
+      setStatusMessage(t.deletingError);
+      setStatusType("error");
     }
+  }
 
-    if (unsureCount >= 2) {
-      return locale === "fr"
-        ? "Réactions mixtes — garder une structure simple."
-        : "Mixed reactions — keep the structure simple.";
-    }
-
-    return locale === "fr"
-      ? "Le rythme alimentaire semble plutôt stable."
-      : "Food rhythm looks fairly stable.";
-  }, [reactions, t.sensitive, t.unsure, locale]);
+  if (isLoading) {
+    return (
+      <AppModuleLayout
+        active="food"
+        title="Smart Baby System"
+        subtitle={t.subtitle}
+        label={t.label}
+        currentFocusTitle={t.focusTitle}
+        currentFocusText={t.focusText}
+        dateLabel="..."
+      >
+        <section className="neoDash__panel">
+          <div className="neoDash__card">
+            <h3>{t.loading}</h3>
+            <p>{t.secureStorage}</p>
+          </div>
+        </section>
+      </AppModuleLayout>
+    );
+  }
 
   return (
     <AppModuleLayout
       active="food"
-      title={t.title}
+      title={t.pageTitle}
       subtitle={t.subtitle}
       label={t.label}
       currentFocusTitle={t.focusTitle}
       currentFocusText={t.focusText}
-      dateLabel={dateLabel}
+      dateLabel={todayLabel || "..."}
     >
       <section className="neoDash__panel">
         <div className="neoDash__panelHeader">
           <div>
-            <p className="neoDash__label">{t.addLabel}</p>
-            <h3>{t.addTitle}</h3>
-            <p className="neoDash__panelText">{t.addText}</p>
+            <p className="neoDash__label">{t.pageLabel}</p>
+            <h3>{t.pageTitle}</h3>
+            <p className="neoDash__panelText">{t.pageText}</p>
           </div>
         </div>
 
-        <form className="neoDash__form" onSubmit={handleSubmit}>
-          <div className="neoDash__formGrid">
+        <div className="neoDash__form">
+          <div
+            className="neoDash__formGrid"
+            style={{
+              display: "grid",
+              gap: "16px",
+              gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+            }}
+          >
             <label>
               <span>{t.time}</span>
               <input
                 type="time"
                 value={form.time}
-                onChange={(e) => setForm((prev) => ({ ...prev, time: e.target.value }))}
+                onChange={(e) => updateField("time", e.target.value)}
               />
             </label>
 
@@ -266,13 +347,13 @@ export default function FoodPage() {
               <span>{t.type}</span>
               <select
                 value={form.type}
-                onChange={(e) => setForm((prev) => ({ ...prev, type: e.target.value }))}
+                onChange={(e) => updateField("type", e.target.value)}
               >
-                <option value={t.breakfast}>{t.breakfast}</option>
-                <option value={t.lunch}>{t.lunch}</option>
-                <option value={t.dinner}>{t.dinner}</option>
-                <option value={t.snack}>{t.snack}</option>
                 <option value={t.bottle}>{t.bottle}</option>
+                <option value={t.puree}>{t.puree}</option>
+                <option value={t.solids}>{t.solids}</option>
+                <option value={t.snack}>{t.snack}</option>
+                <option value={t.breastmilk}>{t.breastmilk}</option>
               </select>
             </label>
 
@@ -281,8 +362,18 @@ export default function FoodPage() {
               <input
                 type="text"
                 value={form.amount}
-                onChange={(e) => setForm((prev) => ({ ...prev, amount: e.target.value }))}
-                placeholder="120 ml / small bowl"
+                onChange={(e) => updateField("amount", e.target.value)}
+                placeholder={t.amountPlaceholder}
+              />
+            </label>
+
+            <label>
+              <span>{t.food}</span>
+              <input
+                type="text"
+                value={form.food}
+                onChange={(e) => updateField("food", e.target.value)}
+                placeholder={t.foodPlaceholder}
               />
             </label>
 
@@ -290,7 +381,7 @@ export default function FoodPage() {
               <span>{t.reaction}</span>
               <select
                 value={form.reaction}
-                onChange={(e) => setForm((prev) => ({ ...prev, reaction: e.target.value }))}
+                onChange={(e) => updateField("reaction", e.target.value)}
               >
                 <option value={t.good}>{t.good}</option>
                 <option value={t.unsure}>{t.unsure}</option>
@@ -299,137 +390,126 @@ export default function FoodPage() {
             </label>
 
             <label style={{ gridColumn: "1 / -1" }}>
-              <span>{t.food}</span>
-              <input
-                type="text"
-                value={form.food}
-                onChange={(e) => setForm((prev) => ({ ...prev, food: e.target.value }))}
-                placeholder={t.placeholderFood}
-              />
-            </label>
-
-            <label style={{ gridColumn: "1 / -1" }}>
-              <span>{t.note}</span>
+              <span>{t.notes}</span>
               <textarea
-                rows={4}
-                value={form.note}
-                onChange={(e) => setForm((prev) => ({ ...prev, note: e.target.value }))}
-                placeholder={t.placeholderNotes}
+                rows={5}
+                value={form.notes}
+                onChange={(e) => updateField("notes", e.target.value)}
+                placeholder={t.notesPlaceholder}
               />
             </label>
           </div>
 
-          <div className="neoDash__formActions">
-            <button type="submit" className="neoDash__primaryBtn">
-              {t.save}
+          <div
+            className="neoDash__formActions"
+            style={{
+              display: "flex",
+              gap: "12px",
+              alignItems: "center",
+              flexWrap: "wrap",
+              marginTop: "18px",
+            }}
+          >
+            <button
+              type="button"
+              className="neoDash__primaryBtn"
+              onClick={handleAddFoodEntry}
+              disabled={isSaving}
+            >
+              {isSaving ? t.adding : t.addEntry}
             </button>
+
+            <p style={{ fontSize: "13px", opacity: 0.7 }}>{t.secureStorage}</p>
           </div>
-        </form>
+
+          {statusMessage ? (
+            <div
+              style={{
+                marginTop: "16px",
+                padding: "14px 16px",
+                borderRadius: "16px",
+                border:
+                  statusType === "success"
+                    ? "1px solid rgba(34,197,94,0.25)"
+                    : "1px solid rgba(239,68,68,0.25)",
+                background:
+                  statusType === "success"
+                    ? "rgba(34,197,94,0.08)"
+                    : "rgba(239,68,68,0.08)",
+                color: statusType === "success" ? "#166534" : "#991b1b",
+                fontSize: "14px",
+                lineHeight: 1.5,
+              }}
+            >
+              {statusMessage}
+            </div>
+          ) : null}
+        </div>
       </section>
 
-      <div className="neoDash__summaryGrid">
-        <article className="neoDash__summaryCard">
-          <p className="neoDash__label">{t.totalLogs}</p>
-          <strong>{foodHistory.length}</strong>
-          <span>{t.insightTitle}</span>
-        </article>
+      <section className="neoDash__panel" style={{ marginTop: "20px" }}>
+        <div className="neoDash__panelHeader">
+          <div>
+            <p className="neoDash__label">{t.pageLabel}</p>
+            <h3>{t.lastEntries}</h3>
+          </div>
+        </div>
 
-        <article className="neoDash__summaryCard">
-          <p className="neoDash__label">{t.recentReaction}</p>
-          <strong>{recentReaction}</strong>
-          <span>{t.insightText}</span>
-        </article>
+        {foodEntries.length === 0 ? (
+          <div className="neoDash__card">
+            <p>{t.noEntries}</p>
+          </div>
+        ) : (
+          <div
+            style={{
+              display: "grid",
+              gap: "16px",
+              gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+            }}
+          >
+            {foodEntries.map((entry) => {
+              const parsed = parseFoodNote(entry.note);
 
-        <article className="neoDash__summaryCard">
-          <p className="neoDash__label">{t.mealVariety}</p>
-          <strong>{mealVariety}</strong>
-          <span>{t.insightText}</span>
-        </article>
-      </div>
+              return (
+                <article key={entry.id} className="neoDash__card">
+                  <p className="neoDash__label">{t.pageLabel}</p>
+                  <h3>{parsed.food || t.mealSummary}</h3>
 
-      <div className="neoDash__contentGrid">
-        <article className="neoDash__card">
-          <p className="neoDash__label">{t.premiumTitle}</p>
-          <h3>{t.insightTitle}</h3>
-          <p>{t.premiumText}</p>
+                  <p>
+                    <strong>{t.typeLabel}:</strong> {entry.type}
+                  </p>
+                  <p>
+                    <strong>{t.amountLabel}:</strong> {entry.amount}
+                  </p>
+                  <p>
+                    <strong>{t.reaction}:</strong> {parsed.reaction || "-"}
+                  </p>
 
-          {!premiumUnlocked ? (
-            <div style={lockedBoxStyle}>{t.premiumLocked}</div>
-          ) : (
-            <div style={infoBoxStyle}>{advancedSignal}</div>
-          )}
+                  {parsed.notes ? <p style={{ marginTop: "10px" }}>{parsed.notes}</p> : null}
 
-          {premiumUnlocked && !eliteUnlocked ? (
-            <div style={{ ...lockedBoxStyle, marginTop: "12px" }}>{t.eliteLocked}</div>
-          ) : null}
-        </article>
+                  <p style={{ marginTop: "12px", fontSize: "12px", opacity: 0.65 }}>
+                    {t.savedAt}: {formatSavedDate(entry.createdAt, locale)}
+                  </p>
 
-        <article className="neoDash__card">
-          <p className="neoDash__label">{t.recentLogs}</p>
-          <h3>{t.insightTitle}</h3>
-
-          {foodHistory.length === 0 ? (
-            <p>{t.noLogs}</p>
-          ) : (
-            <div style={{ display: "grid", gap: "12px" }}>
-              {foodHistory.slice(0, 6).map((entry) => (
-                <div key={entry.id} style={logRowStyle}>
-                  <div>
-                    <strong>
-                      {entry.time} • {entry.type}
-                    </strong>
-                    <p style={smallTextStyle}>{entry.amount}</p>
-                    <p style={smallTextStyle}>{extractFood(entry.note)}</p>
-                    <p style={smallTextStyle}>{extractReaction(entry.note, t.good)}</p>
-                    {entry.note ? <p style={smallTextStyle}>{entry.note}</p> : null}
+                  <div style={{ marginTop: "14px" }}>
+                    <button
+                      type="button"
+                      className="neoDash__secondaryBtn"
+                      onClick={() => handleDeleteFoodEntry(entry.id)}
+                    >
+                      {t.deleteEntry}
+                    </button>
                   </div>
+                </article>
+              );
+            })}
+          </div>
+        )}
+      </section>
 
-                  <button
-                    type="button"
-                    className="neoDash__secondaryBtn"
-                    onClick={() => deleteEntry(entry.id)}
-                  >
-                    {t.delete}
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
-        </article>
-      </div>
+      <section className="neoDash__panel" style={{ marginTop: "20px" }}>
+        <p style={{ fontSize: "12px", opacity: 0.6 }}>{t.aiMedicalNote}</p>
+      </section>
     </AppModuleLayout>
   );
 }
-
-const lockedBoxStyle: React.CSSProperties = {
-  marginTop: "16px",
-  padding: "14px",
-  borderRadius: "16px",
-  background: "#f8fafc",
-  border: "1px solid rgba(148,163,184,0.2)",
-};
-
-const infoBoxStyle: React.CSSProperties = {
-  marginTop: "16px",
-  padding: "14px",
-  borderRadius: "16px",
-  background: "rgba(239,246,255,0.9)",
-  border: "1px solid rgba(96,165,250,0.25)",
-};
-
-const logRowStyle: React.CSSProperties = {
-  display: "flex",
-  justifyContent: "space-between",
-  gap: "16px",
-  alignItems: "flex-start",
-  padding: "14px",
-  borderRadius: "16px",
-  background: "#fff",
-  border: "1px solid rgba(148,163,184,0.14)",
-};
-
-const smallTextStyle: React.CSSProperties = {
-  marginTop: "4px",
-  color: "#64748b",
-  lineHeight: 1.5,
-};
