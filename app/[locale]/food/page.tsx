@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import AppModuleLayout from "../../../components/AppModuleLayout";
 import { defaultLocale, isValidLocale } from "../../../lib/i18n";
@@ -161,13 +161,15 @@ function parseFoodNote(note: string) {
   };
 }
 
+function getSupabase() {
+  return createSupabaseClient();
+}
+
 export default function FoodPage() {
   const params = useParams();
   const rawLocale = typeof params.locale === "string" ? params.locale : defaultLocale;
   const locale: Locale = isValidLocale(rawLocale) ? (rawLocale as Locale) : "en";
   const t = copy[locale];
-
-  const supabase = useMemo(() => createSupabaseClient(), []);
 
   const [todayLabel, setTodayLabel] = useState("");
   const [isLoading, setIsLoading] = useState(true);
@@ -197,6 +199,8 @@ export default function FoodPage() {
     let isMounted = true;
 
     async function loadFoodData() {
+      const supabase = getSupabase();
+
       setIsLoading(true);
       setTodayLabel(getTodayLabel(locale));
       setStatusMessage("");
@@ -227,7 +231,7 @@ export default function FoodPage() {
     return () => {
       isMounted = false;
     };
-  }, [locale, supabase, t.loadError]);
+  }, [locale, t.loadError]);
 
   function updateField(field: keyof typeof form, value: string) {
     setForm((prev) => ({
@@ -248,6 +252,8 @@ export default function FoodPage() {
     setStatusType("");
 
     try {
+      const supabase = getSupabase();
+
       const saved = await addFoodEntry(supabase, {
         time: form.time.trim(),
         type: form.type.trim(),
@@ -276,6 +282,8 @@ export default function FoodPage() {
 
   async function handleDeleteFoodEntry(id: number) {
     try {
+      const supabase = getSupabase();
+
       await deleteFoodEntry(supabase, id);
       setFoodEntries((prev) => prev.filter((item) => item.id !== id));
     } catch (error) {
