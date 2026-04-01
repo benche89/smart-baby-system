@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import type { ReactNode } from "react";
 import { getMessages, isValidLocale, defaultLocale } from "../lib/i18n";
 
-type ActiveModule = "dashboard" | "sleep" | "food" | "care";
+type ActiveModule = "dashboard" | "profile" | "sleep" | "food" | "care";
 
 type AppModuleLayoutProps = {
   active: ActiveModule;
@@ -28,9 +28,9 @@ export default function AppModuleLayout({
   children,
   currentFocusTitle = "Smart Baby System",
   currentFocusText = "Premium navigation unified across the app.",
-  rightActionHref = "/onboarding",
+  rightActionHref = "/profile",
   rightActionLabel,
-  dateLabel
+  dateLabel,
 }: AppModuleLayoutProps) {
   const params = useParams();
   const rawLocale = typeof params.locale === "string" ? params.locale : defaultLocale;
@@ -54,15 +54,29 @@ export default function AppModuleLayout({
           <nav className="neoDash__nav">
             <Link
               href={withLocale("/dashboard")}
-              className={`neoDash__navItem ${active === "dashboard" ? "neoDash__navItem--active" : ""}`}
+              className={`neoDash__navItem ${
+                active === "dashboard" ? "neoDash__navItem--active" : ""
+              }`}
             >
               <span>✨</span>
               <span>{t.nav.mainDashboard}</span>
             </Link>
 
             <Link
+              href={withLocale("/profile")}
+              className={`neoDash__navItem ${
+                active === "profile" ? "neoDash__navItem--active" : ""
+              }`}
+            >
+              <span>👶</span>
+              <span>{t.nav.editProfile}</span>
+            </Link>
+
+            <Link
               href={withLocale("/sleep")}
-              className={`neoDash__navItem ${active === "sleep" ? "neoDash__navItem--active" : ""}`}
+              className={`neoDash__navItem ${
+                active === "sleep" ? "neoDash__navItem--active" : ""
+              }`}
             >
               <span>🌙</span>
               <span>{t.nav.sleepModule}</span>
@@ -70,7 +84,9 @@ export default function AppModuleLayout({
 
             <Link
               href={withLocale("/food")}
-              className={`neoDash__navItem ${active === "food" ? "neoDash__navItem--active" : ""}`}
+              className={`neoDash__navItem ${
+                active === "food" ? "neoDash__navItem--active" : ""
+              }`}
             >
               <span>🍼</span>
               <span>{t.nav.foodModule}</span>
@@ -78,15 +94,12 @@ export default function AppModuleLayout({
 
             <Link
               href={withLocale("/care")}
-              className={`neoDash__navItem ${active === "care" ? "neoDash__navItem--active" : ""}`}
+              className={`neoDash__navItem ${
+                active === "care" ? "neoDash__navItem--active" : ""
+              }`}
             >
               <span>💙</span>
               <span>{t.nav.careModule}</span>
-            </Link>
-
-            <Link href={withLocale("/onboarding")} className="neoDash__navItem">
-              <span>✏️</span>
-              <span>{t.nav.editProfile}</span>
             </Link>
           </nav>
         </div>
