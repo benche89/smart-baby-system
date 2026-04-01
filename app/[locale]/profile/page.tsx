@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import AppModuleLayout from "../../../components/AppModuleLayout";
 import { defaultLocale, isValidLocale } from "../../../lib/i18n";
@@ -90,13 +90,15 @@ function getTodayLabel(locale: Locale) {
   });
 }
 
+function getSupabase() {
+  return createSupabaseClient();
+}
+
 export default function ProfilePage() {
   const params = useParams();
   const rawLocale = typeof params.locale === "string" ? params.locale : defaultLocale;
   const locale: Locale = isValidLocale(rawLocale) ? (rawLocale as Locale) : "en";
   const t = copy[locale];
-
-  const supabase = useMemo(() => createSupabaseClient(), []);
 
   const [form, setForm] = useState({
     babyName: "",
@@ -116,6 +118,8 @@ export default function ProfilePage() {
     let isMounted = true;
 
     async function loadProfileData() {
+      const supabase = getSupabase();
+
       setIsLoading(true);
       setTodayLabel(getTodayLabel(locale));
       setStatusMessage("");
@@ -155,7 +159,7 @@ export default function ProfilePage() {
     return () => {
       isMounted = false;
     };
-  }, [locale, supabase, t.loadError]);
+  }, [locale, t.loadError]);
 
   function updateField(field: keyof typeof form, value: string) {
     setForm((prev) => ({
@@ -170,6 +174,8 @@ export default function ProfilePage() {
     setStatusType("");
 
     try {
+      const supabase = getSupabase();
+
       const existing = await getProfile(supabase);
 
       const payload: BabyProfile = {
