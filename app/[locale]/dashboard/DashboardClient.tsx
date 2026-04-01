@@ -344,13 +344,15 @@ function average(numbers: number[]) {
   return numbers.reduce((sum, value) => sum + value, 0) / numbers.length;
 }
 
+function getSupabase() {
+  return createSupabaseClient();
+}
+
 export default function DashboardClient() {
   const params = useParams();
   const rawLocale = typeof params.locale === "string" ? params.locale : defaultLocale;
   const locale: Locale = isValidLocale(rawLocale) ? (rawLocale as Locale) : "en";
   const t = copy[locale];
-
-  const supabase = useMemo(() => createSupabaseClient(), []);
 
   const [profile, setProfile] = useState<BabyProfile | null>(null);
   const [todayLabel, setTodayLabel] = useState("");
@@ -367,6 +369,8 @@ export default function DashboardClient() {
 
     async function loadDashboardData() {
       if (typeof window === "undefined") return;
+
+      const supabase = getSupabase();
 
       setIsLoadingData(true);
 
@@ -415,10 +419,12 @@ export default function DashboardClient() {
     return () => {
       isMounted = false;
     };
-  }, [locale, supabase]);
+  }, [locale]);
 
   async function choosePlan(plan: PlanTier) {
     try {
+      const supabase = getSupabase();
+
       setSelectedPlan(plan);
 
       const savedPlan = await updatePlanTier(supabase, plan);
