@@ -1,112 +1,135 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import AppModuleLayout from "../../../components/AppModuleLayout";
 import { defaultLocale, isValidLocale } from "../../../lib/i18n";
+import { createClient as createSupabaseClient } from "../../../lib/supabase/client";
+import {
+  getCareEntries,
+  addCareEntry,
+  deleteCareEntry,
+  importLocalStorageToSupabase,
+  type CareEntry,
+} from "../../../lib/supabase/app-data";
 
 type Locale = "en" | "fr";
-type PlanTier = "basic" | "premium" | "elite";
-
-type CareEntry = {
-  id: number;
-  time: string;
-  careType: string;
-  status: string;
-  note: string;
-  createdAt: string;
-};
-
-const CARE_STORAGE_KEY = "sb_care_entries";
-const PLAN_STORAGE_KEY = "smartBabyPlanTier";
 
 const copy = {
   en: {
-    title: "Care module",
-    subtitle:
-      "Track care routines, daily actions and consistency signals to create calmer structure.",
-    label: "Care intelligence",
-    focusTitle: "Care tracking",
-    focusText: "Routines, stability and clearer daily care structure.",
-    addLabel: "Add care log",
-    addTitle: "Log a care action",
-    addText:
-      "Save routines and daily care events to make consistency easier to understand.",
+    subtitle: "Track care routines securely with Supabase-backed storage.",
+    label: "Care tracking",
+    focusTitle: "Care module",
+    focusText: "Log daily care moments to reveal routine consistency and support calmer parenting decisions.",
+
+    pageLabel: "Care",
+    pageTitle: "Care log",
+    pageText:
+      "Save each care action to build stronger routine insights and smarter dashboard guidance.",
+
     time: "Time",
-    type: "Care type",
+    careType: "Care type",
     status: "Status",
     note: "Notes",
-    save: "Save care log",
-    diaper: "Diaper",
+    notePlaceholder:
+      "Add useful context about this care moment, for example diaper change, bath routine, mood or difficulty.",
+    addEntry: "Add care entry",
+    adding: "Saving...",
+    loading: "Loading care data...",
+    noEntries: "No care entries yet.",
+    deleteEntry: "Delete",
+    deletingError: "Failed to delete care entry.",
+    saveError: "Failed to save care entry.",
+    loadError: "Failed to load care data.",
+    secureStorage: "Your care logs are stored securely in Supabase.",
+    aiMedicalNote: "AI suggestions are not medical advice.",
+
+    diaper: "Diaper change",
     bath: "Bath",
-    hygiene: "Hygiene",
+    skincare: "Skincare",
     medicine: "Medicine",
-    routine: "Routine",
+    hygiene: "Hygiene",
+    comfort: "Comfort routine",
+
     completed: "Completed",
     partial: "Partial",
     difficult: "Difficult",
-    totalLogs: "Total logs",
-    recentStatus: "Recent status",
-    careVariety: "Routine variety",
-    premiumTitle: "Premium care insights",
-    premiumText:
-      "Premium and Elite unlock a stronger view of consistency, friction and routine quality.",
-    premiumLocked: "Upgrade to Premium to unlock better routine analysis.",
-    eliteLocked: "Upgrade to Elite for deeper care insights.",
-    insightTitle: "Care overview",
-    insightText: "Stable routines reduce friction across the whole day.",
-    recentLogs: "Recent care logs",
-    noLogs: "No care logs yet.",
-    delete: "Delete",
-    placeholder: "Short note about routine, resistance, context or outcome..."
+
+    lastEntries: "Recent care entries",
+    typeLabel: "Type",
+    statusLabel: "Status",
+    savedAt: "Saved",
   },
   fr: {
-    title: "Module soins",
-    subtitle:
-      "Suivez les routines, les actions quotidiennes et les signaux de cohérence pour créer une structure plus apaisée.",
-    label: "Intelligence soins",
-    focusTitle: "Suivi des soins",
-    focusText: "Routines, stabilité et structure quotidienne plus claire.",
-    addLabel: "Ajouter un log soins",
-    addTitle: "Enregistrer une action de soin",
-    addText:
-      "Enregistrez les routines et les événements de soins quotidiens pour mieux comprendre la cohérence.",
+    subtitle: "Suivez les routines de soins avec un stockage sécurisé sur Supabase.",
+    label: "Suivi soins",
+    focusTitle: "Module soins",
+    focusText:
+      "Enregistrez les moments de soins quotidiens pour révéler la cohérence de la routine et soutenir des décisions parentales plus calmes.",
+
+    pageLabel: "Soins",
+    pageTitle: "Journal des soins",
+    pageText:
+      "Enregistrez chaque action de soin pour créer de meilleurs insights de routine et une guidance dashboard plus intelligente.",
+
     time: "Heure",
-    type: "Type de soin",
+    careType: "Type de soin",
     status: "Statut",
     note: "Notes",
-    save: "Enregistrer le log soins",
-    diaper: "Couche",
+    notePlaceholder:
+      "Ajoutez un contexte utile sur ce moment de soin, par exemple changement de couche, bain, humeur ou difficulté.",
+    addEntry: "Ajouter une entrée soins",
+    adding: "Enregistrement...",
+    loading: "Chargement des données soins...",
+    noEntries: "Aucune entrée soins pour le moment.",
+    deleteEntry: "Supprimer",
+    deletingError: "Impossible de supprimer l’entrée soins.",
+    saveError: "Impossible d’enregistrer l’entrée soins.",
+    loadError: "Impossible de charger les données soins.",
+    secureStorage: "Vos logs soins sont stockés en toute sécurité dans Supabase.",
+    aiMedicalNote: "Les suggestions IA ne constituent pas un avis médical.",
+
+    diaper: "Changement de couche",
     bath: "Bain",
-    hygiene: "Hygiène",
+    skincare: "Soin de la peau",
     medicine: "Médicament",
-    routine: "Routine",
+    hygiene: "Hygiène",
+    comfort: "Routine de réconfort",
+
     completed: "Terminé",
     partial: "Partiel",
     difficult: "Difficile",
-    totalLogs: "Nombre de logs",
-    recentStatus: "Statut récent",
-    careVariety: "Variété des routines",
-    premiumTitle: "Insights soins Premium",
-    premiumText:
-      "Premium et Elite débloquent une vision plus forte de la cohérence, des frictions et de la qualité des routines.",
-    premiumLocked: "Passez à Premium pour débloquer une meilleure analyse des routines.",
-    eliteLocked: "Passez à Elite pour des insights soins plus poussés.",
-    insightTitle: "Vue d’ensemble des soins",
-    insightText: "Des routines stables réduisent les frictions sur toute la journée.",
-    recentLogs: "Logs soins récents",
-    noLogs: "Aucun log soins pour le moment.",
-    delete: "Supprimer",
-    placeholder: "Courte note sur la routine, la résistance, le contexte ou le résultat..."
+
+    lastEntries: "Entrées soins récentes",
+    typeLabel: "Type",
+    statusLabel: "Statut",
+    savedAt: "Enregistré",
   },
 } as const;
 
 function getTodayLabel(locale: Locale) {
-  return new Date().toLocaleDateString(locale === "fr" ? "fr-BE" : "en-GB", {
+  const format = locale === "fr" ? "fr-BE" : "en-GB";
+  return new Date().toLocaleDateString(format, {
     weekday: "long",
     day: "numeric",
     month: "long",
   });
+}
+
+function formatSavedDate(value: string, locale: Locale) {
+  const format = locale === "fr" ? "fr-BE" : "en-GB";
+
+  try {
+    return new Date(value).toLocaleString(format, {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  } catch {
+    return value;
+  }
 }
 
 export default function CarePage() {
@@ -115,136 +138,190 @@ export default function CarePage() {
   const locale: Locale = isValidLocale(rawLocale) ? (rawLocale as Locale) : "en";
   const t = copy[locale];
 
-  const [dateLabel, setDateLabel] = useState("");
-  const [selectedPlan, setSelectedPlan] = useState<PlanTier>("basic");
-  const [careHistory, setCareHistory] = useState<CareEntry[]>([]);
+  const supabase = useMemo(() => createSupabaseClient(), []);
+
+  const [todayLabel, setTodayLabel] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [careEntries, setCareEntries] = useState<CareEntry[]>([]);
+  const [statusMessage, setStatusMessage] = useState("");
+  const [statusType, setStatusType] = useState<"success" | "error" | "">("");
+
   const [form, setForm] = useState({
     time: "",
-    careType: locale === "fr" ? "Routine" : "Routine",
+    careType: locale === "fr" ? "Changement de couche" : "Diaper change",
     status: locale === "fr" ? "Terminé" : "Completed",
     note: "",
   });
 
   useEffect(() => {
-    setDateLabel(getTodayLabel(locale));
-
-    const savedPlan = localStorage.getItem(PLAN_STORAGE_KEY);
-    if (savedPlan === "basic" || savedPlan === "premium" || savedPlan === "elite") {
-      setSelectedPlan(savedPlan);
-    }
-
-    try {
-      const saved = localStorage.getItem(CARE_STORAGE_KEY);
-      if (saved) {
-        const parsed = JSON.parse(saved) as CareEntry[];
-        setCareHistory(Array.isArray(parsed) ? parsed : []);
-      }
-    } catch {
-      // ignore invalid storage
-    }
+    setForm((prev) => ({
+      ...prev,
+      careType: locale === "fr" ? "Changement de couche" : "Diaper change",
+      status: locale === "fr" ? "Terminé" : "Completed",
+    }));
   }, [locale]);
 
-  function persist(entries: CareEntry[]) {
-    setCareHistory(entries);
-    localStorage.setItem(CARE_STORAGE_KEY, JSON.stringify(entries));
-  }
+  useEffect(() => {
+    let isMounted = true;
 
-  function handleSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+    async function loadCareData() {
+      setIsLoading(true);
+      setTodayLabel(getTodayLabel(locale));
+      setStatusMessage("");
+      setStatusType("");
 
-    if (!form.time || !form.careType || !form.status) return;
+      try {
+        await importLocalStorageToSupabase(supabase);
 
-    const entry: CareEntry = {
-      id: Date.now(),
-      time: form.time,
-      careType: form.careType,
-      status: form.status,
-      note: form.note,
-      createdAt: new Date().toISOString(),
+        const rows = await getCareEntries(supabase);
+
+        if (!isMounted) return;
+        setCareEntries(rows);
+      } catch (error) {
+        console.error("Failed to load care entries:", error);
+        if (isMounted) {
+          setStatusMessage(t.loadError);
+          setStatusType("error");
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      }
+    }
+
+    loadCareData();
+
+    return () => {
+      isMounted = false;
     };
+  }, [locale, supabase, t.loadError]);
 
-    persist([entry, ...careHistory]);
-
-    setForm({
-      time: "",
-      careType: locale === "fr" ? "Routine" : "Routine",
-      status: locale === "fr" ? "Terminé" : "Completed",
-      note: "",
-    });
+  function updateField(field: keyof typeof form, value: string) {
+    setForm((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
   }
 
-  function deleteEntry(id: number) {
-    persist(careHistory.filter((entry) => entry.id !== id));
+  async function handleAddCareEntry() {
+    if (!form.time || !form.careType || !form.status) {
+      setStatusMessage(t.saveError);
+      setStatusType("error");
+      return;
+    }
+
+    setIsSaving(true);
+    setStatusMessage("");
+    setStatusType("");
+
+    try {
+      const saved = await addCareEntry(supabase, {
+        time: form.time.trim(),
+        careType: form.careType.trim(),
+        status: form.status.trim(),
+        note: form.note.trim(),
+        createdAt: new Date().toISOString(),
+      });
+
+      setCareEntries((prev) => [saved, ...prev]);
+      setForm({
+        time: "",
+        careType: locale === "fr" ? "Changement de couche" : "Diaper change",
+        status: locale === "fr" ? "Terminé" : "Completed",
+        note: "",
+      });
+    } catch (error) {
+      console.error("Failed to save care entry:", error);
+      setStatusMessage(t.saveError);
+      setStatusType("error");
+    } finally {
+      setIsSaving(false);
+    }
   }
 
-  const recentStatus = careHistory[0]?.status ?? "-";
-  const careVariety = new Set(careHistory.map((entry) => entry.careType)).size;
-
-  const premiumUnlocked = selectedPlan === "premium" || selectedPlan === "elite";
-  const eliteUnlocked = selectedPlan === "elite";
-
-  const advancedSignal = useMemo(() => {
-    const difficultCount = careHistory.filter((entry) => entry.status === t.difficult).length;
-    const partialCount = careHistory.filter((entry) => entry.status === t.partial).length;
-
-    if (difficultCount >= 2) {
-      return locale === "fr"
-        ? "Frictions répétées détectées — simplifier la routine."
-        : "Repeated friction detected — simplify the routine.";
+  async function handleDeleteCareEntry(id: number) {
+    try {
+      await deleteCareEntry(supabase, id);
+      setCareEntries((prev) => prev.filter((item) => item.id !== id));
+    } catch (error) {
+      console.error("Failed to delete care entry:", error);
+      setStatusMessage(t.deletingError);
+      setStatusType("error");
     }
+  }
 
-    if (partialCount >= 2) {
-      return locale === "fr"
-        ? "Cohérence mixte — garder une structure plus stable."
-        : "Mixed consistency — keep a more stable structure.";
-    }
-
-    return locale === "fr"
-      ? "La routine semble plutôt stable."
-      : "Routine looks fairly stable.";
-  }, [careHistory, t.difficult, t.partial, locale]);
+  if (isLoading) {
+    return (
+      <AppModuleLayout
+        active="care"
+        title="Smart Baby System"
+        subtitle={t.subtitle}
+        label={t.label}
+        currentFocusTitle={t.focusTitle}
+        currentFocusText={t.focusText}
+        dateLabel="..."
+      >
+        <section className="neoDash__panel">
+          <div className="neoDash__card">
+            <h3>{t.loading}</h3>
+            <p>{t.secureStorage}</p>
+          </div>
+        </section>
+      </AppModuleLayout>
+    );
+  }
 
   return (
     <AppModuleLayout
       active="care"
-      title={t.title}
+      title={t.pageTitle}
       subtitle={t.subtitle}
       label={t.label}
       currentFocusTitle={t.focusTitle}
       currentFocusText={t.focusText}
-      dateLabel={dateLabel}
+      dateLabel={todayLabel || "..."}
     >
       <section className="neoDash__panel">
         <div className="neoDash__panelHeader">
           <div>
-            <p className="neoDash__label">{t.addLabel}</p>
-            <h3>{t.addTitle}</h3>
-            <p className="neoDash__panelText">{t.addText}</p>
+            <p className="neoDash__label">{t.pageLabel}</p>
+            <h3>{t.pageTitle}</h3>
+            <p className="neoDash__panelText">{t.pageText}</p>
           </div>
         </div>
 
-        <form className="neoDash__form" onSubmit={handleSubmit}>
-          <div className="neoDash__formGrid">
+        <div className="neoDash__form">
+          <div
+            className="neoDash__formGrid"
+            style={{
+              display: "grid",
+              gap: "16px",
+              gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+            }}
+          >
             <label>
               <span>{t.time}</span>
               <input
                 type="time"
                 value={form.time}
-                onChange={(e) => setForm((prev) => ({ ...prev, time: e.target.value }))}
+                onChange={(e) => updateField("time", e.target.value)}
               />
             </label>
 
             <label>
-              <span>{t.type}</span>
+              <span>{t.careType}</span>
               <select
                 value={form.careType}
-                onChange={(e) => setForm((prev) => ({ ...prev, careType: e.target.value }))}
+                onChange={(e) => updateField("careType", e.target.value)}
               >
                 <option value={t.diaper}>{t.diaper}</option>
                 <option value={t.bath}>{t.bath}</option>
-                <option value={t.hygiene}>{t.hygiene}</option>
+                <option value={t.skincare}>{t.skincare}</option>
                 <option value={t.medicine}>{t.medicine}</option>
-                <option value={t.routine}>{t.routine}</option>
+                <option value={t.hygiene}>{t.hygiene}</option>
+                <option value={t.comfort}>{t.comfort}</option>
               </select>
             </label>
 
@@ -252,7 +329,7 @@ export default function CarePage() {
               <span>{t.status}</span>
               <select
                 value={form.status}
-                onChange={(e) => setForm((prev) => ({ ...prev, status: e.target.value }))}
+                onChange={(e) => updateField("status", e.target.value)}
               >
                 <option value={t.completed}>{t.completed}</option>
                 <option value={t.partial}>{t.partial}</option>
@@ -263,123 +340,117 @@ export default function CarePage() {
             <label style={{ gridColumn: "1 / -1" }}>
               <span>{t.note}</span>
               <textarea
-                rows={4}
+                rows={5}
                 value={form.note}
-                onChange={(e) => setForm((prev) => ({ ...prev, note: e.target.value }))}
-                placeholder={t.placeholder}
+                onChange={(e) => updateField("note", e.target.value)}
+                placeholder={t.notePlaceholder}
               />
             </label>
           </div>
 
-          <div className="neoDash__formActions">
-            <button type="submit" className="neoDash__primaryBtn">
-              {t.save}
+          <div
+            className="neoDash__formActions"
+            style={{
+              display: "flex",
+              gap: "12px",
+              alignItems: "center",
+              flexWrap: "wrap",
+              marginTop: "18px",
+            }}
+          >
+            <button
+              type="button"
+              className="neoDash__primaryBtn"
+              onClick={handleAddCareEntry}
+              disabled={isSaving}
+            >
+              {isSaving ? t.adding : t.addEntry}
             </button>
+
+            <p style={{ fontSize: "13px", opacity: 0.7 }}>{t.secureStorage}</p>
           </div>
-        </form>
+
+          {statusMessage ? (
+            <div
+              style={{
+                marginTop: "16px",
+                padding: "14px 16px",
+                borderRadius: "16px",
+                border:
+                  statusType === "success"
+                    ? "1px solid rgba(34,197,94,0.25)"
+                    : "1px solid rgba(239,68,68,0.25)",
+                background:
+                  statusType === "success"
+                    ? "rgba(34,197,94,0.08)"
+                    : "rgba(239,68,68,0.08)",
+                color: statusType === "success" ? "#166534" : "#991b1b",
+                fontSize: "14px",
+                lineHeight: 1.5,
+              }}
+            >
+              {statusMessage}
+            </div>
+          ) : null}
+        </div>
       </section>
 
-      <div className="neoDash__summaryGrid">
-        <article className="neoDash__summaryCard">
-          <p className="neoDash__label">{t.totalLogs}</p>
-          <strong>{careHistory.length}</strong>
-          <span>{t.insightTitle}</span>
-        </article>
+      <section className="neoDash__panel" style={{ marginTop: "20px" }}>
+        <div className="neoDash__panelHeader">
+          <div>
+            <p className="neoDash__label">{t.pageLabel}</p>
+            <h3>{t.lastEntries}</h3>
+          </div>
+        </div>
 
-        <article className="neoDash__summaryCard">
-          <p className="neoDash__label">{t.recentStatus}</p>
-          <strong>{recentStatus}</strong>
-          <span>{t.insightText}</span>
-        </article>
+        {careEntries.length === 0 ? (
+          <div className="neoDash__card">
+            <p>{t.noEntries}</p>
+          </div>
+        ) : (
+          <div
+            style={{
+              display: "grid",
+              gap: "16px",
+              gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+            }}
+          >
+            {careEntries.map((entry) => (
+              <article key={entry.id} className="neoDash__card">
+                <p className="neoDash__label">{t.pageLabel}</p>
+                <h3>{entry.careType}</h3>
 
-        <article className="neoDash__summaryCard">
-          <p className="neoDash__label">{t.careVariety}</p>
-          <strong>{careVariety}</strong>
-          <span>{t.insightText}</span>
-        </article>
-      </div>
+                <p>
+                  <strong>{t.statusLabel}:</strong> {entry.status}
+                </p>
+                <p>
+                  <strong>{t.typeLabel}:</strong> {entry.careType}
+                </p>
 
-      <div className="neoDash__contentGrid">
-        <article className="neoDash__card">
-          <p className="neoDash__label">{t.premiumTitle}</p>
-          <h3>{t.insightTitle}</h3>
-          <p>{t.premiumText}</p>
+                {entry.note ? <p style={{ marginTop: "10px" }}>{entry.note}</p> : null}
 
-          {!premiumUnlocked ? (
-            <div style={lockedBoxStyle}>{t.premiumLocked}</div>
-          ) : (
-            <div style={infoBoxStyle}>{advancedSignal}</div>
-          )}
+                <p style={{ marginTop: "12px", fontSize: "12px", opacity: 0.65 }}>
+                  {t.savedAt}: {formatSavedDate(entry.createdAt, locale)}
+                </p>
 
-          {premiumUnlocked && !eliteUnlocked ? (
-            <div style={{ ...lockedBoxStyle, marginTop: "12px" }}>{t.eliteLocked}</div>
-          ) : null}
-        </article>
-
-        <article className="neoDash__card">
-          <p className="neoDash__label">{t.recentLogs}</p>
-          <h3>{t.insightTitle}</h3>
-
-          {careHistory.length === 0 ? (
-            <p>{t.noLogs}</p>
-          ) : (
-            <div style={{ display: "grid", gap: "12px" }}>
-              {careHistory.slice(0, 6).map((entry) => (
-                <div key={entry.id} style={logRowStyle}>
-                  <div>
-                    <strong>
-                      {entry.time} • {entry.careType}
-                    </strong>
-                    <p style={smallTextStyle}>{entry.status}</p>
-                    {entry.note ? <p style={smallTextStyle}>{entry.note}</p> : null}
-                  </div>
-
+                <div style={{ marginTop: "14px" }}>
                   <button
                     type="button"
                     className="neoDash__secondaryBtn"
-                    onClick={() => deleteEntry(entry.id)}
+                    onClick={() => handleDeleteCareEntry(entry.id)}
                   >
-                    {t.delete}
+                    {t.deleteEntry}
                   </button>
                 </div>
-              ))}
-            </div>
-          )}
-        </article>
-      </div>
+              </article>
+            ))}
+          </div>
+        )}
+      </section>
+
+      <section className="neoDash__panel" style={{ marginTop: "20px" }}>
+        <p style={{ fontSize: "12px", opacity: 0.6 }}>{t.aiMedicalNote}</p>
+      </section>
     </AppModuleLayout>
   );
 }
-
-const lockedBoxStyle: React.CSSProperties = {
-  marginTop: "16px",
-  padding: "14px",
-  borderRadius: "16px",
-  background: "#f8fafc",
-  border: "1px solid rgba(148,163,184,0.2)",
-};
-
-const infoBoxStyle: React.CSSProperties = {
-  marginTop: "16px",
-  padding: "14px",
-  borderRadius: "16px",
-  background: "rgba(239,246,255,0.9)",
-  border: "1px solid rgba(96,165,250,0.25)",
-};
-
-const logRowStyle: React.CSSProperties = {
-  display: "flex",
-  justifyContent: "space-between",
-  gap: "16px",
-  alignItems: "flex-start",
-  padding: "14px",
-  borderRadius: "16px",
-  background: "#fff",
-  border: "1px solid rgba(148,163,184,0.14)",
-};
-
-const smallTextStyle: React.CSSProperties = {
-  marginTop: "4px",
-  color: "#64748b",
-  lineHeight: 1.5,
-};
