@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import AppModuleLayout from "../../../components/AppModuleLayout";
 import { defaultLocale, isValidLocale } from "../../../lib/i18n";
@@ -59,7 +59,8 @@ const copy = {
     subtitle: "Suivez les siestes et la qualité du sommeil avec un stockage sécurisé sur Supabase.",
     label: "Suivi sommeil",
     focusTitle: "Module sommeil",
-    focusText: "Enregistrez les siestes, la qualité et le rythme du sommeil pour une meilleure clarté quotidienne.",
+    focusText:
+      "Enregistrez les siestes, la qualité et le rythme du sommeil pour une meilleure clarté quotidienne.",
 
     pageLabel: "Sommeil",
     pageTitle: "Journal du sommeil",
@@ -121,13 +122,15 @@ function formatSavedDate(value: string, locale: Locale) {
   }
 }
 
+function getSupabase() {
+  return createSupabaseClient();
+}
+
 export default function SleepPage() {
   const params = useParams();
   const rawLocale = typeof params.locale === "string" ? params.locale : defaultLocale;
   const locale: Locale = isValidLocale(rawLocale) ? (rawLocale as Locale) : "en";
   const t = copy[locale];
-
-  const supabase = useMemo(() => createSupabaseClient(), []);
 
   const [todayLabel, setTodayLabel] = useState("");
   const [isLoading, setIsLoading] = useState(true);
@@ -155,6 +158,8 @@ export default function SleepPage() {
     let isMounted = true;
 
     async function loadSleepData() {
+      const supabase = getSupabase();
+
       setIsLoading(true);
       setTodayLabel(getTodayLabel(locale));
       setStatusMessage("");
@@ -185,7 +190,7 @@ export default function SleepPage() {
     return () => {
       isMounted = false;
     };
-  }, [locale, supabase, t.loadError]);
+  }, [locale, t.loadError]);
 
   function updateField(field: keyof typeof form, value: string) {
     setForm((prev) => ({
@@ -206,6 +211,8 @@ export default function SleepPage() {
     setStatusType("");
 
     try {
+      const supabase = getSupabase();
+
       const saved = await addSleepEntry(supabase, {
         start: form.start.trim(),
         end: form.end.trim(),
@@ -234,6 +241,8 @@ export default function SleepPage() {
 
   async function handleDeleteSleepEntry(id: number) {
     try {
+      const supabase = getSupabase();
+
       await deleteSleepEntry(supabase, id);
       setSleepEntries((prev) => prev.filter((item) => item.id !== id));
     } catch (error) {
