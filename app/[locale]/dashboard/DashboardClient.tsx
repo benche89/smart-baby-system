@@ -4,51 +4,22 @@ import { useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import AppModuleLayout from "../../../components/AppModuleLayout";
 import { defaultLocale, isValidLocale } from "../../../lib/i18n";
+import { createClient as createSupabaseClient } from "../../../lib/supabase/client";
+import {
+  getProfile,
+  getSleepEntries,
+  getFoodEntries,
+  getCareEntries,
+  importLocalStorageToSupabase,
+  updatePlanTier,
+  type BabyProfile,
+  type SleepEntry,
+  type FoodEntry,
+  type CareEntry,
+  type PlanTier,
+} from "../../../lib/supabase/app-data";
 
 type Locale = "en" | "fr";
-type PlanTier = "basic" | "premium" | "elite";
-
-type BabyProfile = {
-  babyName: string;
-  ageMonths: string;
-  bedtime: string;
-  mainConcern: string;
-  notes: string;
-};
-
-type SleepEntry = {
-  id: number;
-  start: string;
-  end: string;
-  duration: string;
-  quality: string;
-  note: string;
-  createdAt: string;
-};
-
-type FoodEntry = {
-  id: number;
-  time: string;
-  type: string;
-  amount: string;
-  note: string;
-  createdAt: string;
-};
-
-type CareEntry = {
-  id: number;
-  time: string;
-  careType: string;
-  status: string;
-  note: string;
-  createdAt: string;
-};
-
-const PROFILE_STORAGE_KEY = "sb_profile";
-const SLEEP_STORAGE_KEY = "sb_sleep_entries";
-const FOOD_STORAGE_KEY = "sb_food_entries";
-const CARE_STORAGE_KEY = "sb_care_entries";
-const PLAN_STORAGE_KEY = "smartBabyPlanTier";
 
 const copy = {
   en: {
@@ -379,6 +350,8 @@ export default function DashboardClient() {
   const locale: Locale = isValidLocale(rawLocale) ? (rawLocale as Locale) : "en";
   const t = copy[locale];
 
+  const supabase = useMemo(() => createSupabaseClient(), []);
+
   const [profile, setProfile] = useState<BabyProfile | null>(null);
   const [todayLabel, setTodayLabel] = useState("");
   const [selectedPlan, setSelectedPlan] = useState<PlanTier>("basic");
@@ -387,58 +360,89 @@ export default function DashboardClient() {
   const [careHistory, setCareHistory] = useState<CareEntry[]>([]);
   const [aiInput, setAiInput] = useState("");
   const [aiQuestion, setAiQuestion] = useState("");
+  const [isLoadingData, setIsLoadingData] = useState(true);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    let isMounted = true;
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const q = urlParams.get("q")?.trim() || "";
-    setAiQuestion(q);
+    async function loadDashboardData() {
+      if (typeof window === "undefined") return;
 
-    try {
-      const savedProfile = localStorage.getItem(PROFILE_STORAGE_KEY);
-      if (savedProfile) {
-        const parsed = JSON.parse(savedProfile) as BabyProfile;
-        setProfile(parsed);
+      setIsLoadingData(true);
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const q = urlParams.get("q")?.trim() || "";
+
+      if (isMounted) {
+        setAiQuestion(q);
+        setTodayLabel(getTodayLabel(locale));
       }
-    } catch {}
 
-    try {
-      const savedSleepHistory = localStorage.getItem(SLEEP_STORAGE_KEY);
-      if (savedSleepHistory) {
-        const parsed = JSON.parse(savedSleepHistory) as SleepEntry[];
-        setSleepHistory(Array.isArray(parsed) ? parsed : []);
+      try {
+        await importLocalStorageToSupabase(supabase);
+
+        const [dbProfile, dbSleep, dbFood, dbCare] = await Promise.all([
+          getProfile(supabase),
+          getSleepEntries(supabase),
+          getFoodEntries(supabase),
+          getCareEntries(supabase),
+        ]);
+
+        if (!isMounted) return;
+
+        setProfile(dbProfile);
+
+        if (dbProfile?.planTier) {
+          setSelectedPlan(dbProfile.planTier);
+        } else {
+          setSelectedPlan("basic");
+        }
+
+        setSleepHistory(dbSleep);
+        setFoodHistory(dbFood);
+        setCareHistory(dbCare);
+      } catch (error) {
+        console.error("Failed to load dashboard data:", error);
+      } finally {
+        if (isMounted) {
+          setIsLoadingData(false);
+        }
       }
-    } catch {}
-
-    try {
-      const savedFoodHistory = localStorage.getItem(FOOD_STORAGE_KEY);
-      if (savedFoodHistory) {
-        const parsed = JSON.parse(savedFoodHistory) as FoodEntry[];
-        setFoodHistory(Array.isArray(parsed) ? parsed : []);
-      }
-    } catch {}
-
-    try {
-      const savedCareHistory = localStorage.getItem(CARE_STORAGE_KEY);
-      if (savedCareHistory) {
-        const parsed = JSON.parse(savedCareHistory) as CareEntry[];
-        setCareHistory(Array.isArray(parsed) ? parsed : []);
-      }
-    } catch {}
-
-    const savedPlan = localStorage.getItem(PLAN_STORAGE_KEY);
-    if (savedPlan === "basic" || savedPlan === "premium" || savedPlan === "elite") {
-      setSelectedPlan(savedPlan);
     }
 
-    setTodayLabel(getTodayLabel(locale));
-  }, [locale]);
+    loadDashboardData();
 
-  function choosePlan(plan: PlanTier) {
-    setSelectedPlan(plan);
-    if (typeof window !== "undefined") {
-      localStorage.setItem(PLAN_STORAGE_KEY, plan);
+    return () => {
+      isMounted = false;
+    };
+  }, [locale, supabase]);
+
+  async function choosePlan(plan: PlanTier) {
+    try {
+      setSelectedPlan(plan);
+
+      const savedPlan = await updatePlanTier(supabase, plan);
+
+      setSelectedPlan(savedPlan);
+      setProfile((prev) => {
+        if (!prev) {
+          return {
+            babyName: "",
+            ageMonths: "",
+            bedtime: "",
+            mainConcern: "",
+            notes: "",
+            planTier: savedPlan,
+          };
+        }
+
+        return {
+          ...prev,
+          planTier: savedPlan,
+        };
+      });
+    } catch (error) {
+      console.error("Failed to update plan:", error);
     }
   }
 
@@ -720,7 +724,7 @@ export default function DashboardClient() {
               "Reduce stimulation before the next nap or bedtime",
               "Protect bedtime if daytime sleep remains short",
             ];
-      let eliteInsights =
+      const eliteInsights =
         locale === "fr"
           ? [
               "La qualité du sommeil peut être plus importante que l’heure lors des journées difficiles",
@@ -812,7 +816,7 @@ export default function DashboardClient() {
               "Avoid introducing too many new foods at once",
               "Track reactions calmly after meals",
             ];
-      let eliteInsights =
+      const eliteInsights =
         locale === "fr"
           ? [
               "Des repas simples rendent les schémas plus faciles à comprendre",
@@ -897,7 +901,7 @@ export default function DashboardClient() {
               "Reduce unnecessary variation between care moments",
               "Use calmer transitions around more difficult moments",
             ];
-      let eliteInsights =
+      const eliteInsights =
         locale === "fr"
           ? [
               "La cohérence aide généralement plus que l’ajout de complexité",
@@ -1018,6 +1022,27 @@ export default function DashboardClient() {
   const totalLogs = sleepHistory.length + foodHistory.length + careHistory.length;
   const combinedScore =
     totalLogs === 0 ? 0 : Math.round((sleepScore + foodScore + careScore) / 3);
+
+  if (isLoadingData) {
+    return (
+      <AppModuleLayout
+        active="dashboard"
+        title="Smart Baby System"
+        subtitle={t.subtitle}
+        label={t.label}
+        currentFocusTitle={t.focusTitle}
+        currentFocusText={t.focusText}
+        dateLabel="..."
+      >
+        <section className="neoDash__panel">
+          <div className="neoDash__card">
+            <h3>Loading your secure dashboard...</h3>
+            <p>Your profile, sleep, food and care data are being loaded from Supabase.</p>
+          </div>
+        </section>
+      </AppModuleLayout>
+    );
+  }
 
   return (
     <AppModuleLayout
@@ -1350,6 +1375,12 @@ export default function DashboardClient() {
           <p>{notes}</p>
         </article>
       </div>
+
+      <section className="neoDash__panel" style={{ marginTop: "20px" }}>
+        <p style={{ fontSize: "12px", opacity: 0.6 }}>
+          AI suggestions are not medical advice.
+        </p>
+      </section>
     </AppModuleLayout>
   );
 }
