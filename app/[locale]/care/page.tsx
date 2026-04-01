@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import AppModuleLayout from "../../../components/AppModuleLayout";
 import { defaultLocale, isValidLocale } from "../../../lib/i18n";
@@ -20,7 +20,8 @@ const copy = {
     subtitle: "Track care routines securely with Supabase-backed storage.",
     label: "Care tracking",
     focusTitle: "Care module",
-    focusText: "Log daily care moments to reveal routine consistency and support calmer parenting decisions.",
+    focusText:
+      "Log daily care moments to reveal routine consistency and support calmer parenting decisions.",
 
     pageLabel: "Care",
     pageTitle: "Care log",
@@ -132,13 +133,15 @@ function formatSavedDate(value: string, locale: Locale) {
   }
 }
 
+function getSupabase() {
+  return createSupabaseClient();
+}
+
 export default function CarePage() {
   const params = useParams();
   const rawLocale = typeof params.locale === "string" ? params.locale : defaultLocale;
   const locale: Locale = isValidLocale(rawLocale) ? (rawLocale as Locale) : "en";
   const t = copy[locale];
-
-  const supabase = useMemo(() => createSupabaseClient(), []);
 
   const [todayLabel, setTodayLabel] = useState("");
   const [isLoading, setIsLoading] = useState(true);
@@ -166,6 +169,8 @@ export default function CarePage() {
     let isMounted = true;
 
     async function loadCareData() {
+      const supabase = getSupabase();
+
       setIsLoading(true);
       setTodayLabel(getTodayLabel(locale));
       setStatusMessage("");
@@ -196,7 +201,7 @@ export default function CarePage() {
     return () => {
       isMounted = false;
     };
-  }, [locale, supabase, t.loadError]);
+  }, [locale, t.loadError]);
 
   function updateField(field: keyof typeof form, value: string) {
     setForm((prev) => ({
@@ -217,6 +222,8 @@ export default function CarePage() {
     setStatusType("");
 
     try {
+      const supabase = getSupabase();
+
       const saved = await addCareEntry(supabase, {
         time: form.time.trim(),
         careType: form.careType.trim(),
@@ -243,6 +250,8 @@ export default function CarePage() {
 
   async function handleDeleteCareEntry(id: number) {
     try {
+      const supabase = getSupabase();
+
       await deleteCareEntry(supabase, id);
       setCareEntries((prev) => prev.filter((item) => item.id !== id));
     } catch (error) {
