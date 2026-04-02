@@ -115,6 +115,15 @@ textarea {
   color: #184668;
 }
 
+.neoDash__navEmoji {
+  width: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
 .neoDash__sidebarCard {
   padding: 18px;
   border-radius: 22px;
@@ -219,6 +228,11 @@ textarea {
   background: rgba(255, 255, 255, 0.86);
   color: #35516d;
   border: 1px solid #dfe9f3;
+}
+
+.neoDash__topActions a.neoDash__primaryBtn,
+.neoDash__topActions a.neoDash__secondaryBtn {
+  text-decoration: none;
 }
 
 .neoDash__moduleRow {
@@ -470,9 +484,10 @@ textarea {
 }
 
 .neoDash__formGrid input,
-.neoDash__formGrid select {
+.neoDash__formGrid select,
+.neoDash__formGrid textarea {
   min-height: 52px;
-  padding: 0 16px;
+  padding: 12px 16px;
   border-radius: 14px;
   border: 1px solid #d9e5ef;
   background: white;
@@ -480,8 +495,14 @@ textarea {
   outline: none;
 }
 
+.neoDash__formGrid textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
 .neoDash__formGrid input:focus,
-.neoDash__formGrid select:focus {
+.neoDash__formGrid select:focus,
+.neoDash__formGrid textarea:focus {
   border-color: #8cc2ff;
   box-shadow: 0 0 0 4px rgba(140, 194, 255, 0.16);
 }
@@ -2181,9 +2202,6 @@ textarea {
   font-weight: 800;
   color: #0f172a;
   box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
-}
-
-.marketCard__badge:has(+ *) {
   z-index: 2;
 }
 
@@ -2267,19 +2285,6 @@ textarea {
 .marketCard:hover::after {
   opacity: 1;
   transform: translateY(0);
-}
-
-/* Donation / Free feel more visible */
-.marketCard .marketCard__price:where(*) {
-  position: relative;
-}
-
-.marketCard:has(.marketCard__price) .marketCard__price {
-  text-shadow: none;
-}
-
-.marketCard:has(.marketCard__price) .marketCard__badge {
-  border: 1px solid rgba(255, 255, 255, 0.7);
 }
 
 /* =========================
@@ -2628,287 +2633,6 @@ textarea {
 }
 
 /* =========================
-   RESPONSIVE
-========================= */
-
-@media (max-width: 1200px) {
-  .neoDash,
-  .neoDash__heroGrid,
-  .neoDash__summaryGrid,
-  .neoDash__contentGrid,
-  .neoDash__moduleRow,
-  .homePremium__hero,
-  .homePremium__featureGrid,
-  .homePremium__moduleGrid,
-  .homePremium__stepsGrid,
-  .homePremium__previewStrip,
-  .homePremium__testimonialGrid,
-  .homePremium__pricingGrid,
-  .homePremium__heroMeta,
-  .homePremium__heroPanelMiniStats,
-  .homePremium__heroPanelRow,
-  .homePremium__footerInner,
-  .homePremium__footerGrid,
-  .onboardingPremium__grid,
-  .onboardingPremium__highlights,
-  .onboardingPremium__choiceGrid,
-  .onboardingPremium__valueGrid,
-  .onboardingPremium__signalRow,
-  .onboardingPremium__previewStats,
-  .onboardingPremium__miniCards {
-    grid-template-columns: 1fr;
-  }
-
-  .neoDash__sidebar {
-    border-right: none;
-    border-bottom: 1px solid #e7edf4;
-  }
-
-  .neoDash__formGrid--food {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .homePremium__priceCard--featured {
-    transform: none;
-  }
-
-  .marketplaceGrid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 1100px) {
-  .marketplaceDetails {
-    grid-template-columns: 1fr;
-  }
-
-  .marketplaceDetails__imageWrap,
-  .marketplaceDetails__image {
-    min-height: 300px;
-    max-height: 360px;
-  }
-
-  .marketplaceHero {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-}
-
-@media (max-width: 900px) {
-  .marketplaceGrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .marketplaceSellerCard__grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 760px) {
-  .neoDash__main,
-  .neoDash__sidebar {
-    padding: 18px;
-  }
-
-  .neoDash__topline {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .neoDash__topActions,
-  .neoDash__formActions {
-    width: 100%;
-  }
-
-  .neoDash__primaryBtn,
-  .neoDash__secondaryBtn {
-    width: 100%;
-  }
-
-  .neoDash__miniStats,
-  .neoDash__formGrid,
-  .neoDash__formGrid--food {
-    grid-template-columns: 1fr;
-  }
-
-  .neoDash__historyItem {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .homePremium__nav {
-    top: 8px;
-    padding: 10px 10px 0;
-  }
-
-  .homePremium__navInner,
-  .homePremium__hero,
-  .homePremium__section {
-    padding-left: 18px;
-    padding-right: 18px;
-  }
-
-  .homePremium__navInner {
-    min-height: auto;
-    padding: 14px 16px;
-    border-radius: 20px;
-    flex-wrap: wrap;
-  }
-
-  .homePremium__navLinks {
-    display: none;
-  }
-
-  .homePremium__navActions,
-  .homePremium__heroActions,
-  .homePremium__ctaActions {
-    width: 100%;
-  }
-
-  .homePremium__primaryBtn,
-  .homePremium__ghostBtn {
-    width: 100%;
-  }
-
-  .homePremium__heroBackdrop {
-    inset: 0 18px auto 18px;
-    height: 340px;
-    border-radius: 28px;
-  }
-
-  .homePremium__heroBadge {
-    font-size: 12px;
-  }
-
-  .homePremium__heroPanelBody {
-    padding: 18px;
-  }
-
-  .homePremium__heroPanelCardHead {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .homePremium__heroPanelCardHead h3,
-  .homePremium__previewCard h3 {
-    font-size: 22px;
-  }
-
-  .homePremium__footer {
-    padding-left: 10px;
-    padding-right: 10px;
-  }
-
-  .homePremium__footerInner {
-    padding: 24px 18px;
-    border-radius: 24px;
-  }
-
-  .onboardingPremium {
-    padding: 16px 10px;
-  }
-
-  .onboardingPremium__top {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .onboardingPremium__panel,
-  .onboardingPremium__preview {
-    padding: 18px;
-    border-radius: 24px;
-  }
-
-  .onboardingPremium__step h1 {
-    font-size: 30px;
-  }
-
-  .onboardingPremium__text {
-    font-size: 16px;
-  }
-
-  .onboardingPremium__actions,
-  .onboardingPremium__paywallActions {
-    width: 100%;
-  }
-
-  .onboardingPremium__primaryBtn,
-  .onboardingPremium__ghostBtn {
-    width: 100%;
-  }
-
-  .marketplacePage {
-    padding: 18px;
-  }
-
-  .marketplaceControls {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .marketplaceControl {
-    min-width: 100%;
-  }
-
-  .marketplaceGrid {
-    grid-template-columns: 1fr;
-  }
-
-  .marketCard__imageWrap {
-    height: 190px;
-  }
-
-  .marketplaceHero h1,
-  .marketplaceCreateHero h1 {
-    font-size: 28px;
-  }
-
-  .marketplaceSection__header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .marketplaceFormGrid {
-    grid-template-columns: 1fr;
-  }
-
-  .marketplaceFormActions {
-    justify-content: stretch;
-  }
-
-  .marketplaceFormActions .marketplaceBtn,
-  .marketplaceDetails__actions .marketplaceBtn {
-    width: 100%;
-    text-align: center;
-  }
-
-  .marketplaceDetails__content {
-    padding: 20px;
-  }
-
-  .marketplaceDetails__top {
-    flex-direction: column;
-  }
-
-  .marketplaceDetails__top h1 {
-    font-size: 28px;
-  }
-
-  .marketplaceDetails__price {
-    font-size: 24px;
-  }
-
-  .marketplaceDetails__infoGrid {
-    grid-template-columns: 1fr;
-  }
-
-  .marketplaceNotFound {
-    padding: 24px;
-  }
-
-  .marketplaceNotFound h1 {
-    font-size: 28px;
-    /* =========================
    MY LISTINGS PREMIUM
 ========================= */
 
@@ -3122,10 +2846,55 @@ textarea {
   border: none;
 }
 
+/* =========================
+   RESPONSIVE
+========================= */
+
 @media (max-width: 1200px) {
+  .neoDash,
+  .neoDash__heroGrid,
+  .neoDash__summaryGrid,
+  .neoDash__contentGrid,
+  .neoDash__moduleRow,
+  .homePremium__hero,
+  .homePremium__featureGrid,
+  .homePremium__moduleGrid,
+  .homePremium__stepsGrid,
+  .homePremium__previewStrip,
+  .homePremium__testimonialGrid,
+  .homePremium__pricingGrid,
+  .homePremium__heroMeta,
+  .homePremium__heroPanelMiniStats,
+  .homePremium__heroPanelRow,
+  .homePremium__footerInner,
+  .homePremium__footerGrid,
+  .onboardingPremium__grid,
+  .onboardingPremium__highlights,
+  .onboardingPremium__choiceGrid,
+  .onboardingPremium__valueGrid,
+  .onboardingPremium__signalRow,
+  .onboardingPremium__previewStats,
+  .onboardingPremium__miniCards,
   .myListingsHero,
   .myListingsStats {
     grid-template-columns: 1fr;
+  }
+
+  .neoDash__sidebar {
+    border-right: none;
+    border-bottom: 1px solid #e7edf4;
+  }
+
+  .neoDash__formGrid--food {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .homePremium__priceCard--featured {
+    transform: none;
+  }
+
+  .marketplaceGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .myListingsGrid {
@@ -3133,7 +2902,241 @@ textarea {
   }
 }
 
+@media (max-width: 1100px) {
+  .marketplaceDetails {
+    grid-template-columns: 1fr;
+  }
+
+  .marketplaceDetails__imageWrap,
+  .marketplaceDetails__image {
+    min-height: 300px;
+    max-height: 360px;
+  }
+
+  .marketplaceHero {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 900px) {
+  .marketplaceGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .marketplaceSellerCard__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 760px) {
+  .neoDash__main,
+  .neoDash__sidebar {
+    padding: 18px;
+  }
+
+  .neoDash__topline {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .neoDash__topActions,
+  .neoDash__formActions {
+    width: 100%;
+  }
+
+  .neoDash__primaryBtn,
+  .neoDash__secondaryBtn,
+  .neoDash__topActions a.neoDash__primaryBtn,
+  .neoDash__topActions a.neoDash__secondaryBtn {
+    width: 100%;
+  }
+
+  .neoDash__miniStats,
+  .neoDash__formGrid,
+  .neoDash__formGrid--food {
+    grid-template-columns: 1fr;
+  }
+
+  .neoDash__historyItem {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .homePremium__nav {
+    top: 8px;
+    padding: 10px 10px 0;
+  }
+
+  .homePremium__navInner,
+  .homePremium__hero,
+  .homePremium__section {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  .homePremium__navInner {
+    min-height: auto;
+    padding: 14px 16px;
+    border-radius: 20px;
+    flex-wrap: wrap;
+  }
+
+  .homePremium__navLinks {
+    display: none;
+  }
+
+  .homePremium__navActions,
+  .homePremium__heroActions,
+  .homePremium__ctaActions {
+    width: 100%;
+  }
+
+  .homePremium__primaryBtn,
+  .homePremium__ghostBtn {
+    width: 100%;
+  }
+
+  .homePremium__heroBackdrop {
+    inset: 0 18px auto 18px;
+    height: 340px;
+    border-radius: 28px;
+  }
+
+  .homePremium__heroBadge {
+    font-size: 12px;
+  }
+
+  .homePremium__heroPanelBody {
+    padding: 18px;
+  }
+
+  .homePremium__heroPanelCardHead {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .homePremium__heroPanelCardHead h3,
+  .homePremium__previewCard h3 {
+    font-size: 22px;
+  }
+
+  .homePremium__footer {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .homePremium__footerInner {
+    padding: 24px 18px;
+    border-radius: 24px;
+  }
+
+  .onboardingPremium {
+    padding: 16px 10px;
+  }
+
+  .onboardingPremium__top {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .onboardingPremium__panel,
+  .onboardingPremium__preview {
+    padding: 18px;
+    border-radius: 24px;
+  }
+
+  .onboardingPremium__step h1 {
+    font-size: 30px;
+  }
+
+  .onboardingPremium__text {
+    font-size: 16px;
+  }
+
+  .onboardingPremium__actions,
+  .onboardingPremium__paywallActions {
+    width: 100%;
+  }
+
+  .onboardingPremium__primaryBtn,
+  .onboardingPremium__ghostBtn {
+    width: 100%;
+  }
+
+  .marketplacePage {
+    padding: 18px;
+  }
+
+  .marketplaceControls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .marketplaceControl {
+    min-width: 100%;
+  }
+
+  .marketplaceGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .marketCard__imageWrap {
+    height: 190px;
+  }
+
+  .marketplaceHero h1,
+  .marketplaceCreateHero h1 {
+    font-size: 28px;
+  }
+
+  .marketplaceSection__header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .marketplaceFormGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .marketplaceFormActions {
+    justify-content: stretch;
+  }
+
+  .marketplaceFormActions .marketplaceBtn,
+  .marketplaceDetails__actions .marketplaceBtn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .marketplaceDetails__content {
+    padding: 20px;
+  }
+
+  .marketplaceDetails__top {
+    flex-direction: column;
+  }
+
+  .marketplaceDetails__top h1 {
+    font-size: 28px;
+  }
+
+  .marketplaceDetails__price {
+    font-size: 24px;
+  }
+
+  .marketplaceDetails__infoGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .marketplaceNotFound {
+    padding: 24px;
+  }
+
+  .marketplaceNotFound h1 {
+    font-size: 28px;
+  }
+
   .myListingsHero__content,
   .myListingsHero__profile,
   .myListingsStatCard,
@@ -3159,610 +3162,5 @@ textarea {
   .myListingsEmpty__actions .marketplaceBtn,
   .myListingsHero__actions .marketplaceBtn {
     width: 100%;
-    /* =========================
-   MODULE LAYOUT
-========================= */
-
-.moduleShell {
-  min-height: 100vh;
-  background:
-    radial-gradient(circle at top left, rgba(166, 210, 255, 0.18), transparent 26%),
-    linear-gradient(180deg, #f7fbff 0%, #fcfdff 100%);
-  color: #0f172a;
-}
-
-.moduleTopbar {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 24px 20px 0;
-}
-
-.moduleTopbar__left {
-  display: flex;
-  align-items: center;
-  margin-bottom: 16px;
-}
-
-.moduleHomeButton {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 16px;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.88);
-  border: 1px solid rgba(148, 163, 184, 0.22);
-  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
-  font-size: 14px;
-  font-weight: 700;
-  color: #0f172a;
-  text-decoration: none;
-  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
-  backdrop-filter: blur(10px);
-}
-
-.moduleHomeButton:hover {
-  transform: translateY(-1px);
-  background: #ffffff;
-  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.1);
-}
-
-.moduleTopbar__content {
-  margin-bottom: 24px;
-}
-
-.moduleTitle {
-  font-size: clamp(28px, 4vw, 42px);
-  line-height: 1.05;
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  color: #0f172a;
-  margin-bottom: 10px;
-}
-
-.moduleSubtitle {
-  max-width: 760px;
-  font-size: 16px;
-  line-height: 1.7;
-  color: #475569;
-}
-
-.moduleContent {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px 32px;
-  /* =========================
-   APP MODULE LAYOUT
-========================= */
-
-.neoDash {
-  min-height: 100vh;
-  display: grid;
-  grid-template-columns: 280px 1fr;
-  background:
-    radial-gradient(circle at top left, rgba(166, 210, 255, 0.18), transparent 26%),
-    linear-gradient(180deg, #f7fbff 0%, #fcfdff 100%);
-  color: #0f172a;
-}
-
-.neoSidebar {
-  position: sticky;
-  top: 0;
-  min-height: 100vh;
-  padding: 24px 18px;
-  background: rgba(255, 255, 255, 0.72);
-  border-right: 1px solid rgba(148, 163, 184, 0.14);
-  backdrop-filter: blur(18px);
-}
-
-.neoSidebar__top {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  margin-bottom: 26px;
-}
-
-.neoBrand {
-  font-size: 20px;
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  color: #0f172a;
-  text-decoration: none;
-}
-
-.neoHomeButton {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: fit-content;
-  padding: 10px 16px;
-  border-radius: 14px;
-  background: #ffffff;
-  border: 1px solid rgba(148, 163, 184, 0.18);
-  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.06);
-  color: #0f172a;
-  font-size: 14px;
-  font-weight: 700;
-  text-decoration: none;
-  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
-}
-
-.neoHomeButton:hover {
-  transform: translateY(-1px);
-  background: #f8fbff;
-  box-shadow: 0 16px 34px rgba(15, 23, 42, 0.1);
-}
-
-.neoNav {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.neoNav__item {
-  display: flex;
-  align-items: center;
-  min-height: 46px;
-  padding: 0 14px;
-  border-radius: 14px;
-  color: #334155;
-  text-decoration: none;
-  font-weight: 700;
-  transition: background 0.18s ease, color 0.18s ease, transform 0.18s ease;
-}
-
-.neoNav__item:hover {
-  background: rgba(79, 156, 255, 0.08);
-  color: #0f172a;
-  transform: translateX(2px);
-}
-
-.neoNav__item.is-active {
-  background: linear-gradient(135deg, #4f9cff 0%, #7ab2ff 100%);
-  color: #ffffff;
-  box-shadow: 0 14px 34px rgba(79, 156, 255, 0.28);
-}
-
-.neoSidebarCard {
-  margin-top: 24px;
-  padding: 18px;
-  border-radius: 20px;
-  background: linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(247,251,255,0.96) 100%);
-  border: 1px solid rgba(148, 163, 184, 0.14);
-  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.06);
-}
-
-.neoSidebarCard__label {
-  display: inline-flex;
-  margin-bottom: 10px;
-  padding: 6px 10px;
-  border-radius: 999px;
-  background: rgba(79, 156, 255, 0.1);
-  color: #2563eb;
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-}
-
-.neoSidebarCard__title {
-  margin: 0 0 8px;
-  font-size: 18px;
-  line-height: 1.2;
-  font-weight: 800;
-  color: #0f172a;
-}
-
-.neoSidebarCard__text {
-  margin: 0;
-  font-size: 14px;
-  line-height: 1.65;
-  color: #475569;
-}
-
-.neoMain {
-  min-width: 0;
-  padding: 32px 28px 40px;
-}
-
-.neoHero {
-  margin-bottom: 24px;
-}
-
-.neoHero__title {
-  margin: 0 0 10px;
-  font-size: clamp(30px, 4vw, 52px);
-  line-height: 0.98;
-  font-weight: 900;
-  letter-spacing: -0.04em;
-  color: #0f172a;
-}
-
-.neoHero__subtitle {
-  max-width: 800px;
-  margin: 0;
-  font-size: 16px;
-  line-height: 1.75;
-  color: #475569;
-}
-
-.neoMain__content {
-  min-width: 0;
-}
-
-@media (max-width: 980px) {
-  .neoDash {
-    grid-template-columns: 1fr;
-  }
-
-  .neoSidebar {
-    position: relative;
-    min-height: auto;
-    border-right: none;
-    border-bottom: 1px solid rgba(148, 163, 184, 0.14);
-  }
-
-  .neoNav {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .neoMain {
-    padding: 24px 18px 32px;
-  }
-}
-
-@media (max-width: 640px) {
-  .neoNav {
-    grid-template-columns: 1fr;
-  }
-
-  .neoHero__title {
-    font-size: 34px;
-  }
-
-  .neoHero__subtitle {
-    font-size: 15px;
-    .neoHero__date {
-  margin: 0 0 10px;
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: #64748b;
-  /* =========================
-   ULTRA PREMIUM MODULE LAYOUT
-========================= */
-
-.neoDash {
-  min-height: 100vh;
-  display: grid;
-  grid-template-columns: 290px 1fr;
-  background:
-    radial-gradient(circle at top left, rgba(166, 210, 255, 0.2), transparent 24%),
-    radial-gradient(circle at top right, rgba(255, 255, 255, 0.75), transparent 20%),
-    linear-gradient(180deg, #f6fbff 0%, #fbfdff 100%);
-  color: #0f172a;
-}
-
-.neoSidebar {
-  position: sticky;
-  top: 0;
-  min-height: 100vh;
-  padding: 22px 18px;
-  background: rgba(255, 255, 255, 0.7);
-  border-right: 1px solid rgba(148, 163, 184, 0.14);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-}
-
-.neoSidebar__top {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  margin-bottom: 28px;
-}
-
-.neoBrand {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 20px;
-  font-weight: 800;
-  letter-spacing: -0.04em;
-  color: #0f172a;
-  text-decoration: none;
-}
-
-.neoBrand__dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 999px;
-  background: linear-gradient(135deg, #4f9cff 0%, #8cc8ff 100%);
-  box-shadow: 0 0 0 6px rgba(79, 156, 255, 0.12);
-}
-
-.neoSidebarActions {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.neoGlassButton {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  width: fit-content;
-  padding: 11px 16px;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.85);
-  border: 1px solid rgba(148, 163, 184, 0.16);
-  box-shadow:
-    0 10px 30px rgba(15, 23, 42, 0.06),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
-  color: #0f172a;
-  text-decoration: none;
-  font-size: 14px;
-  font-weight: 700;
-  transition:
-    transform 0.18s ease,
-    box-shadow 0.18s ease,
-    background 0.18s ease,
-    border-color 0.18s ease;
-}
-
-.neoGlassButton:hover {
-  transform: translateY(-1px);
-  background: #ffffff;
-  border-color: rgba(79, 156, 255, 0.22);
-  box-shadow:
-    0 16px 36px rgba(15, 23, 42, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.95);
-}
-
-.neoGlassButton--secondary {
-  background: rgba(248, 251, 255, 0.82);
-}
-
-.neoGlassButton__icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 22px;
-  height: 22px;
-  border-radius: 999px;
-  background: rgba(79, 156, 255, 0.1);
-  color: #2563eb;
-  font-size: 12px;
-  font-weight: 800;
-}
-
-.neoNav {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.neoNav__item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  min-height: 48px;
-  padding: 0 14px;
-  border-radius: 16px;
-  color: #334155;
-  text-decoration: none;
-  font-weight: 700;
-  transition:
-    background 0.18s ease,
-    color 0.18s ease,
-    transform 0.18s ease,
-    box-shadow 0.18s ease;
-}
-
-.neoNav__item:hover {
-  background: rgba(79, 156, 255, 0.08);
-  color: #0f172a;
-  transform: translateX(2px);
-}
-
-.neoNav__pill {
-  width: 8px;
-  height: 8px;
-  border-radius: 999px;
-  background: rgba(148, 163, 184, 0.65);
-  transition: background 0.18s ease, transform 0.18s ease;
-}
-
-.neoNav__item.is-active {
-  background: linear-gradient(135deg, #4f9cff 0%, #7eb8ff 100%);
-  color: #ffffff;
-  box-shadow: 0 18px 40px rgba(79, 156, 255, 0.24);
-}
-
-.neoNav__item.is-active .neoNav__pill {
-  background: #ffffff;
-  transform: scale(1.15);
-}
-
-.neoSidebarCard {
-  margin-top: 24px;
-  padding: 20px;
-  border-radius: 24px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(247, 251, 255, 0.96) 100%);
-  border: 1px solid rgba(148, 163, 184, 0.14);
-  box-shadow: 0 18px 44px rgba(15, 23, 42, 0.06);
-}
-
-.neoSidebarCard__label {
-  display: inline-flex;
-  margin-bottom: 10px;
-  padding: 6px 10px;
-  border-radius: 999px;
-  background: rgba(79, 156, 255, 0.1);
-  color: #2563eb;
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
-}
-
-.neoSidebarCard__title {
-  margin: 0 0 8px;
-  font-size: 18px;
-  line-height: 1.2;
-  font-weight: 800;
-  color: #0f172a;
-}
-
-.neoSidebarCard__text {
-  margin: 0;
-  font-size: 14px;
-  line-height: 1.68;
-  color: #475569;
-}
-
-.neoMain {
-  min-width: 0;
-  padding: 28px 28px 40px;
-}
-
-.neoHero--premium {
-  margin-bottom: 24px;
-  padding: 22px 24px;
-  border-radius: 28px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.86) 0%, rgba(250, 252, 255, 0.9) 100%);
-  border: 1px solid rgba(148, 163, 184, 0.14);
-  box-shadow:
-    0 20px 50px rgba(15, 23, 42, 0.06),
-    inset 0 1px 0 rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-}
-
-.neoHeroTopline {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 14px;
-  flex-wrap: wrap;
-}
-
-.neoBreadcrumb {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-  font-size: 13px;
-  color: #64748b;
-}
-
-.neoBreadcrumb__link {
-  color: #64748b;
-  text-decoration: none;
-  font-weight: 700;
-  transition: color 0.18s ease;
-}
-
-.neoBreadcrumb__link:hover {
-  color: #0f172a;
-}
-
-.neoBreadcrumb__sep {
-  opacity: 0.5;
-}
-
-.neoBreadcrumb__current {
-  color: #0f172a;
-  font-weight: 800;
-}
-
-.neoHero__dateBadge {
-  display: inline-flex;
-  align-items: center;
-  min-height: 34px;
-  padding: 0 14px;
-  border-radius: 999px;
-  background: rgba(79, 156, 255, 0.08);
-  border: 1px solid rgba(79, 156, 255, 0.12);
-  color: #2563eb;
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
-}
-
-.neoHero__content {
-  max-width: 860px;
-}
-
-.neoHero__title {
-  margin: 0 0 10px;
-  font-size: clamp(32px, 4.2vw, 56px);
-  line-height: 0.98;
-  font-weight: 900;
-  letter-spacing: -0.05em;
-  color: #0f172a;
-}
-
-.neoHero__subtitle {
-  margin: 0;
-  font-size: 16px;
-  line-height: 1.75;
-  color: #475569;
-}
-
-.neoMain__content {
-  min-width: 0;
-}
-
-@media (max-width: 1024px) {
-  .neoDash {
-    grid-template-columns: 1fr;
-  }
-
-  .neoSidebar {
-    position: relative;
-    min-height: auto;
-    border-right: none;
-    border-bottom: 1px solid rgba(148, 163, 184, 0.14);
-  }
-
-  .neoMain {
-    padding: 22px 18px 32px;
-  }
-}
-
-@media (max-width: 640px) {
-  .neoSidebarActions {
-    flex-direction: column;
-  }
-
-  .neoGlassButton {
-    width: 100%;
-    justify-content: center;
-  }
-
-  .neoHero--premium {
-    padding: 18px;
-    border-radius: 22px;
-  }
-
-  .neoHero__title {
-    font-size: 34px;
-  }
-
-  .neoHero__subtitle {
-    font-size: 15px;
-  }
-}
-}
-  }
-}
-}
-  }
-}
   }
 }

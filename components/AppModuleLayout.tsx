@@ -17,6 +17,8 @@ type AppModuleLayoutProps = {
   dateLabel?: string;
 };
 
+type Locale = "en" | "fr";
+
 export default function AppModuleLayout({
   children,
   active,
@@ -29,94 +31,156 @@ export default function AppModuleLayout({
 }: AppModuleLayoutProps) {
   const params = useParams();
   const rawLocale = params?.locale;
-  const locale = Array.isArray(rawLocale) ? rawLocale[0] : rawLocale || "en";
+  const locale: Locale =
+    Array.isArray(rawLocale)
+      ? ((rawLocale[0] as Locale) || "en")
+      : ((rawLocale as Locale) || "en");
 
-  const navItems: Array<{ key: ActiveModule; href: string; label: string }> = [
-    { key: "dashboard", href: `/${locale}/dashboard`, label: "Dashboard" },
-    { key: "sleep", href: `/${locale}/sleep`, label: "Sleep" },
-    { key: "food", href: `/${locale}/food`, label: "Food" },
-    { key: "care", href: `/${locale}/care`, label: "Care" },
-    { key: "profile", href: `/${locale}/profile`, label: "Profile" },
-  ];
-
-  const activeItem = navItems.find((item) => item.key === active);
-  const breadcrumbLabel = activeItem?.label || "Module";
+  const navItems: Array<{
+    key: ActiveModule;
+    href: string;
+    label: string;
+    description: string;
+    icon: string;
+  }> =
+    locale === "fr"
+      ? [
+          {
+            key: "dashboard",
+            href: `/${locale}/dashboard`,
+            label: "Tableau principal",
+            description: "Vue unifiée",
+            icon: "✨",
+          },
+          {
+            key: "profile",
+            href: `/${locale}/profile`,
+            label: "Modifier le profil",
+            description: "Profil bébé",
+            icon: "👶",
+          },
+          {
+            key: "sleep",
+            href: `/${locale}/sleep`,
+            label: "Module sommeil",
+            description: "Rythme & repos",
+            icon: "🌙",
+          },
+          {
+            key: "food",
+            href: `/${locale}/food`,
+            label: "Module alimentation",
+            description: "Repas & réactions",
+            icon: "🍼",
+          },
+          {
+            key: "care",
+            href: `/${locale}/care`,
+            label: "Module soins",
+            description: "Routine & confort",
+            icon: "💙",
+          },
+        ]
+      : [
+          {
+            key: "dashboard",
+            href: `/${locale}/dashboard`,
+            label: "Main dashboard",
+            description: "Unified view",
+            icon: "✨",
+          },
+          {
+            key: "profile",
+            href: `/${locale}/profile`,
+            label: "Edit profile",
+            description: "Baby profile",
+            icon: "👶",
+          },
+          {
+            key: "sleep",
+            href: `/${locale}/sleep`,
+            label: "Sleep module",
+            description: "Rhythm & rest",
+            icon: "🌙",
+          },
+          {
+            key: "food",
+            href: `/${locale}/food`,
+            label: "Food module",
+            description: "Meals & reactions",
+            icon: "🍼",
+          },
+          {
+            key: "care",
+            href: `/${locale}/care`,
+            label: "Care module",
+            description: "Routine & comfort",
+            icon: "💙",
+          },
+        ];
 
   return (
     <div className="neoDash">
-      <aside className="neoSidebar">
-        <div className="neoSidebar__top">
-          <Link href={`/${locale}`} className="neoBrand">
-            <span className="neoBrand__dot" />
-            <span>Smart Baby System</span>
-          </Link>
-
-          <div className="neoSidebarActions">
-            <Link href={`/${locale}`} className="neoGlassButton">
-              <span className="neoGlassButton__icon">⌂</span>
-              <span>Home</span>
-            </Link>
-
-            <Link href={`/${locale}/dashboard`} className="neoGlassButton neoGlassButton--secondary">
-              <span className="neoGlassButton__icon">←</span>
-              <span>Dashboard</span>
-            </Link>
+      <aside className="neoDash__sidebar">
+        <div>
+          <div className="neoDash__brand">
+            <div className="neoDash__logo">SB</div>
+            <div>
+              <div className="neoDash__brandTitle">Smart Baby</div>
+              <div className="neoDash__brandSub">System</div>
+            </div>
           </div>
+
+          <nav className="neoDash__nav">
+            {navItems.map((item) => (
+              <Link
+                key={item.key}
+                href={item.href}
+                className={`neoDash__navItem ${
+                  active === item.key ? "neoDash__navItem--active" : ""
+                }`}
+              >
+                <span className="neoDash__navEmoji" aria-hidden="true">
+                  {item.icon}
+                </span>
+                <span>{item.label}</span>
+              </Link>
+            ))}
+          </nav>
         </div>
 
-        <nav className="neoNav">
-          {navItems.map((item) => (
-            <Link
-              key={item.key}
-              href={item.href}
-              className={`neoNav__item ${active === item.key ? "is-active" : ""}`}
-            >
-              <span className="neoNav__pill" />
-              <span>{item.label}</span>
-            </Link>
-          ))}
-        </nav>
-
         {(label || currentFocusTitle || currentFocusText) && (
-          <div className="neoSidebarCard">
-            {label ? <span className="neoSidebarCard__label">{label}</span> : null}
-            {currentFocusTitle ? (
-              <h3 className="neoSidebarCard__title">{currentFocusTitle}</h3>
-            ) : null}
-            {currentFocusText ? (
-              <p className="neoSidebarCard__text">{currentFocusText}</p>
-            ) : null}
+          <div className="neoDash__sidebarCard">
+            {label ? <p className="neoDash__label">{label}</p> : null}
+            {currentFocusTitle ? <h3>{currentFocusTitle}</h3> : null}
+            {currentFocusText ? <p>{currentFocusText}</p> : null}
           </div>
         )}
       </aside>
 
-      <main className="neoMain">
-        <header className="neoHero neoHero--premium">
-          <div className="neoHeroTopline">
-            <div className="neoBreadcrumb">
-              <Link href={`/${locale}`} className="neoBreadcrumb__link">
-                Home
-              </Link>
-              <span className="neoBreadcrumb__sep">/</span>
-              <Link href={`/${locale}/dashboard`} className="neoBreadcrumb__link">
-                Dashboard
-              </Link>
-              <span className="neoBreadcrumb__sep">/</span>
-              <span className="neoBreadcrumb__current">{breadcrumbLabel}</span>
-            </div>
-
-            {dateLabel ? <div className="neoHero__dateBadge">{dateLabel}</div> : null}
+      <main className="neoDash__main">
+        <section className="neoDash__topline">
+          <div>
+            {title ? <h1>{title}</h1> : null}
+            {subtitle ? <p className="neoDash__subtitle">{subtitle}</p> : null}
           </div>
 
-          {(title || subtitle) && (
-            <div className="neoHero__content">
-              {title ? <h1 className="neoHero__title">{title}</h1> : null}
-              {subtitle ? <p className="neoHero__subtitle">{subtitle}</p> : null}
-            </div>
-          )}
-        </header>
+          <div className="neoDash__topActions">
+            {dateLabel ? <div className="neoDash__dateChip">{dateLabel}</div> : null}
 
-        <div className="neoMain__content">{children}</div>
+            <Link href={`/${locale}`} className="neoDash__secondaryBtn">
+              {locale === "fr" ? "Accueil" : "Home"}
+            </Link>
+
+            {active !== "dashboard" ? (
+              <Link href={`/${locale}/dashboard`} className="neoDash__primaryBtn">
+                {locale === "fr" ? "Dashboard" : "Dashboard"}
+              </Link>
+            ) : null}
+          </div>
+        </section>
+
+        {children}
       </main>
     </div>
   );
