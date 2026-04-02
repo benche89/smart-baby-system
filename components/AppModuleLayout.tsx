@@ -39,17 +39,29 @@ export default function AppModuleLayout({
     { key: "profile", href: `/${locale}/profile`, label: "Profile" },
   ];
 
+  const activeItem = navItems.find((item) => item.key === active);
+  const breadcrumbLabel = activeItem?.label || "Module";
+
   return (
     <div className="neoDash">
       <aside className="neoSidebar">
         <div className="neoSidebar__top">
           <Link href={`/${locale}`} className="neoBrand">
-            Smart Baby System
+            <span className="neoBrand__dot" />
+            <span>Smart Baby System</span>
           </Link>
 
-          <Link href={`/${locale}`} className="neoHomeButton">
-            ← Home
-          </Link>
+          <div className="neoSidebarActions">
+            <Link href={`/${locale}`} className="neoGlassButton">
+              <span className="neoGlassButton__icon">⌂</span>
+              <span>Home</span>
+            </Link>
+
+            <Link href={`/${locale}/dashboard`} className="neoGlassButton neoGlassButton--secondary">
+              <span className="neoGlassButton__icon">←</span>
+              <span>Dashboard</span>
+            </Link>
+          </div>
         </div>
 
         <nav className="neoNav">
@@ -59,7 +71,8 @@ export default function AppModuleLayout({
               href={item.href}
               className={`neoNav__item ${active === item.key ? "is-active" : ""}`}
             >
-              {item.label}
+              <span className="neoNav__pill" />
+              <span>{item.label}</span>
             </Link>
           ))}
         </nav>
@@ -78,13 +91,30 @@ export default function AppModuleLayout({
       </aside>
 
       <main className="neoMain">
-        {(title || subtitle || dateLabel) && (
-          <header className="neoHero">
-            {dateLabel ? <p className="neoHero__date">{dateLabel}</p> : null}
-            {title ? <h1 className="neoHero__title">{title}</h1> : null}
-            {subtitle ? <p className="neoHero__subtitle">{subtitle}</p> : null}
-          </header>
-        )}
+        <header className="neoHero neoHero--premium">
+          <div className="neoHeroTopline">
+            <div className="neoBreadcrumb">
+              <Link href={`/${locale}`} className="neoBreadcrumb__link">
+                Home
+              </Link>
+              <span className="neoBreadcrumb__sep">/</span>
+              <Link href={`/${locale}/dashboard`} className="neoBreadcrumb__link">
+                Dashboard
+              </Link>
+              <span className="neoBreadcrumb__sep">/</span>
+              <span className="neoBreadcrumb__current">{breadcrumbLabel}</span>
+            </div>
+
+            {dateLabel ? <div className="neoHero__dateBadge">{dateLabel}</div> : null}
+          </div>
+
+          {(title || subtitle) && (
+            <div className="neoHero__content">
+              {title ? <h1 className="neoHero__title">{title}</h1> : null}
+              {subtitle ? <p className="neoHero__subtitle">{subtitle}</p> : null}
+            </div>
+          )}
+        </header>
 
         <div className="neoMain__content">{children}</div>
       </main>

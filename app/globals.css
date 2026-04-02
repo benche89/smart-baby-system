@@ -3429,6 +3429,335 @@ textarea {
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: #64748b;
+  /* =========================
+   ULTRA PREMIUM MODULE LAYOUT
+========================= */
+
+.neoDash {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 290px 1fr;
+  background:
+    radial-gradient(circle at top left, rgba(166, 210, 255, 0.2), transparent 24%),
+    radial-gradient(circle at top right, rgba(255, 255, 255, 0.75), transparent 20%),
+    linear-gradient(180deg, #f6fbff 0%, #fbfdff 100%);
+  color: #0f172a;
+}
+
+.neoSidebar {
+  position: sticky;
+  top: 0;
+  min-height: 100vh;
+  padding: 22px 18px;
+  background: rgba(255, 255, 255, 0.7);
+  border-right: 1px solid rgba(148, 163, 184, 0.14);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.neoSidebar__top {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.neoBrand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  color: #0f172a;
+  text-decoration: none;
+}
+
+.neoBrand__dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #4f9cff 0%, #8cc8ff 100%);
+  box-shadow: 0 0 0 6px rgba(79, 156, 255, 0.12);
+}
+
+.neoSidebarActions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.neoGlassButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  width: fit-content;
+  padding: 11px 16px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  box-shadow:
+    0 10px 30px rgba(15, 23, 42, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  color: #0f172a;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 700;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    background 0.18s ease,
+    border-color 0.18s ease;
+}
+
+.neoGlassButton:hover {
+  transform: translateY(-1px);
+  background: #ffffff;
+  border-color: rgba(79, 156, 255, 0.22);
+  box-shadow:
+    0 16px 36px rgba(15, 23, 42, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+}
+
+.neoGlassButton--secondary {
+  background: rgba(248, 251, 255, 0.82);
+}
+
+.neoGlassButton__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: rgba(79, 156, 255, 0.1);
+  color: #2563eb;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.neoNav {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.neoNav__item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 48px;
+  padding: 0 14px;
+  border-radius: 16px;
+  color: #334155;
+  text-decoration: none;
+  font-weight: 700;
+  transition:
+    background 0.18s ease,
+    color 0.18s ease,
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.neoNav__item:hover {
+  background: rgba(79, 156, 255, 0.08);
+  color: #0f172a;
+  transform: translateX(2px);
+}
+
+.neoNav__pill {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.65);
+  transition: background 0.18s ease, transform 0.18s ease;
+}
+
+.neoNav__item.is-active {
+  background: linear-gradient(135deg, #4f9cff 0%, #7eb8ff 100%);
+  color: #ffffff;
+  box-shadow: 0 18px 40px rgba(79, 156, 255, 0.24);
+}
+
+.neoNav__item.is-active .neoNav__pill {
+  background: #ffffff;
+  transform: scale(1.15);
+}
+
+.neoSidebarCard {
+  margin-top: 24px;
+  padding: 20px;
+  border-radius: 24px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(247, 251, 255, 0.96) 100%);
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  box-shadow: 0 18px 44px rgba(15, 23, 42, 0.06);
+}
+
+.neoSidebarCard__label {
+  display: inline-flex;
+  margin-bottom: 10px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(79, 156, 255, 0.1);
+  color: #2563eb;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.neoSidebarCard__title {
+  margin: 0 0 8px;
+  font-size: 18px;
+  line-height: 1.2;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.neoSidebarCard__text {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.68;
+  color: #475569;
+}
+
+.neoMain {
+  min-width: 0;
+  padding: 28px 28px 40px;
+}
+
+.neoHero--premium {
+  margin-bottom: 24px;
+  padding: 22px 24px;
+  border-radius: 28px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.86) 0%, rgba(250, 252, 255, 0.9) 100%);
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  box-shadow:
+    0 20px 50px rgba(15, 23, 42, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.neoHeroTopline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.neoBreadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.neoBreadcrumb__link {
+  color: #64748b;
+  text-decoration: none;
+  font-weight: 700;
+  transition: color 0.18s ease;
+}
+
+.neoBreadcrumb__link:hover {
+  color: #0f172a;
+}
+
+.neoBreadcrumb__sep {
+  opacity: 0.5;
+}
+
+.neoBreadcrumb__current {
+  color: #0f172a;
+  font-weight: 800;
+}
+
+.neoHero__dateBadge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 0 14px;
+  border-radius: 999px;
+  background: rgba(79, 156, 255, 0.08);
+  border: 1px solid rgba(79, 156, 255, 0.12);
+  color: #2563eb;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.neoHero__content {
+  max-width: 860px;
+}
+
+.neoHero__title {
+  margin: 0 0 10px;
+  font-size: clamp(32px, 4.2vw, 56px);
+  line-height: 0.98;
+  font-weight: 900;
+  letter-spacing: -0.05em;
+  color: #0f172a;
+}
+
+.neoHero__subtitle {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.75;
+  color: #475569;
+}
+
+.neoMain__content {
+  min-width: 0;
+}
+
+@media (max-width: 1024px) {
+  .neoDash {
+    grid-template-columns: 1fr;
+  }
+
+  .neoSidebar {
+    position: relative;
+    min-height: auto;
+    border-right: none;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+  }
+
+  .neoMain {
+    padding: 22px 18px 32px;
+  }
+}
+
+@media (max-width: 640px) {
+  .neoSidebarActions {
+    flex-direction: column;
+  }
+
+  .neoGlassButton {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .neoHero--premium {
+    padding: 18px;
+    border-radius: 22px;
+  }
+
+  .neoHero__title {
+    font-size: 34px;
+  }
+
+  .neoHero__subtitle {
+    font-size: 15px;
+  }
+}
 }
   }
 }
