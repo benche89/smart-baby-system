@@ -5,6 +5,7 @@ import { ReactNode } from "react";
 import { useParams } from "next/navigation";
 
 type ActiveModule = "dashboard" | "sleep" | "food" | "care" | "profile";
+type Locale = "en" | "fr";
 
 type AppModuleLayoutProps = {
   children: ReactNode;
@@ -16,8 +17,6 @@ type AppModuleLayoutProps = {
   currentFocusText?: string;
   dateLabel?: string;
 };
-
-type Locale = "en" | "fr";
 
 export default function AppModuleLayout({
   children,
@@ -40,83 +39,22 @@ export default function AppModuleLayout({
     key: ActiveModule;
     href: string;
     label: string;
-    description: string;
     icon: string;
   }> =
     locale === "fr"
       ? [
-          {
-            key: "dashboard",
-            href: `/${locale}/dashboard`,
-            label: "Tableau principal",
-            description: "Vue unifiée",
-            icon: "✨",
-          },
-          {
-            key: "profile",
-            href: `/${locale}/profile`,
-            label: "Modifier le profil",
-            description: "Profil bébé",
-            icon: "👶",
-          },
-          {
-            key: "sleep",
-            href: `/${locale}/sleep`,
-            label: "Module sommeil",
-            description: "Rythme & repos",
-            icon: "🌙",
-          },
-          {
-            key: "food",
-            href: `/${locale}/food`,
-            label: "Module alimentation",
-            description: "Repas & réactions",
-            icon: "🍼",
-          },
-          {
-            key: "care",
-            href: `/${locale}/care`,
-            label: "Module soins",
-            description: "Routine & confort",
-            icon: "💙",
-          },
+          { key: "dashboard", href: `/${locale}/dashboard`, label: "Tableau principal", icon: "✨" },
+          { key: "profile", href: `/${locale}/profile`, label: "Modifier le profil", icon: "👶" },
+          { key: "sleep", href: `/${locale}/sleep`, label: "Module sommeil", icon: "🌙" },
+          { key: "food", href: `/${locale}/food`, label: "Module alimentation", icon: "🍼" },
+          { key: "care", href: `/${locale}/care`, label: "Module soins", icon: "💙" },
         ]
       : [
-          {
-            key: "dashboard",
-            href: `/${locale}/dashboard`,
-            label: "Main dashboard",
-            description: "Unified view",
-            icon: "✨",
-          },
-          {
-            key: "profile",
-            href: `/${locale}/profile`,
-            label: "Edit profile",
-            description: "Baby profile",
-            icon: "👶",
-          },
-          {
-            key: "sleep",
-            href: `/${locale}/sleep`,
-            label: "Sleep module",
-            description: "Rhythm & rest",
-            icon: "🌙",
-          },
-          {
-            key: "food",
-            href: `/${locale}/food`,
-            label: "Food module",
-            description: "Meals & reactions",
-            icon: "🍼",
-          },
-          {
-            key: "care",
-            href: `/${locale}/care`,
-            label: "Care module",
-            description: "Routine & comfort",
-            icon: "💙",
-          },
+          { key: "dashboard", href: `/${locale}/dashboard`, label: "Main dashboard", icon: "✨" },
+          { key: "profile", href: `/${locale}/profile`, label: "Edit profile", icon: "👶" },
+          { key: "sleep", href: `/${locale}/sleep`, label: "Sleep module", icon: "🌙" },
+          { key: "food", href: `/${locale}/food`, label: "Food module", icon: "🍼" },
+          { key: "care", href: `/${locale}/care`, label: "Care module", icon: "💙" },
         ];
 
   return (
@@ -174,7 +112,7 @@ export default function AppModuleLayout({
 
             {active !== "dashboard" ? (
               <Link href={`/${locale}/dashboard`} className="neoDash__primaryBtn">
-                {locale === "fr" ? "Dashboard" : "Dashboard"}
+                Dashboard
               </Link>
             ) : null}
           </div>
