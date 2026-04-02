@@ -195,6 +195,8 @@ function normalizeCareEntry(data: any): CareEntry {
 }
 
 async function getUserOrNull(supabase: any) {
+  if (!supabase) return null;
+
   try {
     const {
       data: { user },
@@ -207,11 +209,10 @@ async function getUserOrNull(supabase: any) {
 
 export async function getProfile(supabase: any): Promise<BabyProfile | null> {
   try {
-    const user = await getUserOrNull(supabase);
+    if (!supabase) return getLocalProfile();
 
-    if (!user) {
-      return getLocalProfile();
-    }
+    const user = await getUserOrNull(supabase);
+    if (!user) return getLocalProfile();
 
     const { data, error } = await supabase
       .from(PROFILE_TABLE)
@@ -238,6 +239,10 @@ export async function upsertProfile(
 ): Promise<{ success: boolean; error?: string }> {
   try {
     saveLocalProfile(profile);
+
+    if (!supabase) {
+      return { success: true };
+    }
 
     const user = await getUserOrNull(supabase);
     if (!user) {
@@ -271,11 +276,10 @@ export async function upsertProfile(
 
 export async function getSleepEntries(supabase: any): Promise<SleepEntry[]> {
   try {
-    const user = await getUserOrNull(supabase);
+    if (!supabase) return getLocalSleepEntries();
 
-    if (!user) {
-      return getLocalSleepEntries();
-    }
+    const user = await getUserOrNull(supabase);
+    if (!user) return getLocalSleepEntries();
 
     const { data, error } = await supabase
       .from(SLEEP_TABLE)
@@ -307,8 +311,11 @@ export async function addSleepEntry(
       ...entry,
     };
 
-    const nextLocal = [newEntry, ...localEntries];
-    saveLocalSleepEntries(nextLocal);
+    saveLocalSleepEntries([newEntry, ...localEntries]);
+
+    if (!supabase) {
+      return { success: true, entry: newEntry };
+    }
 
     const user = await getUserOrNull(supabase);
     if (!user) {
@@ -342,13 +349,12 @@ export async function deleteSleepEntry(
   id: number
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    const nextLocal = getLocalSleepEntries().filter((item) => item.id !== id);
-    saveLocalSleepEntries(nextLocal);
+    saveLocalSleepEntries(getLocalSleepEntries().filter((item) => item.id !== id));
+
+    if (!supabase) return { success: true };
 
     const user = await getUserOrNull(supabase);
-    if (!user) {
-      return { success: true };
-    }
+    if (!user) return { success: true };
 
     const { error } = await supabase
       .from(SLEEP_TABLE)
@@ -356,10 +362,7 @@ export async function deleteSleepEntry(
       .eq("user_id", user.id)
       .eq("entry_id", id);
 
-    if (error) {
-      return { success: false, error: error.message };
-    }
-
+    if (error) return { success: false, error: error.message };
     return { success: true };
   } catch (error: any) {
     console.error("deleteSleepEntry error:", error);
@@ -369,11 +372,10 @@ export async function deleteSleepEntry(
 
 export async function getFoodEntries(supabase: any): Promise<FoodEntry[]> {
   try {
-    const user = await getUserOrNull(supabase);
+    if (!supabase) return getLocalFoodEntries();
 
-    if (!user) {
-      return getLocalFoodEntries();
-    }
+    const user = await getUserOrNull(supabase);
+    if (!user) return getLocalFoodEntries();
 
     const { data, error } = await supabase
       .from(FOOD_TABLE)
@@ -405,8 +407,11 @@ export async function addFoodEntry(
       ...entry,
     };
 
-    const nextLocal = [newEntry, ...localEntries];
-    saveLocalFoodEntries(nextLocal);
+    saveLocalFoodEntries([newEntry, ...localEntries]);
+
+    if (!supabase) {
+      return { success: true, entry: newEntry };
+    }
 
     const user = await getUserOrNull(supabase);
     if (!user) {
@@ -442,13 +447,12 @@ export async function deleteFoodEntry(
   id: number
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    const nextLocal = getLocalFoodEntries().filter((item) => item.id !== id);
-    saveLocalFoodEntries(nextLocal);
+    saveLocalFoodEntries(getLocalFoodEntries().filter((item) => item.id !== id));
+
+    if (!supabase) return { success: true };
 
     const user = await getUserOrNull(supabase);
-    if (!user) {
-      return { success: true };
-    }
+    if (!user) return { success: true };
 
     const { error } = await supabase
       .from(FOOD_TABLE)
@@ -456,10 +460,7 @@ export async function deleteFoodEntry(
       .eq("user_id", user.id)
       .eq("entry_id", id);
 
-    if (error) {
-      return { success: false, error: error.message };
-    }
-
+    if (error) return { success: false, error: error.message };
     return { success: true };
   } catch (error: any) {
     console.error("deleteFoodEntry error:", error);
@@ -469,11 +470,10 @@ export async function deleteFoodEntry(
 
 export async function getCareEntries(supabase: any): Promise<CareEntry[]> {
   try {
-    const user = await getUserOrNull(supabase);
+    if (!supabase) return getLocalCareEntries();
 
-    if (!user) {
-      return getLocalCareEntries();
-    }
+    const user = await getUserOrNull(supabase);
+    if (!user) return getLocalCareEntries();
 
     const { data, error } = await supabase
       .from(CARE_TABLE)
@@ -505,8 +505,11 @@ export async function addCareEntry(
       ...entry,
     };
 
-    const nextLocal = [newEntry, ...localEntries];
-    saveLocalCareEntries(nextLocal);
+    saveLocalCareEntries([newEntry, ...localEntries]);
+
+    if (!supabase) {
+      return { success: true, entry: newEntry };
+    }
 
     const user = await getUserOrNull(supabase);
     if (!user) {
@@ -541,13 +544,12 @@ export async function deleteCareEntry(
   id: number
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    const nextLocal = getLocalCareEntries().filter((item) => item.id !== id);
-    saveLocalCareEntries(nextLocal);
+    saveLocalCareEntries(getLocalCareEntries().filter((item) => item.id !== id));
+
+    if (!supabase) return { success: true };
 
     const user = await getUserOrNull(supabase);
-    if (!user) {
-      return { success: true };
-    }
+    if (!user) return { success: true };
 
     const { error } = await supabase
       .from(CARE_TABLE)
@@ -555,10 +557,7 @@ export async function deleteCareEntry(
       .eq("user_id", user.id)
       .eq("entry_id", id);
 
-    if (error) {
-      return { success: false, error: error.message };
-    }
-
+    if (error) return { success: false, error: error.message };
     return { success: true };
   } catch (error: any) {
     console.error("deleteCareEntry error:", error);
@@ -573,10 +572,10 @@ export async function updatePlanTier(
   try {
     saveLocalPlanTier(plan);
 
+    if (!supabase) return { success: true };
+
     const user = await getUserOrNull(supabase);
-    if (!user) {
-      return { success: true };
-    }
+    if (!user) return { success: true };
 
     const payload = {
       user_id: user.id,
@@ -588,10 +587,7 @@ export async function updatePlanTier(
       onConflict: "user_id",
     });
 
-    if (error) {
-      return { success: false, error: error.message };
-    }
-
+    if (error) return { success: false, error: error.message };
     return { success: true };
   } catch (error: any) {
     console.error("updatePlanTier error:", error);
@@ -601,6 +597,8 @@ export async function updatePlanTier(
 
 export async function importLocalStorageToSupabase(supabase: any) {
   try {
+    if (!supabase) return;
+
     const user = await getUserOrNull(supabase);
     if (!user) return;
 
@@ -626,16 +624,16 @@ export async function importLocalStorageToSupabase(supabase: any) {
         .limit(1);
 
       if (!existingSleep || existingSleep.length === 0) {
-        const payload = localSleep.map((entry) => ({
-          user_id: user.id,
-          entry_id: entry.id,
-          last_nap_time: entry.lastNapTime,
-          nap_duration: entry.napDuration,
-          mood: entry.mood,
-          created_at: new Date().toISOString(),
-        }));
-
-        await supabase.from(SLEEP_TABLE).insert(payload);
+        await supabase.from(SLEEP_TABLE).insert(
+          localSleep.map((entry) => ({
+            user_id: user.id,
+            entry_id: entry.id,
+            last_nap_time: entry.lastNapTime,
+            nap_duration: entry.napDuration,
+            mood: entry.mood,
+            created_at: new Date().toISOString(),
+          }))
+        );
       }
     }
 
@@ -648,18 +646,18 @@ export async function importLocalStorageToSupabase(supabase: any) {
         .limit(1);
 
       if (!existingFood || existingFood.length === 0) {
-        const payload = localFood.map((entry) => ({
-          user_id: user.id,
-          entry_id: entry.id,
-          meal_time: entry.mealTime,
-          meal_type: entry.mealType,
-          food: entry.food,
-          quantity: entry.quantity,
-          reaction: entry.reaction,
-          created_at: new Date().toISOString(),
-        }));
-
-        await supabase.from(FOOD_TABLE).insert(payload);
+        await supabase.from(FOOD_TABLE).insert(
+          localFood.map((entry) => ({
+            user_id: user.id,
+            entry_id: entry.id,
+            meal_time: entry.mealTime,
+            meal_type: entry.mealType,
+            food: entry.food,
+            quantity: entry.quantity,
+            reaction: entry.reaction,
+            created_at: new Date().toISOString(),
+          }))
+        );
       }
     }
 
@@ -672,31 +670,29 @@ export async function importLocalStorageToSupabase(supabase: any) {
         .limit(1);
 
       if (!existingCare || existingCare.length === 0) {
-        const payload = localCare.map((entry) => ({
-          user_id: user.id,
-          entry_id: entry.id,
-          time: entry.time,
-          care_type: entry.careType,
-          status: entry.status,
-          note: entry.note,
-          created_at: new Date().toISOString(),
-        }));
-
-        await supabase.from(CARE_TABLE).insert(payload);
+        await supabase.from(CARE_TABLE).insert(
+          localCare.map((entry) => ({
+            user_id: user.id,
+            entry_id: entry.id,
+            time: entry.time,
+            care_type: entry.careType,
+            status: entry.status,
+            note: entry.note,
+            created_at: new Date().toISOString(),
+          }))
+        );
       }
     }
 
     const localPlan = getLocalPlanTier();
-    if (localPlan) {
-      const { data: existingPlan } = await supabase
-        .from(PLAN_TABLE)
-        .select("user_id")
-        .eq("user_id", user.id)
-        .maybeSingle();
+    const { data: existingPlan } = await supabase
+      .from(PLAN_TABLE)
+      .select("user_id")
+      .eq("user_id", user.id)
+      .maybeSingle();
 
-      if (!existingPlan) {
-        await updatePlanTier(supabase, localPlan);
-      }
+    if (!existingPlan) {
+      await updatePlanTier(supabase, localPlan);
     }
   } catch (error) {
     console.error("importLocalStorageToSupabase error:", error);
