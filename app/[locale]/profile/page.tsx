@@ -86,9 +86,19 @@ const emptyProfile: BabyProfile = {
   notes: "",
 };
 
+function getTodayLabel(locale: Locale) {
+  const format = locale === "fr" ? "fr-BE" : "en-GB";
+  return new Date().toLocaleDateString(format, {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+  });
+}
+
 export default function ProfilePage() {
   const params = useParams<{ locale?: string }>();
-  const locale = isValidLocale(params?.locale) ? (params!.locale as Locale) : defaultLocale;
+  const rawLocale = typeof params?.locale === "string" ? params.locale : defaultLocale;
+  const locale: Locale = isValidLocale(rawLocale) ? (rawLocale as Locale) : "en";
   const t = copy[locale];
 
   const supabase = useMemo(() => createSupabaseClient(), []);
@@ -96,6 +106,11 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
+  const [todayLabel, setTodayLabel] = useState("");
+
+  useEffect(() => {
+    setTodayLabel(getTodayLabel(locale));
+  }, [locale]);
 
   useEffect(() => {
     let active = true;
@@ -111,7 +126,9 @@ export default function ProfilePage() {
           (async () => {
             await importLocalStorageToSupabase(supabase);
             const loaded = await getProfile(supabase);
+
             if (!active) return;
+
             if (loaded) {
               setProfile(loaded);
             }
@@ -122,6 +139,7 @@ export default function ProfilePage() {
         ]);
       } catch (error) {
         console.error("Profile page load error:", error);
+
         if (!active) return;
         setProfile(getLocalProfile());
       } finally {
@@ -165,24 +183,27 @@ export default function ProfilePage() {
   }
 
   function updateField<K extends keyof BabyProfile>(key: K, value: BabyProfile[K]) {
-    setProfile((prev) => {
-      const next = { ...prev, [key]: value };
-      return next;
-    });
+    setProfile((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
   }
 
   if (loading) {
     return (
       <AppModuleLayout
-        locale={locale}
+        active="profile"
         title={t.pageTitle}
         subtitle={t.subtitle}
-        badge={t.label}
+        label={t.label}
+        currentFocusTitle={t.focusTitle}
+        currentFocusText={t.focusText}
+        dateLabel={todayLabel || "..."}
       >
-        <section className="rounded-[28px] border border-white/70 bg-white/85 p-6 shadow-[0_20px_60px_rgba(15,23,42,0.08)] backdrop-blur">
-          <div className="space-y-2">
-            <h2 className="text-xl font-semibold text-slate-900">{t.loadingTitle}</h2>
-            <p className="text-sm text-slate-600">{t.loadingText}</p>
+        <section className="neoDash__panel">
+          <div className="neoDash__card">
+            <h3>{t.loadingTitle}</h3>
+            <p>{t.loadingText}</p>
           </div>
         </section>
       </AppModuleLayout>
@@ -191,110 +212,132 @@ export default function ProfilePage() {
 
   return (
     <AppModuleLayout
-      locale={locale}
+      active="profile"
       title={t.pageTitle}
       subtitle={t.subtitle}
-      badge={t.label}
+      label={t.label}
+      currentFocusTitle={t.focusTitle}
+      currentFocusText={t.focusText}
+      dateLabel={todayLabel || "..."}
     >
-      <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
-        <section className="rounded-[28px] border border-white/70 bg-white/90 p-6 shadow-[0_20px_60px_rgba(15,23,42,0.08)] backdrop-blur">
-          <div className="mb-6 space-y-2">
-            <span className="inline-flex rounded-full bg-sky-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-sky-700">
-              {t.pageLabel}
-            </span>
-            <h1 className="text-2xl font-semibold text-slate-900">{t.pageTitle}</h1>
-            <p className="max-w-2xl text-sm leading-6 text-slate-600">{t.pageText}</p>
+      <div
+        style={{
+          display: "grid",
+          gap: "20px",
+          gridTemplateColumns: "minmax(0, 1.15fr) minmax(320px, 0.85fr)",
+        }}
+      >
+        <section className="neoDash__panel">
+          <div className="neoDash__panelHeader">
+            <div>
+              <p className="neoDash__label">{t.pageLabel}</p>
+              <h3>{t.pageTitle}</h3>
+              <p className="neoDash__panelText">{t.pageText}</p>
+            </div>
           </div>
 
-          <form onSubmit={handleSave} className="grid gap-4 md:grid-cols-2">
-            <label className="grid gap-2">
-              <span className="text-sm font-medium text-slate-700">{t.fields.babyName}</span>
-              <input
-                value={profile.babyName}
-                onChange={(e) => updateField("babyName", e.target.value)}
-                placeholder={t.placeholders.babyName}
-                className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-sky-400"
-              />
-            </label>
+          <form onSubmit={handleSave} className="neoDash__form">
+            <div
+              className="neoDash__formGrid"
+              style={{
+                display: "grid",
+                gap: "16px",
+                gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+              }}
+            >
+              <label>
+                <span>{t.fields.babyName}</span>
+                <input
+                  value={profile.babyName}
+                  onChange={(e) => updateField("babyName", e.target.value)}
+                  placeholder={t.placeholders.babyName}
+                />
+              </label>
 
-            <label className="grid gap-2">
-              <span className="text-sm font-medium text-slate-700">{t.fields.ageMonths}</span>
-              <input
-                value={profile.ageMonths}
-                onChange={(e) => updateField("ageMonths", e.target.value)}
-                placeholder={t.placeholders.ageMonths}
-                className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-sky-400"
-              />
-            </label>
+              <label>
+                <span>{t.fields.ageMonths}</span>
+                <input
+                  value={profile.ageMonths}
+                  onChange={(e) => updateField("ageMonths", e.target.value)}
+                  placeholder={t.placeholders.ageMonths}
+                />
+              </label>
 
-            <label className="grid gap-2">
-              <span className="text-sm font-medium text-slate-700">{t.fields.bedtime}</span>
-              <input
-                value={profile.bedtime}
-                onChange={(e) => updateField("bedtime", e.target.value)}
-                placeholder={t.placeholders.bedtime}
-                className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-sky-400"
-              />
-            </label>
+              <label>
+                <span>{t.fields.bedtime}</span>
+                <input
+                  value={profile.bedtime}
+                  onChange={(e) => updateField("bedtime", e.target.value)}
+                  placeholder={t.placeholders.bedtime}
+                />
+              </label>
 
-            <label className="grid gap-2">
-              <span className="text-sm font-medium text-slate-700">{t.fields.mainConcern}</span>
-              <input
-                value={profile.mainConcern}
-                onChange={(e) => updateField("mainConcern", e.target.value)}
-                placeholder={t.placeholders.mainConcern}
-                className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-sky-400"
-              />
-            </label>
+              <label>
+                <span>{t.fields.mainConcern}</span>
+                <input
+                  value={profile.mainConcern}
+                  onChange={(e) => updateField("mainConcern", e.target.value)}
+                  placeholder={t.placeholders.mainConcern}
+                />
+              </label>
 
-            <label className="grid gap-2 md:col-span-2">
-              <span className="text-sm font-medium text-slate-700">{t.fields.notes}</span>
-              <textarea
-                rows={5}
-                value={profile.notes}
-                onChange={(e) => updateField("notes", e.target.value)}
-                placeholder={t.placeholders.notes}
-                className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-sky-400"
-              />
-            </label>
+              <label style={{ gridColumn: "1 / -1" }}>
+                <span>{t.fields.notes}</span>
+                <textarea
+                  rows={5}
+                  value={profile.notes}
+                  onChange={(e) => updateField("notes", e.target.value)}
+                  placeholder={t.placeholders.notes}
+                />
+              </label>
+            </div>
 
-            <div className="md:col-span-2 flex flex-col gap-3 pt-2 sm:flex-row sm:items-center">
+            <div
+              className="neoDash__formActions"
+              style={{
+                display: "flex",
+                gap: "12px",
+                alignItems: "center",
+                flexWrap: "wrap",
+                marginTop: "18px",
+              }}
+            >
               <button
                 type="submit"
+                className="neoDash__primaryBtn"
                 disabled={saving}
-                className="inline-flex items-center justify-center rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {saving ? t.saving : t.save}
               </button>
 
-              {message ? (
-                <p className="text-sm text-slate-600">{message}</p>
-              ) : null}
+              {message ? <p style={{ fontSize: "14px", opacity: 0.8 }}>{message}</p> : null}
             </div>
           </form>
         </section>
 
-        <aside className="rounded-[28px] border border-sky-100 bg-gradient-to-br from-sky-50 to-white p-6 shadow-[0_20px_60px_rgba(15,23,42,0.06)]">
-          <div className="space-y-3">
-            <span className="inline-flex rounded-full bg-white px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-slate-600 shadow-sm">
-              {t.focusTitle}
-            </span>
-            <h2 className="text-xl font-semibold text-slate-900">{t.focusTitle}</h2>
-            <p className="text-sm leading-6 text-slate-600">{t.focusText}</p>
+        <aside className="neoDash__panel">
+          <div className="neoDash__panelHeader">
+            <div>
+              <p className="neoDash__label">{t.focusTitle}</p>
+              <h3>{t.focusTitle}</h3>
+              <p className="neoDash__panelText">{t.focusText}</p>
+            </div>
           </div>
 
-          <div className="mt-6 space-y-3">
-            <div className="rounded-2xl bg-white p-4 shadow-sm">
-              <p className="text-xs uppercase tracking-[0.18em] text-slate-400">{t.fields.babyName}</p>
-              <p className="mt-1 text-sm font-medium text-slate-800">{profile.babyName || "-"}</p>
+          <div style={{ display: "grid", gap: "14px" }}>
+            <div className="neoDash__card">
+              <p className="neoDash__label">{t.fields.babyName}</p>
+              <h3>{profile.babyName || "-"}</h3>
             </div>
-            <div className="rounded-2xl bg-white p-4 shadow-sm">
-              <p className="text-xs uppercase tracking-[0.18em] text-slate-400">{t.fields.ageMonths}</p>
-              <p className="mt-1 text-sm font-medium text-slate-800">{profile.ageMonths || "-"}</p>
+
+            <div className="neoDash__card">
+              <p className="neoDash__label">{t.fields.ageMonths}</p>
+              <h3>{profile.ageMonths || "-"}</h3>
             </div>
-            <div className="rounded-2xl bg-white p-4 shadow-sm">
-              <p className="text-xs uppercase tracking-[0.18em] text-slate-400">{t.fields.mainConcern}</p>
-              <p className="mt-1 text-sm font-medium text-slate-800">{profile.mainConcern || "-"}</p>
+
+            <div className="neoDash__card">
+              <p className="neoDash__label">{t.fields.mainConcern}</p>
+              <h3>{profile.mainConcern || "-"}</h3>
             </div>
           </div>
         </aside>
