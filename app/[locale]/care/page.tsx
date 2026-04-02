@@ -117,22 +117,6 @@ function getTodayLabel(locale: Locale) {
   });
 }
 
-function formatSavedDate(value: string, locale: Locale) {
-  const format = locale === "fr" ? "fr-BE" : "en-GB";
-
-  try {
-    return new Date(value).toLocaleString(format, {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  } catch {
-    return value;
-  }
-}
-
 function getSupabase() {
   return createSupabaseClient();
 }
@@ -158,11 +142,12 @@ export default function CarePage() {
   });
 
   useEffect(() => {
-    setForm((prev) => ({
-      ...prev,
+    setForm({
+      time: "",
       careType: locale === "fr" ? "Changement de couche" : "Diaper change",
       status: locale === "fr" ? "Terminé" : "Completed",
-    }));
+      note: "",
+    });
   }, [locale]);
 
   useEffect(() => {
@@ -178,7 +163,6 @@ export default function CarePage() {
 
       try {
         await importLocalStorageToSupabase(supabase);
-
         const rows = await getCareEntries(supabase);
 
         if (!isMounted) return;
@@ -211,7 +195,7 @@ export default function CarePage() {
   }
 
   async function handleAddCareEntry() {
-    if (!form.time || !form.careType || !form.status) {
+    if (!form.time.trim() || !form.careType.trim() || !form.status.trim()) {
       setStatusMessage(t.saveError);
       setStatusType("error");
       return;
@@ -224,21 +208,28 @@ export default function CarePage() {
     try {
       const supabase = getSupabase();
 
-      const saved = await addCareEntry(supabase, {
+      const result = await addCareEntry(supabase, {
         time: form.time.trim(),
         careType: form.careType.trim(),
         status: form.status.trim(),
         note: form.note.trim(),
-        createdAt: new Date().toISOString(),
       });
 
-      setCareEntries((prev) => [saved, ...prev]);
+      if (!result.success || !result.entry) {
+        setStatusMessage(result.error || t.saveError);
+        setStatusType("error");
+        return;
+      }
+
+      setCareEntries((prev) => [result.entry!, ...prev]);
       setForm({
         time: "",
         careType: locale === "fr" ? "Changement de couche" : "Diaper change",
         status: locale === "fr" ? "Terminé" : "Completed",
         note: "",
       });
+      setStatusMessage("");
+      setStatusType("");
     } catch (error) {
       console.error("Failed to save care entry:", error);
       setStatusMessage(t.saveError);
@@ -251,8 +242,14 @@ export default function CarePage() {
   async function handleDeleteCareEntry(id: number) {
     try {
       const supabase = getSupabase();
+      const result = await deleteCareEntry(supabase, id);
 
-      await deleteCareEntry(supabase, id);
+      if (!result.success) {
+        setStatusMessage(result.error || t.deletingError);
+        setStatusType("error");
+        return;
+      }
+
       setCareEntries((prev) => prev.filter((item) => item.id !== id));
     } catch (error) {
       console.error("Failed to delete care entry:", error);
@@ -430,6 +427,9 @@ export default function CarePage() {
                 <h3>{entry.careType}</h3>
 
                 <p>
+                  <strong>{t.time}:</strong> {entry.time}
+                </p>
+                <p>
                   <strong>{t.statusLabel}:</strong> {entry.status}
                 </p>
                 <p>
@@ -437,10 +437,6 @@ export default function CarePage() {
                 </p>
 
                 {entry.note ? <p style={{ marginTop: "10px" }}>{entry.note}</p> : null}
-
-                <p style={{ marginTop: "12px", fontSize: "12px", opacity: 0.65 }}>
-                  {t.savedAt}: {formatSavedDate(entry.createdAt, locale)}
-                </p>
 
                 <div style={{ marginTop: "14px" }}>
                   <button

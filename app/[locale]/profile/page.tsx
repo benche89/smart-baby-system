@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import AppModuleLayout from "../../../components/AppModuleLayout";
 import { defaultLocale, isValidLocale } from "../../../lib/i18n";
@@ -9,6 +9,7 @@ import {
   getProfile,
   upsertProfile,
   importLocalStorageToSupabase,
+  getLocalProfile,
   type BabyProfile,
 } from "../../../lib/supabase/app-data";
 
@@ -20,201 +21,168 @@ const copy = {
     label: "Baby profile",
     focusTitle: "Profile settings",
     focusText: "Name, age, bedtime, main concern and notes used across AI guidance.",
-
     pageLabel: "Profile",
     pageTitle: "Your baby profile",
     pageText:
       "This information helps Smart Baby System personalize sleep, food, care and dashboard insights.",
-
-    babyName: "Baby name",
-    babyNamePlaceholder: "e.g. Emma",
-    ageMonths: "Age in months",
-    ageMonthsPlaceholder: "e.g. 8",
-    bedtime: "Usual bedtime",
-    bedtimePlaceholder: "e.g. 19:30",
-    mainConcern: "Main concern",
-    mainConcernPlaceholder: "e.g. short naps, feeding rhythm, evening routine",
-    notes: "Parent notes",
-    notesPlaceholder:
-      "Add useful context about routines, sensitivities, preferences or anything important.",
-    saveProfile: "Save profile",
+    loadingTitle: "Loading profile...",
+    loadingText: "Your profile is securely stored in Supabase.",
+    save: "Save profile",
     saving: "Saving...",
-    loading: "Loading profile...",
-    secureStorage: "Your profile is stored securely in Supabase.",
-    savedSuccess: "Profile saved successfully.",
-    saveError: "Something went wrong while saving the profile.",
-    loadError: "Failed to load profile data.",
-    aiMedicalNote: "AI suggestions are not medical advice.",
+    saved: "Profile saved successfully.",
+    saveError: "Save failed. Your data is still stored locally in this browser.",
+    fields: {
+      babyName: "Baby name",
+      ageMonths: "Age (months)",
+      bedtime: "Usual bedtime",
+      mainConcern: "Main concern",
+      notes: "Notes",
+    },
+    placeholders: {
+      babyName: "e.g. Emma",
+      ageMonths: "e.g. 8",
+      bedtime: "e.g. 19:30",
+      mainConcern: "e.g. Night wakings",
+      notes: "Anything important to remember...",
+    },
   },
   fr: {
-    subtitle:
-      "Enregistrez le profil principal de votre bébé en toute sécurité et utilisez-le dans tout le système.",
-    label: "Profil bébé",
-    focusTitle: "Paramètres du profil",
-    focusText:
-      "Nom, âge, heure du coucher, préoccupation principale et notes utilisées dans toute la guidance IA.",
-
+    subtitle: "Enregistrez le profil principal de votre bebe et utilisez-le dans tout le systeme.",
+    label: "Profil bebe",
+    focusTitle: "Parametres du profil",
+    focusText: "Nom, age, heure du coucher, besoin principal et notes utilises dans tout le systeme.",
     pageLabel: "Profil",
-    pageTitle: "Le profil de votre bébé",
+    pageTitle: "Le profil de votre bebe",
     pageText:
-      "Ces informations aident Smart Baby System à personnaliser les insights sommeil, alimentation, soins et dashboard.",
-
-    babyName: "Nom du bébé",
-    babyNamePlaceholder: "ex. Emma",
-    ageMonths: "Âge en mois",
-    ageMonthsPlaceholder: "ex. 8",
-    bedtime: "Heure habituelle du coucher",
-    bedtimePlaceholder: "ex. 19:30",
-    mainConcern: "Préoccupation principale",
-    mainConcernPlaceholder: "ex. siestes courtes, rythme des repas, routine du soir",
-    notes: "Notes parentales",
-    notesPlaceholder:
-      "Ajoutez un contexte utile sur les routines, sensibilités, préférences ou tout autre élément important.",
-    saveProfile: "Enregistrer le profil",
+      "Ces informations aident Smart Baby System a personnaliser le sommeil, l'alimentation, les soins et les analyses du dashboard.",
+    loadingTitle: "Chargement du profil...",
+    loadingText: "Votre profil est stocke en toute securite dans Supabase.",
+    save: "Enregistrer le profil",
     saving: "Enregistrement...",
-    loading: "Chargement du profil...",
-    secureStorage: "Votre profil est stocké en toute sécurité dans Supabase.",
-    savedSuccess: "Profil enregistré avec succès.",
-    saveError: "Une erreur s’est produite pendant l’enregistrement du profil.",
-    loadError: "Impossible de charger les données du profil.",
-    aiMedicalNote: "Les suggestions IA ne constituent pas un avis médical.",
+    saved: "Profil enregistre avec succes.",
+    saveError: "Echec de l'enregistrement. Vos donnees restent stockees localement dans ce navigateur.",
+    fields: {
+      babyName: "Nom du bebe",
+      ageMonths: "Age (mois)",
+      bedtime: "Heure habituelle du coucher",
+      mainConcern: "Besoin principal",
+      notes: "Notes",
+    },
+    placeholders: {
+      babyName: "ex. Emma",
+      ageMonths: "ex. 8",
+      bedtime: "ex. 19:30",
+      mainConcern: "ex. Reveils nocturnes",
+      notes: "Tout ce qu'il faut retenir...",
+    },
   },
 } as const;
 
-function getTodayLabel(locale: Locale) {
-  const format = locale === "fr" ? "fr-BE" : "en-GB";
-  return new Date().toLocaleDateString(format, {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-  });
-}
-
-function getSupabase() {
-  return createSupabaseClient();
-}
+const emptyProfile: BabyProfile = {
+  babyName: "",
+  ageMonths: "",
+  bedtime: "",
+  mainConcern: "",
+  notes: "",
+};
 
 export default function ProfilePage() {
-  const params = useParams();
-  const rawLocale = typeof params.locale === "string" ? params.locale : defaultLocale;
-  const locale: Locale = isValidLocale(rawLocale) ? (rawLocale as Locale) : "en";
+  const params = useParams<{ locale?: string }>();
+  const locale = isValidLocale(params?.locale) ? (params!.locale as Locale) : defaultLocale;
   const t = copy[locale];
 
-  const [form, setForm] = useState({
-    babyName: "",
-    ageMonths: "",
-    bedtime: "",
-    mainConcern: "",
-    notes: "",
-  });
-
-  const [todayLabel, setTodayLabel] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
-  const [statusMessage, setStatusMessage] = useState("");
-  const [statusType, setStatusType] = useState<"success" | "error" | "">("");
+  const supabase = useMemo(() => createSupabaseClient(), []);
+  const [profile, setProfile] = useState<BabyProfile>(emptyProfile);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
-    let isMounted = true;
+    let active = true;
 
-    async function loadProfileData() {
-      const supabase = getSupabase();
-
-      setIsLoading(true);
-      setTodayLabel(getTodayLabel(locale));
-      setStatusMessage("");
-      setStatusType("");
+    async function loadProfile() {
+      setLoading(true);
+      setMessage("");
 
       try {
-        await importLocalStorageToSupabase(supabase);
+        setProfile(getLocalProfile());
 
-        const dbProfile = await getProfile(supabase);
-
-        if (!isMounted) return;
-
-        if (dbProfile) {
-          setForm({
-            babyName: dbProfile.babyName ?? "",
-            ageMonths: dbProfile.ageMonths ?? "",
-            bedtime: dbProfile.bedtime ?? "",
-            mainConcern: dbProfile.mainConcern ?? "",
-            notes: dbProfile.notes ?? "",
-          });
-        }
+        await Promise.race([
+          (async () => {
+            await importLocalStorageToSupabase(supabase);
+            const loaded = await getProfile(supabase);
+            if (!active) return;
+            if (loaded) {
+              setProfile(loaded);
+            }
+          })(),
+          new Promise((_, reject) =>
+            setTimeout(() => reject(new Error("Profile load timeout")), 6000)
+          ),
+        ]);
       } catch (error) {
-        console.error("Failed to load profile:", error);
-        if (isMounted) {
-          setStatusMessage(t.loadError);
-          setStatusType("error");
-        }
+        console.error("Profile page load error:", error);
+        if (!active) return;
+        setProfile(getLocalProfile());
       } finally {
-        if (isMounted) {
-          setIsLoading(false);
+        if (active) {
+          setLoading(false);
         }
       }
     }
 
-    loadProfileData();
+    loadProfile();
 
     return () => {
-      isMounted = false;
+      active = false;
     };
-  }, [locale, t.loadError]);
+  }, [supabase]);
 
-  function updateField(field: keyof typeof form, value: string) {
-    setForm((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  }
-
-  async function handleSaveProfile() {
-    setIsSaving(true);
-    setStatusMessage("");
-    setStatusType("");
+  async function handleSave(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setSaving(true);
+    setMessage("");
 
     try {
-      const supabase = getSupabase();
+      const result = await Promise.race([
+        upsertProfile(supabase, profile),
+        new Promise<{ success: false; error: string }>((resolve) =>
+          setTimeout(() => resolve({ success: false, error: "Save timeout" }), 6000)
+        ),
+      ]);
 
-      const existing = await getProfile(supabase);
-
-      const payload: BabyProfile = {
-        babyName: form.babyName.trim(),
-        ageMonths: form.ageMonths.trim(),
-        bedtime: form.bedtime.trim(),
-        mainConcern: form.mainConcern.trim(),
-        notes: form.notes.trim(),
-        planTier: existing?.planTier ?? "basic",
-      };
-
-      await upsertProfile(supabase, payload);
-
-      setStatusMessage(t.savedSuccess);
-      setStatusType("success");
+      if (result.success) {
+        setMessage(t.saved);
+      } else {
+        setMessage(t.saveError);
+      }
     } catch (error) {
-      console.error("Failed to save profile:", error);
-      setStatusMessage(t.saveError);
-      setStatusType("error");
+      console.error("Profile save error:", error);
+      setMessage(t.saveError);
     } finally {
-      setIsSaving(false);
+      setSaving(false);
     }
   }
 
-  if (isLoading) {
+  function updateField<K extends keyof BabyProfile>(key: K, value: BabyProfile[K]) {
+    setProfile((prev) => {
+      const next = { ...prev, [key]: value };
+      return next;
+    });
+  }
+
+  if (loading) {
     return (
       <AppModuleLayout
-        active="profile"
-        title="Smart Baby System"
+        locale={locale}
+        title={t.pageTitle}
         subtitle={t.subtitle}
-        label={t.label}
-        currentFocusTitle={t.focusTitle}
-        currentFocusText={t.focusText}
-        dateLabel="..."
+        badge={t.label}
       >
-        <section className="neoDash__panel">
-          <div className="neoDash__card">
-            <h3>{t.loading}</h3>
-            <p>{t.secureStorage}</p>
+        <section className="rounded-[28px] border border-white/70 bg-white/85 p-6 shadow-[0_20px_60px_rgba(15,23,42,0.08)] backdrop-blur">
+          <div className="space-y-2">
+            <h2 className="text-xl font-semibold text-slate-900">{t.loadingTitle}</h2>
+            <p className="text-sm text-slate-600">{t.loadingText}</p>
           </div>
         </section>
       </AppModuleLayout>
@@ -223,134 +191,114 @@ export default function ProfilePage() {
 
   return (
     <AppModuleLayout
-      active="profile"
-      title={form.babyName || "Smart Baby System"}
+      locale={locale}
+      title={t.pageTitle}
       subtitle={t.subtitle}
-      label={t.label}
-      currentFocusTitle={t.focusTitle}
-      currentFocusText={t.focusText}
-      dateLabel={todayLabel || "..."}
+      badge={t.label}
     >
-      <section className="neoDash__panel">
-        <div className="neoDash__panelHeader">
-          <div>
-            <p className="neoDash__label">{t.pageLabel}</p>
-            <h3>{t.pageTitle}</h3>
-            <p className="neoDash__panelText">{t.pageText}</p>
+      <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
+        <section className="rounded-[28px] border border-white/70 bg-white/90 p-6 shadow-[0_20px_60px_rgba(15,23,42,0.08)] backdrop-blur">
+          <div className="mb-6 space-y-2">
+            <span className="inline-flex rounded-full bg-sky-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-sky-700">
+              {t.pageLabel}
+            </span>
+            <h1 className="text-2xl font-semibold text-slate-900">{t.pageTitle}</h1>
+            <p className="max-w-2xl text-sm leading-6 text-slate-600">{t.pageText}</p>
           </div>
-        </div>
 
-        <div className="neoDash__form">
-          <div
-            className="neoDash__formGrid"
-            style={{
-              display: "grid",
-              gap: "16px",
-              gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-            }}
-          >
-            <label>
-              <span>{t.babyName}</span>
+          <form onSubmit={handleSave} className="grid gap-4 md:grid-cols-2">
+            <label className="grid gap-2">
+              <span className="text-sm font-medium text-slate-700">{t.fields.babyName}</span>
               <input
-                type="text"
-                value={form.babyName}
+                value={profile.babyName}
                 onChange={(e) => updateField("babyName", e.target.value)}
-                placeholder={t.babyNamePlaceholder}
+                placeholder={t.placeholders.babyName}
+                className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-sky-400"
               />
             </label>
 
-            <label>
-              <span>{t.ageMonths}</span>
+            <label className="grid gap-2">
+              <span className="text-sm font-medium text-slate-700">{t.fields.ageMonths}</span>
               <input
-                type="number"
-                min="0"
-                value={form.ageMonths}
+                value={profile.ageMonths}
                 onChange={(e) => updateField("ageMonths", e.target.value)}
-                placeholder={t.ageMonthsPlaceholder}
+                placeholder={t.placeholders.ageMonths}
+                className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-sky-400"
               />
             </label>
 
-            <label>
-              <span>{t.bedtime}</span>
+            <label className="grid gap-2">
+              <span className="text-sm font-medium text-slate-700">{t.fields.bedtime}</span>
               <input
-                type="time"
-                value={form.bedtime}
+                value={profile.bedtime}
                 onChange={(e) => updateField("bedtime", e.target.value)}
-                placeholder={t.bedtimePlaceholder}
+                placeholder={t.placeholders.bedtime}
+                className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-sky-400"
               />
             </label>
 
-            <label>
-              <span>{t.mainConcern}</span>
+            <label className="grid gap-2">
+              <span className="text-sm font-medium text-slate-700">{t.fields.mainConcern}</span>
               <input
-                type="text"
-                value={form.mainConcern}
+                value={profile.mainConcern}
                 onChange={(e) => updateField("mainConcern", e.target.value)}
-                placeholder={t.mainConcernPlaceholder}
+                placeholder={t.placeholders.mainConcern}
+                className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-sky-400"
               />
             </label>
 
-            <label style={{ gridColumn: "1 / -1" }}>
-              <span>{t.notes}</span>
+            <label className="grid gap-2 md:col-span-2">
+              <span className="text-sm font-medium text-slate-700">{t.fields.notes}</span>
               <textarea
-                value={form.notes}
+                rows={5}
+                value={profile.notes}
                 onChange={(e) => updateField("notes", e.target.value)}
-                placeholder={t.notesPlaceholder}
-                rows={6}
+                placeholder={t.placeholders.notes}
+                className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-sky-400"
               />
             </label>
-          </div>
 
-          <div
-            className="neoDash__formActions"
-            style={{
-              display: "flex",
-              gap: "12px",
-              alignItems: "center",
-              flexWrap: "wrap",
-              marginTop: "18px",
-            }}
-          >
-            <button
-              type="button"
-              className="neoDash__primaryBtn"
-              onClick={handleSaveProfile}
-              disabled={isSaving}
-            >
-              {isSaving ? t.saving : t.saveProfile}
-            </button>
+            <div className="md:col-span-2 flex flex-col gap-3 pt-2 sm:flex-row sm:items-center">
+              <button
+                type="submit"
+                disabled={saving}
+                className="inline-flex items-center justify-center rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {saving ? t.saving : t.save}
+              </button>
 
-            <p style={{ fontSize: "13px", opacity: 0.7 }}>{t.secureStorage}</p>
-          </div>
-
-          {statusMessage ? (
-            <div
-              style={{
-                marginTop: "16px",
-                padding: "14px 16px",
-                borderRadius: "16px",
-                border:
-                  statusType === "success"
-                    ? "1px solid rgba(34,197,94,0.25)"
-                    : "1px solid rgba(239,68,68,0.25)",
-                background:
-                  statusType === "success"
-                    ? "rgba(34,197,94,0.08)"
-                    : "rgba(239,68,68,0.08)",
-                color: statusType === "success" ? "#166534" : "#991b1b",
-                fontSize: "14px",
-                lineHeight: 1.5,
-              }}
-            >
-              {statusMessage}
+              {message ? (
+                <p className="text-sm text-slate-600">{message}</p>
+              ) : null}
             </div>
-          ) : null}
-        </div>
-      </section>
+          </form>
+        </section>
 
-      <section className="neoDash__panel" style={{ marginTop: "20px" }}>
-        <p style={{ fontSize: "12px", opacity: 0.6 }}>{t.aiMedicalNote}</p>
-      </section>
+        <aside className="rounded-[28px] border border-sky-100 bg-gradient-to-br from-sky-50 to-white p-6 shadow-[0_20px_60px_rgba(15,23,42,0.06)]">
+          <div className="space-y-3">
+            <span className="inline-flex rounded-full bg-white px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-slate-600 shadow-sm">
+              {t.focusTitle}
+            </span>
+            <h2 className="text-xl font-semibold text-slate-900">{t.focusTitle}</h2>
+            <p className="text-sm leading-6 text-slate-600">{t.focusText}</p>
+          </div>
+
+          <div className="mt-6 space-y-3">
+            <div className="rounded-2xl bg-white p-4 shadow-sm">
+              <p className="text-xs uppercase tracking-[0.18em] text-slate-400">{t.fields.babyName}</p>
+              <p className="mt-1 text-sm font-medium text-slate-800">{profile.babyName || "-"}</p>
+            </div>
+            <div className="rounded-2xl bg-white p-4 shadow-sm">
+              <p className="text-xs uppercase tracking-[0.18em] text-slate-400">{t.fields.ageMonths}</p>
+              <p className="mt-1 text-sm font-medium text-slate-800">{profile.ageMonths || "-"}</p>
+            </div>
+            <div className="rounded-2xl bg-white p-4 shadow-sm">
+              <p className="text-xs uppercase tracking-[0.18em] text-slate-400">{t.fields.mainConcern}</p>
+              <p className="mt-1 text-sm font-medium text-slate-800">{profile.mainConcern || "-"}</p>
+            </div>
+          </div>
+        </aside>
+      </div>
     </AppModuleLayout>
   );
 }

@@ -12,6 +12,7 @@ import {
   getCareEntries,
   importLocalStorageToSupabase,
   updatePlanTier,
+  getLocalPlanTier,
   type BabyProfile,
   type SleepEntry,
   type FoodEntry,
@@ -329,16 +330,6 @@ function parseDuration(value: string) {
   return Number.isFinite(numeric) ? numeric : 0;
 }
 
-function extractReactionFromFoodNote(note: string, fallback: string) {
-  const match = note.match(/Reaction:\s*([^|]+)/i);
-  return match ? match[1].trim() : fallback;
-}
-
-function extractFoodFromFoodNote(note: string) {
-  const match = note.match(/Food:\s*([^|]+)/i);
-  return match ? match[1].trim() : "";
-}
-
 function average(numbers: number[]) {
   if (numbers.length === 0) return 0;
   return numbers.reduce((sum, value) => sum + value, 0) / numbers.length;
@@ -395,13 +386,7 @@ export default function DashboardClient() {
         if (!isMounted) return;
 
         setProfile(dbProfile);
-
-        if (dbProfile?.planTier) {
-          setSelectedPlan(dbProfile.planTier);
-        } else {
-          setSelectedPlan("basic");
-        }
-
+        setSelectedPlan(getLocalPlanTier());
         setSleepHistory(dbSleep);
         setFoodHistory(dbFood);
         setCareHistory(dbCare);
@@ -427,28 +412,15 @@ export default function DashboardClient() {
 
       setSelectedPlan(plan);
 
-      const savedPlan = await updatePlanTier(supabase, plan);
+      const result = await updatePlanTier(supabase, plan);
 
-      setSelectedPlan(savedPlan);
-      setProfile((prev) => {
-        if (!prev) {
-          return {
-            babyName: "",
-            ageMonths: "",
-            bedtime: "",
-            mainConcern: "",
-            notes: "",
-            planTier: savedPlan,
-          };
-        }
-
-        return {
-          ...prev,
-          planTier: savedPlan,
-        };
-      });
+      if (!result.success) {
+        console.error("Failed to update plan:", result.error);
+        setSelectedPlan(getLocalPlanTier());
+      }
     } catch (error) {
       console.error("Failed to update plan:", error);
+      setSelectedPlan(getLocalPlanTier());
     }
   }
 
@@ -466,7 +438,7 @@ export default function DashboardClient() {
 
   const sleepDurations = useMemo(() => {
     return sleepHistory
-      .map((entry) => parseDuration(entry.duration))
+      .map((entry) => parseDuration(entry.napDuration))
       .filter((value) => value > 0);
   }, [sleepHistory]);
 
@@ -474,18 +446,17 @@ export default function DashboardClient() {
     return Math.round(average(sleepDurations));
   }, [sleepDurations]);
 
-  const sleepQualities = useMemo(() => {
-    return sleepHistory.map((entry) => entry.quality);
+  const sleepMoods = useMemo(() => {
+    return sleepHistory.map((entry) => entry.mood);
   }, [sleepHistory]);
 
   const foodReactions = useMemo(() => {
-    const fallback = locale === "fr" ? "Bonne" : "Good";
-    return foodHistory.map((entry) => extractReactionFromFoodNote(entry.note, fallback));
-  }, [foodHistory, locale]);
+    return foodHistory.map((entry) => entry.reaction);
+  }, [foodHistory]);
 
   const recentFoods = useMemo(() => {
     return foodHistory
-      .map((entry) => extractFoodFromFoodNote(entry.note))
+      .map((entry) => entry.food)
       .filter(Boolean)
       .slice(0, 3);
   }, [foodHistory]);
@@ -505,7 +476,19 @@ export default function DashboardClient() {
     }
 
     const wakeWindow = getRecommendedWakeWindow(ageMonths);
-    const napStartTimes = sleepHistory.map((entry) => timeToMinutes(entry.start));
+    const napStartTimes = sleepHistory
+      .map((entry) => timeToMinutes(entry.lastNapTime))
+      .filter((value) => value > 0);
+
+    if (napStartTimes.length === 0) {
+      return {
+        title: t.sleepDataBuilding,
+        subtitle: t.sleepDataBuildingText,
+        nextSleepTime: "-",
+        rhythm: t.noRhythm,
+      };
+    }
+
     const averageNapStart =
       napStartTimes.reduce((sum, value) => sum + value, 0) / napStartTimes.length;
 
@@ -544,11 +527,11 @@ export default function DashboardClient() {
     const poorLabels = locale === "fr" ? ["Faible", "Poor"] : ["Poor"];
 
     const excellentCount = sleepHistory.filter((entry) =>
-      excellentLabels.includes(entry.quality)
+      excellentLabels.includes(entry.mood)
     ).length;
-    const goodCount = sleepHistory.filter((entry) => goodLabels.includes(entry.quality)).length;
-    const lightCount = sleepHistory.filter((entry) => lightLabels.includes(entry.quality)).length;
-    const poorCount = sleepHistory.filter((entry) => poorLabels.includes(entry.quality)).length;
+    const goodCount = sleepHistory.filter((entry) => goodLabels.includes(entry.mood)).length;
+    const lightCount = sleepHistory.filter((entry) => lightLabels.includes(entry.mood)).length;
+    const poorCount = sleepHistory.filter((entry) => poorLabels.includes(entry.mood)).length;
 
     score += excellentCount * 8;
     score += goodCount * 5;
@@ -604,7 +587,7 @@ export default function DashboardClient() {
     score -= unsureCount * 4;
     score -= sensitiveCount * 8;
 
-    const uniqueMealTypes = new Set(foodHistory.map((entry) => entry.type)).size;
+    const uniqueMealTypes = new Set(foodHistory.map((entry) => entry.mealType)).size;
     score += uniqueMealTypes * 3;
 
     if (score > 100) score = 100;
@@ -684,11 +667,15 @@ export default function DashboardClient() {
     const difficultLabels = locale === "fr" ? ["Difficile", "Difficult"] : ["Difficult"];
     const partialLabels = locale === "fr" ? ["Partiel", "Partial"] : ["Partial"];
 
-    const poorSleepCount = sleepQualities.filter((entry) => poorLabels.includes(entry)).length;
-    const lightSleepCount = sleepQualities.filter((entry) => lightLabels.includes(entry)).length;
-    const sensitiveFoodCount = foodReactions.filter((entry) => sensitiveLabels.includes(entry)).length;
+    const poorSleepCount = sleepMoods.filter((entry) => poorLabels.includes(entry)).length;
+    const lightSleepCount = sleepMoods.filter((entry) => lightLabels.includes(entry)).length;
+    const sensitiveFoodCount = foodReactions.filter((entry) =>
+      sensitiveLabels.includes(entry)
+    ).length;
     const unsureFoodCount = foodReactions.filter((entry) => unsureLabels.includes(entry)).length;
-    const difficultCareCount = careStatuses.filter((entry) => difficultLabels.includes(entry)).length;
+    const difficultCareCount = careStatuses.filter((entry) =>
+      difficultLabels.includes(entry)
+    ).length;
     const partialCareCount = careStatuses.filter((entry) => partialLabels.includes(entry)).length;
 
     const profileContext = [
@@ -1002,7 +989,7 @@ export default function DashboardClient() {
     careHistory,
     averageSleepDuration,
     sleepInsight.nextSleepTime,
-    sleepQualities,
+    sleepMoods,
     foodReactions,
     careStatuses,
     recentFoods,
