@@ -20,19 +20,17 @@ const copy = {
     subtitle: "Track naps and sleep quality securely with Supabase-backed storage.",
     label: "Sleep tracking",
     focusTitle: "Sleep module",
-    focusText: "Log naps, quality and sleep rhythm to improve daily clarity.",
+    focusText:
+      "Log naps and sleep quality to reveal stronger rhythm patterns and smarter dashboard predictions.",
 
     pageLabel: "Sleep",
     pageTitle: "Sleep log",
     pageText:
-      "Save each sleep session to build stronger daily insights and smarter dashboard guidance.",
+      "Save each nap to build better sleep insights and more useful daily guidance.",
 
-    start: "Start time",
-    end: "End time",
-    duration: "Duration (minutes)",
-    quality: "Sleep quality",
-    note: "Notes",
-    notePlaceholder: "Add useful context about this nap or sleep session...",
+    lastNapTime: "Last nap time",
+    napDuration: "Nap duration (minutes)",
+    mood: "Sleep quality",
     addEntry: "Add sleep entry",
     adding: "Saving...",
     loading: "Loading sleep data...",
@@ -49,51 +47,44 @@ const copy = {
     light: "Light",
     poor: "Poor",
 
-    lastEntries: "Recent sleep entries",
+    recentEntries: "Recent sleep entries",
     qualityLabel: "Quality",
     durationLabel: "Duration",
-    minutes: "min",
-    savedAt: "Saved",
   },
   fr: {
-    subtitle: "Suivez les siestes et la qualité du sommeil avec un stockage sécurisé sur Supabase.",
+    subtitle: "Suivez les siestes et la qualite du sommeil avec un stockage securise sur Supabase.",
     label: "Suivi sommeil",
     focusTitle: "Module sommeil",
     focusText:
-      "Enregistrez les siestes, la qualité et le rythme du sommeil pour une meilleure clarté quotidienne.",
+      "Enregistrez les siestes et la qualite du sommeil pour reveler de meilleurs rythmes et des predictions dashboard plus intelligentes.",
 
     pageLabel: "Sommeil",
     pageTitle: "Journal du sommeil",
     pageText:
-      "Enregistrez chaque session de sommeil pour créer de meilleurs insights quotidiens et une guidance dashboard plus intelligente.",
+      "Enregistrez chaque sieste pour construire de meilleurs insights sommeil et une guidance quotidienne plus utile.",
 
-    start: "Heure de début",
-    end: "Heure de fin",
-    duration: "Durée (minutes)",
-    quality: "Qualité du sommeil",
-    note: "Notes",
-    notePlaceholder: "Ajoutez un contexte utile sur cette sieste ou session de sommeil...",
-    addEntry: "Ajouter une entrée sommeil",
+    lastNapTime: "Heure de la derniere sieste",
+    napDuration: "Duree de la sieste (minutes)",
+    mood: "Qualite du sommeil",
+    addEntry: "Ajouter une entree sommeil",
     adding: "Enregistrement...",
-    loading: "Chargement des données sommeil...",
-    noEntries: "Aucune entrée sommeil pour le moment.",
+    loading: "Chargement des donnees sommeil...",
+    noEntries: "Aucune entree sommeil pour le moment.",
     deleteEntry: "Supprimer",
-    deletingError: "Impossible de supprimer l’entrée sommeil.",
-    saveError: "Impossible d’enregistrer l’entrée sommeil.",
-    loadError: "Impossible de charger les données sommeil.",
-    secureStorage: "Vos logs sommeil sont stockés en toute sécurité dans Supabase.",
-    aiMedicalNote: "Les suggestions IA ne constituent pas un avis médical.",
+    deletingError: "Impossible de supprimer l’entree sommeil.",
+    saveError: "Impossible d’enregistrer l’entree sommeil.",
+    loadError: "Impossible de charger les donnees sommeil.",
+    secureStorage: "Vos logs sommeil sont stockes en toute securite dans Supabase.",
+    aiMedicalNote: "Les suggestions IA ne constituent pas un avis medical.",
 
     excellent: "Excellent",
     good: "Bon",
     light: "Léger",
     poor: "Faible",
 
-    lastEntries: "Entrées sommeil récentes",
-    qualityLabel: "Qualité",
-    durationLabel: "Durée",
-    minutes: "min",
-    savedAt: "Enregistré",
+    recentEntries: "Entrees sommeil recentes",
+    qualityLabel: "Qualite",
+    durationLabel: "Duree",
   },
 } as const;
 
@@ -104,22 +95,6 @@ function getTodayLabel(locale: Locale) {
     day: "numeric",
     month: "long",
   });
-}
-
-function formatSavedDate(value: string, locale: Locale) {
-  const format = locale === "fr" ? "fr-BE" : "en-GB";
-
-  try {
-    return new Date(value).toLocaleString(format, {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  } catch {
-    return value;
-  }
 }
 
 function getSupabase() {
@@ -140,18 +115,18 @@ export default function SleepPage() {
   const [statusType, setStatusType] = useState<"success" | "error" | "">("");
 
   const [form, setForm] = useState({
-    start: "",
-    end: "",
-    duration: "",
-    quality: locale === "fr" ? "Bon" : "Good",
-    note: "",
+    lastNapTime: "",
+    napDuration: "",
+    mood: locale === "fr" ? "Bon" : "Good",
   });
 
   useEffect(() => {
-    setForm((prev) => ({
-      ...prev,
-      quality: locale === "fr" ? "Bon" : "Good",
-    }));
+    setTodayLabel(getTodayLabel(locale));
+    setForm({
+      lastNapTime: "",
+      napDuration: "",
+      mood: locale === "fr" ? "Bon" : "Good",
+    });
   }, [locale]);
 
   useEffect(() => {
@@ -161,13 +136,11 @@ export default function SleepPage() {
       const supabase = getSupabase();
 
       setIsLoading(true);
-      setTodayLabel(getTodayLabel(locale));
       setStatusMessage("");
       setStatusType("");
 
       try {
         await importLocalStorageToSupabase(supabase);
-
         const rows = await getSleepEntries(supabase);
 
         if (!isMounted) return;
@@ -200,7 +173,7 @@ export default function SleepPage() {
   }
 
   async function handleAddSleepEntry() {
-    if (!form.start || !form.end || !form.duration || !form.quality) {
+    if (!form.lastNapTime.trim() || !form.napDuration.trim() || !form.mood.trim()) {
       setStatusMessage(t.saveError);
       setStatusType("error");
       return;
@@ -213,22 +186,23 @@ export default function SleepPage() {
     try {
       const supabase = getSupabase();
 
-      const saved = await addSleepEntry(supabase, {
-        start: form.start.trim(),
-        end: form.end.trim(),
-        duration: form.duration.trim(),
-        quality: form.quality.trim(),
-        note: form.note.trim(),
-        createdAt: new Date().toISOString(),
+      const result = await addSleepEntry(supabase, {
+        lastNapTime: form.lastNapTime.trim(),
+        napDuration: form.napDuration.trim(),
+        mood: form.mood.trim(),
       });
 
-      setSleepEntries((prev) => [saved, ...prev]);
+      if (!result.success || !result.entry) {
+        setStatusMessage(result.error || t.saveError);
+        setStatusType("error");
+        return;
+      }
+
+      setSleepEntries((prev) => [result.entry!, ...prev]);
       setForm({
-        start: "",
-        end: "",
-        duration: "",
-        quality: locale === "fr" ? "Bon" : "Good",
-        note: "",
+        lastNapTime: "",
+        napDuration: "",
+        mood: locale === "fr" ? "Bon" : "Good",
       });
     } catch (error) {
       console.error("Failed to save sleep entry:", error);
@@ -242,8 +216,14 @@ export default function SleepPage() {
   async function handleDeleteSleepEntry(id: number) {
     try {
       const supabase = getSupabase();
+      const result = await deleteSleepEntry(supabase, id);
 
-      await deleteSleepEntry(supabase, id);
+      if (!result.success) {
+        setStatusMessage(result.error || t.deletingError);
+        setStatusType("error");
+        return;
+      }
+
       setSleepEntries((prev) => prev.filter((item) => item.id !== id));
     } catch (error) {
       console.error("Failed to delete sleep entry:", error);
@@ -261,7 +241,7 @@ export default function SleepPage() {
         label={t.label}
         currentFocusTitle={t.focusTitle}
         currentFocusText={t.focusText}
-        dateLabel="..."
+        dateLabel={todayLabel || "..."}
       >
         <section className="neoDash__panel">
           <div className="neoDash__card">
@@ -302,55 +282,35 @@ export default function SleepPage() {
             }}
           >
             <label>
-              <span>{t.start}</span>
+              <span>{t.lastNapTime}</span>
               <input
                 type="time"
-                value={form.start}
-                onChange={(e) => updateField("start", e.target.value)}
+                value={form.lastNapTime}
+                onChange={(e) => updateField("lastNapTime", e.target.value)}
               />
             </label>
 
             <label>
-              <span>{t.end}</span>
-              <input
-                type="time"
-                value={form.end}
-                onChange={(e) => updateField("end", e.target.value)}
-              />
-            </label>
-
-            <label>
-              <span>{t.duration}</span>
+              <span>{t.napDuration}</span>
               <input
                 type="number"
-                min="1"
-                value={form.duration}
-                onChange={(e) => updateField("duration", e.target.value)}
+                value={form.napDuration}
+                onChange={(e) => updateField("napDuration", e.target.value)}
                 placeholder="45"
               />
             </label>
 
             <label>
-              <span>{t.quality}</span>
+              <span>{t.mood}</span>
               <select
-                value={form.quality}
-                onChange={(e) => updateField("quality", e.target.value)}
+                value={form.mood}
+                onChange={(e) => updateField("mood", e.target.value)}
               >
                 <option value={t.excellent}>{t.excellent}</option>
                 <option value={t.good}>{t.good}</option>
                 <option value={t.light}>{t.light}</option>
                 <option value={t.poor}>{t.poor}</option>
               </select>
-            </label>
-
-            <label style={{ gridColumn: "1 / -1" }}>
-              <span>{t.note}</span>
-              <textarea
-                rows={5}
-                value={form.note}
-                onChange={(e) => updateField("note", e.target.value)}
-                placeholder={t.notePlaceholder}
-              />
             </label>
           </div>
 
@@ -405,7 +365,7 @@ export default function SleepPage() {
         <div className="neoDash__panelHeader">
           <div>
             <p className="neoDash__label">{t.pageLabel}</p>
-            <h3>{t.lastEntries}</h3>
+            <h3>{t.recentEntries}</h3>
           </div>
         </div>
 
@@ -424,21 +384,13 @@ export default function SleepPage() {
             {sleepEntries.map((entry) => (
               <article key={entry.id} className="neoDash__card">
                 <p className="neoDash__label">{t.pageLabel}</p>
-                <h3>
-                  {entry.start} → {entry.end}
-                </h3>
+                <h3>{entry.lastNapTime}</h3>
 
                 <p>
-                  <strong>{t.durationLabel}:</strong> {entry.duration} {t.minutes}
+                  <strong>{t.durationLabel}:</strong> {entry.napDuration} min
                 </p>
                 <p>
-                  <strong>{t.qualityLabel}:</strong> {entry.quality}
-                </p>
-
-                {entry.note ? <p style={{ marginTop: "10px" }}>{entry.note}</p> : null}
-
-                <p style={{ marginTop: "12px", fontSize: "12px", opacity: 0.65 }}>
-                  {t.savedAt}: {formatSavedDate(entry.createdAt, locale)}
+                  <strong>{t.qualityLabel}:</strong> {entry.mood}
                 </p>
 
                 <div style={{ marginTop: "14px" }}>

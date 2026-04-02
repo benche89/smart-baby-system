@@ -17,26 +17,22 @@ type Locale = "en" | "fr";
 
 const copy = {
   en: {
-    subtitle: "Track meals, quantities and reactions securely with Supabase-backed storage.",
+    subtitle: "Track meals and reactions securely with Supabase-backed storage.",
     label: "Food tracking",
     focusTitle: "Food module",
-    focusText: "Log meals and reactions to reveal patterns and support calmer feeding decisions.",
+    focusText:
+      "Log meals, quantities and reactions to reveal stronger feeding patterns and smarter AI guidance.",
 
     pageLabel: "Food",
     pageTitle: "Food log",
     pageText:
-      "Save each meal to build stronger feeding insights and smarter dashboard guidance.",
+      "Save each meal to build clearer nutrition insights and better dashboard recommendations.",
 
-    time: "Meal time",
-    type: "Meal type",
-    amount: "Amount",
-    reaction: "Reaction",
+    mealTime: "Meal time",
+    mealType: "Meal type",
     food: "Food",
-    notes: "Notes",
-    foodPlaceholder: "e.g. banana puree",
-    amountPlaceholder: "e.g. 120 ml / half bowl / small portion",
-    notesPlaceholder:
-      "Add useful context, for example: Food: banana puree | Reaction: Good | Notes: finished calmly",
+    quantity: "Quantity",
+    reaction: "Reaction",
     addEntry: "Add food entry",
     adding: "Saving...",
     loading: "Loading food data...",
@@ -48,71 +44,73 @@ const copy = {
     secureStorage: "Your food logs are stored securely in Supabase.",
     aiMedicalNote: "AI suggestions are not medical advice.",
 
-    bottle: "Bottle",
-    puree: "Puree",
-    solids: "Solids",
+    breakfast: "Breakfast",
+    lunch: "Lunch",
+    dinner: "Dinner",
     snack: "Snack",
-    breastmilk: "Breastmilk",
+    bottle: "Bottle",
 
     good: "Good",
     unsure: "Unsure",
     sensitive: "Sensitive",
 
-    lastEntries: "Recent food entries",
+    recentEntries: "Recent food entries",
     typeLabel: "Type",
-    amountLabel: "Amount",
-    savedAt: "Saved",
-    mealSummary: "Meal summary",
+    quantityLabel: "Quantity",
+    reactionLabel: "Reaction",
+
+    placeholders: {
+      food: "e.g. Banana puree",
+      quantity: "e.g. 120 ml / half bowl / 80 g",
+    },
   },
   fr: {
-    subtitle:
-      "Suivez les repas, quantités et réactions avec un stockage sécurisé sur Supabase.",
+    subtitle: "Suivez les repas et reactions avec un stockage securise sur Supabase.",
     label: "Suivi alimentation",
     focusTitle: "Module alimentation",
     focusText:
-      "Enregistrez les repas et réactions pour révéler des schémas et soutenir des décisions plus calmes autour de l’alimentation.",
+      "Enregistrez les repas, quantites et reactions pour reveler de meilleurs schémas alimentaires et une guidance IA plus intelligente.",
 
     pageLabel: "Alimentation",
     pageTitle: "Journal alimentaire",
     pageText:
-      "Enregistrez chaque repas pour créer de meilleurs insights alimentaires et une guidance dashboard plus intelligente.",
+      "Enregistrez chaque repas pour construire des insights nutritionnels plus clairs et de meilleures recommandations dashboard.",
 
-    time: "Heure du repas",
-    type: "Type de repas",
-    amount: "Quantité",
-    reaction: "Réaction",
+    mealTime: "Heure du repas",
+    mealType: "Type de repas",
     food: "Aliment",
-    notes: "Notes",
-    foodPlaceholder: "ex. purée de banane",
-    amountPlaceholder: "ex. 120 ml / demi-bol / petite portion",
-    notesPlaceholder:
-      "Ajoutez un contexte utile, par exemple : Food: purée de banane | Reaction: Bonne | Notes: terminé calmement",
-    addEntry: "Ajouter une entrée alimentation",
+    quantity: "Quantite",
+    reaction: "Reaction",
+    addEntry: "Ajouter une entree alimentation",
     adding: "Enregistrement...",
-    loading: "Chargement des données alimentation...",
-    noEntries: "Aucune entrée alimentation pour le moment.",
+    loading: "Chargement des donnees alimentation...",
+    noEntries: "Aucune entree alimentation pour le moment.",
     deleteEntry: "Supprimer",
-    deletingError: "Impossible de supprimer l’entrée alimentation.",
-    saveError: "Impossible d’enregistrer l’entrée alimentation.",
-    loadError: "Impossible de charger les données alimentation.",
-    secureStorage: "Vos logs alimentation sont stockés en toute sécurité dans Supabase.",
-    aiMedicalNote: "Les suggestions IA ne constituent pas un avis médical.",
+    deletingError: "Impossible de supprimer l’entree alimentation.",
+    saveError: "Impossible d’enregistrer l’entree alimentation.",
+    loadError: "Impossible de charger les donnees alimentation.",
+    secureStorage: "Vos logs alimentation sont stockes en toute securite dans Supabase.",
+    aiMedicalNote: "Les suggestions IA ne constituent pas un avis medical.",
 
-    bottle: "Biberon",
-    puree: "Purée",
-    solids: "Solides",
+    breakfast: "Petit-dejeuner",
+    lunch: "Dejeuner",
+    dinner: "Diner",
     snack: "Collation",
-    breastmilk: "Lait maternel",
+    bottle: "Biberon",
 
     good: "Bonne",
     unsure: "Incertaine",
     sensitive: "Sensible",
 
-    lastEntries: "Entrées alimentation récentes",
+    recentEntries: "Entrees alimentation recentes",
     typeLabel: "Type",
-    amountLabel: "Quantité",
-    savedAt: "Enregistré",
-    mealSummary: "Résumé du repas",
+    quantityLabel: "Quantite",
+    reactionLabel: "Reaction",
+
+    placeholders: {
+      food: "ex. Puree de banane",
+      quantity: "ex. 120 ml / demi-bol / 80 g",
+    },
   },
 } as const;
 
@@ -123,42 +121,6 @@ function getTodayLabel(locale: Locale) {
     day: "numeric",
     month: "long",
   });
-}
-
-function formatSavedDate(value: string, locale: Locale) {
-  const format = locale === "fr" ? "fr-BE" : "en-GB";
-
-  try {
-    return new Date(value).toLocaleString(format, {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  } catch {
-    return value;
-  }
-}
-
-function buildFoodNote(food: string, reaction: string, notes: string) {
-  const parts = [`Food: ${food}`, `Reaction: ${reaction}`];
-  if (notes.trim()) {
-    parts.push(`Notes: ${notes.trim()}`);
-  }
-  return parts.join(" | ");
-}
-
-function parseFoodNote(note: string) {
-  const foodMatch = note.match(/Food:\s*([^|]+)/i);
-  const reactionMatch = note.match(/Reaction:\s*([^|]+)/i);
-  const notesMatch = note.match(/Notes:\s*(.+)$/i);
-
-  return {
-    food: foodMatch ? foodMatch[1].trim() : "",
-    reaction: reactionMatch ? reactionMatch[1].trim() : "",
-    notes: notesMatch ? notesMatch[1].trim() : "",
-  };
 }
 
 function getSupabase() {
@@ -179,20 +141,22 @@ export default function FoodPage() {
   const [statusType, setStatusType] = useState<"success" | "error" | "">("");
 
   const [form, setForm] = useState({
-    time: "",
-    type: locale === "fr" ? "Biberon" : "Bottle",
-    amount: "",
+    mealTime: "",
+    mealType: locale === "fr" ? "Petit-dejeuner" : "Breakfast",
     food: "",
+    quantity: "",
     reaction: locale === "fr" ? "Bonne" : "Good",
-    notes: "",
   });
 
   useEffect(() => {
-    setForm((prev) => ({
-      ...prev,
-      type: locale === "fr" ? "Biberon" : "Bottle",
+    setTodayLabel(getTodayLabel(locale));
+    setForm({
+      mealTime: "",
+      mealType: locale === "fr" ? "Petit-dejeuner" : "Breakfast",
+      food: "",
+      quantity: "",
       reaction: locale === "fr" ? "Bonne" : "Good",
-    }));
+    });
   }, [locale]);
 
   useEffect(() => {
@@ -202,13 +166,11 @@ export default function FoodPage() {
       const supabase = getSupabase();
 
       setIsLoading(true);
-      setTodayLabel(getTodayLabel(locale));
       setStatusMessage("");
       setStatusType("");
 
       try {
         await importLocalStorageToSupabase(supabase);
-
         const rows = await getFoodEntries(supabase);
 
         if (!isMounted) return;
@@ -241,7 +203,13 @@ export default function FoodPage() {
   }
 
   async function handleAddFoodEntry() {
-    if (!form.time || !form.type || !form.amount || !form.food || !form.reaction) {
+    if (
+      !form.mealTime.trim() ||
+      !form.mealType.trim() ||
+      !form.food.trim() ||
+      !form.quantity.trim() ||
+      !form.reaction.trim()
+    ) {
       setStatusMessage(t.saveError);
       setStatusType("error");
       return;
@@ -254,22 +222,27 @@ export default function FoodPage() {
     try {
       const supabase = getSupabase();
 
-      const saved = await addFoodEntry(supabase, {
-        time: form.time.trim(),
-        type: form.type.trim(),
-        amount: form.amount.trim(),
-        note: buildFoodNote(form.food.trim(), form.reaction.trim(), form.notes.trim()),
-        createdAt: new Date().toISOString(),
+      const result = await addFoodEntry(supabase, {
+        mealTime: form.mealTime.trim(),
+        mealType: form.mealType.trim(),
+        food: form.food.trim(),
+        quantity: form.quantity.trim(),
+        reaction: form.reaction.trim(),
       });
 
-      setFoodEntries((prev) => [saved, ...prev]);
+      if (!result.success || !result.entry) {
+        setStatusMessage(result.error || t.saveError);
+        setStatusType("error");
+        return;
+      }
+
+      setFoodEntries((prev) => [result.entry!, ...prev]);
       setForm({
-        time: "",
-        type: locale === "fr" ? "Biberon" : "Bottle",
-        amount: "",
+        mealTime: "",
+        mealType: locale === "fr" ? "Petit-dejeuner" : "Breakfast",
         food: "",
+        quantity: "",
         reaction: locale === "fr" ? "Bonne" : "Good",
-        notes: "",
       });
     } catch (error) {
       console.error("Failed to save food entry:", error);
@@ -283,8 +256,14 @@ export default function FoodPage() {
   async function handleDeleteFoodEntry(id: number) {
     try {
       const supabase = getSupabase();
+      const result = await deleteFoodEntry(supabase, id);
 
-      await deleteFoodEntry(supabase, id);
+      if (!result.success) {
+        setStatusMessage(result.error || t.deletingError);
+        setStatusType("error");
+        return;
+      }
+
       setFoodEntries((prev) => prev.filter((item) => item.id !== id));
     } catch (error) {
       console.error("Failed to delete food entry:", error);
@@ -302,7 +281,7 @@ export default function FoodPage() {
         label={t.label}
         currentFocusTitle={t.focusTitle}
         currentFocusText={t.focusText}
-        dateLabel="..."
+        dateLabel={todayLabel || "..."}
       >
         <section className="neoDash__panel">
           <div className="neoDash__card">
@@ -343,36 +322,26 @@ export default function FoodPage() {
             }}
           >
             <label>
-              <span>{t.time}</span>
+              <span>{t.mealTime}</span>
               <input
                 type="time"
-                value={form.time}
-                onChange={(e) => updateField("time", e.target.value)}
+                value={form.mealTime}
+                onChange={(e) => updateField("mealTime", e.target.value)}
               />
             </label>
 
             <label>
-              <span>{t.type}</span>
+              <span>{t.mealType}</span>
               <select
-                value={form.type}
-                onChange={(e) => updateField("type", e.target.value)}
+                value={form.mealType}
+                onChange={(e) => updateField("mealType", e.target.value)}
               >
-                <option value={t.bottle}>{t.bottle}</option>
-                <option value={t.puree}>{t.puree}</option>
-                <option value={t.solids}>{t.solids}</option>
+                <option value={t.breakfast}>{t.breakfast}</option>
+                <option value={t.lunch}>{t.lunch}</option>
+                <option value={t.dinner}>{t.dinner}</option>
                 <option value={t.snack}>{t.snack}</option>
-                <option value={t.breastmilk}>{t.breastmilk}</option>
+                <option value={t.bottle}>{t.bottle}</option>
               </select>
-            </label>
-
-            <label>
-              <span>{t.amount}</span>
-              <input
-                type="text"
-                value={form.amount}
-                onChange={(e) => updateField("amount", e.target.value)}
-                placeholder={t.amountPlaceholder}
-              />
             </label>
 
             <label>
@@ -381,7 +350,17 @@ export default function FoodPage() {
                 type="text"
                 value={form.food}
                 onChange={(e) => updateField("food", e.target.value)}
-                placeholder={t.foodPlaceholder}
+                placeholder={t.placeholders.food}
+              />
+            </label>
+
+            <label>
+              <span>{t.quantity}</span>
+              <input
+                type="text"
+                value={form.quantity}
+                onChange={(e) => updateField("quantity", e.target.value)}
+                placeholder={t.placeholders.quantity}
               />
             </label>
 
@@ -395,16 +374,6 @@ export default function FoodPage() {
                 <option value={t.unsure}>{t.unsure}</option>
                 <option value={t.sensitive}>{t.sensitive}</option>
               </select>
-            </label>
-
-            <label style={{ gridColumn: "1 / -1" }}>
-              <span>{t.notes}</span>
-              <textarea
-                rows={5}
-                value={form.notes}
-                onChange={(e) => updateField("notes", e.target.value)}
-                placeholder={t.notesPlaceholder}
-              />
             </label>
           </div>
 
@@ -459,7 +428,7 @@ export default function FoodPage() {
         <div className="neoDash__panelHeader">
           <div>
             <p className="neoDash__label">{t.pageLabel}</p>
-            <h3>{t.lastEntries}</h3>
+            <h3>{t.recentEntries}</h3>
           </div>
         </div>
 
@@ -475,42 +444,35 @@ export default function FoodPage() {
               gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
             }}
           >
-            {foodEntries.map((entry) => {
-              const parsed = parseFoodNote(entry.note);
+            {foodEntries.map((entry) => (
+              <article key={entry.id} className="neoDash__card">
+                <p className="neoDash__label">{t.pageLabel}</p>
+                <h3>{entry.food}</h3>
 
-              return (
-                <article key={entry.id} className="neoDash__card">
-                  <p className="neoDash__label">{t.pageLabel}</p>
-                  <h3>{parsed.food || t.mealSummary}</h3>
+                <p>
+                  <strong>{t.mealTime}:</strong> {entry.mealTime}
+                </p>
+                <p>
+                  <strong>{t.typeLabel}:</strong> {entry.mealType}
+                </p>
+                <p>
+                  <strong>{t.quantityLabel}:</strong> {entry.quantity}
+                </p>
+                <p>
+                  <strong>{t.reactionLabel}:</strong> {entry.reaction}
+                </p>
 
-                  <p>
-                    <strong>{t.typeLabel}:</strong> {entry.type}
-                  </p>
-                  <p>
-                    <strong>{t.amountLabel}:</strong> {entry.amount}
-                  </p>
-                  <p>
-                    <strong>{t.reaction}:</strong> {parsed.reaction || "-"}
-                  </p>
-
-                  {parsed.notes ? <p style={{ marginTop: "10px" }}>{parsed.notes}</p> : null}
-
-                  <p style={{ marginTop: "12px", fontSize: "12px", opacity: 0.65 }}>
-                    {t.savedAt}: {formatSavedDate(entry.createdAt, locale)}
-                  </p>
-
-                  <div style={{ marginTop: "14px" }}>
-                    <button
-                      type="button"
-                      className="neoDash__secondaryBtn"
-                      onClick={() => handleDeleteFoodEntry(entry.id)}
-                    >
-                      {t.deleteEntry}
-                    </button>
-                  </div>
-                </article>
-              );
-            })}
+                <div style={{ marginTop: "14px" }}>
+                  <button
+                    type="button"
+                    className="neoDash__secondaryBtn"
+                    onClick={() => handleDeleteFoodEntry(entry.id)}
+                  >
+                    {t.deleteEntry}
+                  </button>
+                </div>
+              </article>
+            ))}
           </div>
         )}
       </section>
