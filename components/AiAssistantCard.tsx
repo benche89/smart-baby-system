@@ -33,6 +33,46 @@ export default function AiAssistantCard() {
   const context = useMemo(() => getBabyContext(), []);
   const aiContext = useMemo(() => buildBabyAiContext(context), [context]);
 
+  const suggestionChips = useMemo(() => {
+    const babyName = context.profile?.babyName?.trim() || "my baby";
+    const ageMonths = Number(context.profile?.ageMonths || 0);
+    const sleepHours = context.summary.totalSleepHours24h;
+    const sleepCount = context.summary.sleepCount24h;
+    const foodCount = context.summary.foodCount24h;
+    const careCount = context.summary.careCount24h;
+
+    const suggestions = [
+      `Why was ${babyName} more fussy before bedtime today?`,
+      `Does ${babyName}'s sleep look fragmented based on today's logs?`,
+      `Could today's feeding rhythm explain changes in mood or settling?`,
+      `What is the strongest pattern you see in ${babyName}'s routine today?`,
+      `Is bedtime becoming less stable for ${babyName}?`,
+      `What can I improve today to help ${babyName} sleep better tonight?`,
+    ];
+
+    if (ageMonths > 0 && ageMonths <= 6) {
+      suggestions[2] = `Could cluster feeding or frequent wake-ups explain ${babyName}'s behavior today?`;
+    }
+
+    if (sleepHours > 0 && sleepHours < 11) {
+      suggestions[5] = `Does ${babyName} look overtired today, and what should I do tonight?`;
+    }
+
+    if (sleepCount > 5) {
+      suggestions[1] = `Do today's logs suggest fragmented sleep for ${babyName}?`;
+    }
+
+    if (foodCount <= 1) {
+      suggestions[2] = `Is there too little feeding data today to explain ${babyName}'s mood clearly?`;
+    }
+
+    if (careCount > 6) {
+      suggestions[3] = `Does today's busy care routine suggest discomfort or an unsettled day for ${babyName}?`;
+    }
+
+    return suggestions;
+  }, [context]);
+
   useEffect(() => {
     try {
       const raw = localStorage.getItem(HISTORY_KEY);
@@ -168,6 +208,7 @@ export default function AiAssistantCard() {
 
   function handleReuseQuestion(oldQuestion: string) {
     setQuestion(oldQuestion);
+    setError("");
   }
 
   function handleOpenHistoryItem(item: AiHistoryItem) {
@@ -183,6 +224,11 @@ export default function AiAssistantCard() {
 
   function handleClearHistory() {
     setHistory([]);
+  }
+
+  function handleSuggestionClick(value: string) {
+    setQuestion(value);
+    setError("");
   }
 
   return (
@@ -245,6 +291,32 @@ export default function AiAssistantCard() {
               placeholder="Example: Why was my baby more fussy before bedtime today?"
               className="min-h-[120px] w-full resize-none rounded-2xl border border-slate-200 p-4 text-sm text-slate-700 outline-none transition focus:border-sky-400"
             />
+          </div>
+
+          <div className="rounded-[24px] border border-slate-200 bg-gradient-to-br from-slate-50 to-white p-4">
+            <div className="mb-3 flex items-center justify-between gap-3">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+                  Smart suggestions
+                </p>
+                <p className="mt-1 text-sm text-slate-600">
+                  Tap a question to generate a premium insight faster.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              {suggestionChips.map((chip) => (
+                <button
+                  key={chip}
+                  type="button"
+                  onClick={() => handleSuggestionClick(chip)}
+                  className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-sky-300 hover:bg-sky-50 hover:text-sky-700"
+                >
+                  {chip}
+                </button>
+              ))}
+            </div>
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
