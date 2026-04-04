@@ -1,157 +1,80 @@
-import { currentUser, getUserById } from "@/lib/mock-auth";
 import { getMarketplaceListingById } from "@/lib/marketplace-storage";
+import { getUserById } from "@/lib/mock-auth";
 
-export type MarketplaceConversation = {
+export type MessageItem = {
+  id: string;
+  senderId: string;
+  text: string;
+  createdAt: string;
+};
+
+export type ConversationItem = {
   id: string;
   listingId: string;
   buyerId: string;
   sellerId: string;
   createdAt: string;
   updatedAt: string;
+  messages: MessageItem[];
 };
 
-export type MarketplaceMessage = {
-  id: string;
-  conversationId: string;
-  senderId: string;
-  text: string;
-  createdAt: string;
+export type InboxItem = {
+  conversation: ConversationItem;
+  listing: any;
+  lastMessage: MessageItem | null;
+  otherUser: any;
 };
 
-const CONVERSATIONS_KEY = "smart-baby-marketplace-conversations";
-const MESSAGES_KEY = "smart-baby-marketplace-messages";
+const STORAGE_KEY = "smart-baby-marketplace-conversations";
 
-function canUseStorage() {
-  return typeof window !== "undefined";
-}
-
-export function getStoredConversations(): MarketplaceConversation[] {
-  if (!canUseStorage()) return [];
+function readConversations(): ConversationItem[] {
+  if (typeof window === "undefined") return [];
 
   try {
-    const raw = window.localStorage.getItem(CONVERSATIONS_KEY);
+    const raw = window.localStorage.getItem(STORAGE_KEY);
     if (!raw) return [];
-    const parsed = JSON.parse(raw) as MarketplaceConversation[];
-    return Array.isArray(parsed) ? parsed : [];
+    return JSON.parse(raw);
   } catch {
     return [];
   }
 }
 
-export function saveStoredConversations(
-  conversations: MarketplaceConversation[]
-) {
-  if (!canUseStorage()) return;
-  window.localStorage.setItem(CONVERSATIONS_KEY, JSON.stringify(conversations));
+function saveConversations(data: ConversationItem[]) {
+  if (typeof window === "undefined") return;
+  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }
 
-export function getStoredMessages(): MarketplaceMessage[] {
-  if (!canUseStorage()) return [];
+export function getUserConversations(userId: string): InboxItem[] {
+  const conversations = readConversations();
 
-  try {
-    const raw = window.localStorage.getItem(MESSAGES_KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw) as MarketplaceMessage[];
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [];
-  }
-}
+  return conversations
+    .filter(
+      (c) => c.buyerId === userId || c.sellerId === userId
+    )
+    .map((conversation) => {
+      const listing = getMarketplaceListingById(conversation.listingId);
+      const lastMessage =
+        conversation.messages[conversation.messages.length - 1] ?? null;
 
-export function saveStoredMessages(messages: MarketplaceMessage[]) {
-  if (!canUseStorage()) return;
-  window.localStorage.setItem(MESSAGES_KEY, JSON.stringify(messages));
-}
+      const otherUserId =
+        conversation.buyerId === userId
+          ? conversation.sellerId
+          : conversation.buyerId;
 
-export function getConversationById(
-  conversationId: string
-): MarketplaceConversation | null {
-  const conversations = getStoredConversations();
-  return conversations.find((item) => item.id === conversationId) ?? null;
-}
+      const otherUser = getUserById(otherUserId);
 
-export function getMessagesForConversation(
-  conversationId: string
-): MarketplaceMessage[] {
-  return getStoredMessages()
-    .filter((message) => message.conversationId === conversationId)
+      return {
+        conversation,
+        listing,
+        lastMessage,
+        otherUser,
+      };
+    })
     .sort(
       (a, b) =>
-        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+        new Date(b.conversation.updatedAt).getTime() -
+        new Date(a.conversation.updatedAt).getTime()
     );
-}
-
-export function addMessageToConversation(params: {
-  conversationId: string;
-  senderId: string;
-  text: string;
-}) {
-  const { conversationId, senderId, text } = params;
-
-  const cleanText = text.trim();
-  if (!cleanText) return null;
-
-  const messages = getStoredMessages();
-  const conversations = getStoredConversations();
-  const now = new Date().toISOString();
-
-  const newMessage: MarketplaceMessage = {
-    id: crypto.randomUUID(),
-    conversationId,
-    senderId,
-    text: cleanText,
-    createdAt: now,
-  };
-
-  saveStoredMessages([...messages, newMessage]);
-
-  const updatedConversations = conversations.map((conversation) =>
-    conversation.id === conversationId
-      ? {
-          ...conversation,
-          updatedAt: now,
-        }
-      : conversation
-  );
-
-  saveStoredConversations(updatedConversations);
-
-  return newMessage;
-}
-
-export function createOrGetConversationForListing(params: {
-  listingId: string;
-  buyerId: string;
-  sellerId: string;
-}) {
-  const { listingId, buyerId, sellerId } = params;
-  const conversations = getStoredConversations();
-
-  const existing = conversations.find(
-    (conversation) =>
-      conversation.listingId === listingId &&
-      conversation.buyerId === buyerId &&
-      conversation.sellerId === sellerId
-  );
-
-  if (existing) {
-    return existing;
-  }
-
-  const now = new Date().toISOString();
-
-  const newConversation: MarketplaceConversation = {
-    id: crypto.randomUUID(),
-    listingId,
-    buyerId,
-    sellerId,
-    createdAt: now,
-    updatedAt: now,
-  };
-
-  saveStoredConversations([newConversation, ...conversations]);
-
-  return newConversation;
 }
 
 export function createConversationWithFirstMessage(params: {
@@ -160,101 +83,27 @@ export function createConversationWithFirstMessage(params: {
   sellerId: string;
   text: string;
 }) {
-  const { listingId, buyerId, sellerId, text } = params;
+  const conversations = readConversations();
+  const now = new Date().toISOString();
 
-  const conversation = createOrGetConversationForListing({
-    listingId,
-    buyerId,
-    sellerId,
-  });
-
-  addMessageToConversation({
-    conversationId: conversation.id,
-    senderId: buyerId,
-    text,
-  });
-
-  return conversation;
-}
-
-export function getUserConversations(userId: string) {
-  const conversations = getStoredConversations()
-    .filter(
-      (conversation) =>
-        conversation.buyerId === userId || conversation.sellerId === userId
-    )
-    .sort(
-      (a, b) =>
-        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-    );
-
-  const messages = getStoredMessages();
-
-  return conversations.map((conversation) => {
-    const listing = getMarketplaceListingById(conversation.listingId);
-    const lastMessage = messages
-      .filter((message) => message.conversationId === conversation.id)
-      .sort(
-        (a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-      )[0];
-
-    const otherUserId =
-      conversation.buyerId === userId
-        ? conversation.sellerId
-        : conversation.buyerId;
-
-    const otherUser = getUserById(otherUserId);
-
-    return {
-      conversation,
-      listing,
-      lastMessage: lastMessage ?? null,
-      otherUser,
-    };
-  });
-}
-
-export function seedAutoReplyIfNeeded(conversationId: string) {
-  const conversation = getConversationById(conversationId);
-  if (!conversation) return;
-
-  const messages = getMessagesForConversation(conversationId);
-  const hasSellerReply = messages.some(
-    (message) => message.senderId === conversation.sellerId
-  );
-
-  if (hasSellerReply) return;
-
-  const listing = getMarketplaceListingById(conversation.listingId);
-  const seller = getUserById(conversation.sellerId);
-
-  addMessageToConversation({
-    conversationId,
-    senderId: conversation.sellerId,
-    text: `Hi, this is ${seller?.name ?? "the seller"}. ${
-      listing?.isDonation
-        ? "Yes, the donation is still available."
-        : "Yes, the item is still available."
-    }`,
-  });
-}
-
-export function getConversationViewModel(conversationId: string) {
-  const conversation = getConversationById(conversationId);
-  if (!conversation) return null;
-
-  const listing = getMarketplaceListingById(conversation.listingId);
-  const buyer = getUserById(conversation.buyerId);
-  const seller = getUserById(conversation.sellerId);
-  const messages = getMessagesForConversation(conversationId);
-
-  return {
-    conversation,
-    listing,
-    buyer,
-    seller,
-    messages,
-    currentUser,
+  const newConversation: ConversationItem = {
+    id: crypto.randomUUID(),
+    listingId: params.listingId,
+    buyerId: params.buyerId,
+    sellerId: params.sellerId,
+    createdAt: now,
+    updatedAt: now,
+    messages: [
+      {
+        id: crypto.randomUUID(),
+        senderId: params.buyerId,
+        text: params.text,
+        createdAt: now,
+      },
+    ],
   };
+
+  saveConversations([newConversation, ...conversations]);
+
+  return newConversation;
 }

@@ -3,9 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { currentUser } from "@/lib/mock-auth";
-import { getUserConversations } from "@/lib/messages-storage";
-
-type InboxItem = ReturnType<typeof getUserConversations>[number];
+import { getUserConversations, InboxItem } from "@/lib/messages-storage";
 
 function formatDate(dateString?: string) {
   if (!dateString) return "";
@@ -46,6 +44,7 @@ export default function MessagesInboxPage() {
           gap: "20px",
         }}
       >
+        {/* HEADER */}
         <div
           style={{
             display: "flex",
@@ -70,6 +69,7 @@ export default function MessagesInboxPage() {
             >
               Inbox
             </span>
+
             <h1
               style={{
                 fontSize: "40px",
@@ -80,6 +80,7 @@ export default function MessagesInboxPage() {
             >
               Your messages
             </h1>
+
             <p
               style={{
                 color: "#475569",
@@ -87,7 +88,7 @@ export default function MessagesInboxPage() {
                 maxWidth: "720px",
               }}
             >
-              Manage private conversations with buyers and sellers in one place.
+              Manage private conversations with buyers and sellers.
             </p>
           </div>
 
@@ -109,6 +110,7 @@ export default function MessagesInboxPage() {
           </Link>
         </div>
 
+        {/* EMPTY STATE */}
         {items.length === 0 ? (
           <div
             style={{
@@ -127,6 +129,7 @@ export default function MessagesInboxPage() {
             >
               No conversations yet
             </h2>
+
             <p
               style={{
                 color: "#64748b",
@@ -134,8 +137,7 @@ export default function MessagesInboxPage() {
                 marginBottom: "18px",
               }}
             >
-              When you message a seller or receive interest in your listing, your
-              conversations will appear here.
+              When you contact a seller, your conversations will appear here.
             </p>
 
             <Link
@@ -162,132 +164,97 @@ export default function MessagesInboxPage() {
               gap: "14px",
             }}
           >
-            {items.map(({ conversation, listing, lastMessage, otherUser }) => (
-              <Link
-                key={conversation.id}
-                href={`/messages/${conversation.id}`}
-                style={{
-                  display: "block",
-                  padding: "18px",
-                  borderRadius: "24px",
-                  background: "#ffffff",
-                  border: "1px solid rgba(148, 163, 184, 0.14)",
-                  boxShadow: "0 12px 30px rgba(15, 23, 42, 0.05)",
-                  transition: "transform 0.18s ease, box-shadow 0.18s ease",
-                }}
-              >
-                <div
+            {items.map((item) => {
+              const { conversation, listing, lastMessage, otherUser } = item;
+
+              return (
+                <Link
+                  key={conversation.id}
+                  href={`/message/${conversation.id}`}
                   style={{
-                    display: "grid",
-                    gridTemplateColumns: "90px 1fr auto",
-                    gap: "16px",
-                    alignItems: "center",
+                    display: "block",
+                    padding: "18px",
+                    borderRadius: "24px",
+                    background: "#ffffff",
+                    border: "1px solid rgba(148, 163, 184, 0.14)",
+                    boxShadow: "0 12px 30px rgba(15, 23, 42, 0.05)",
                   }}
                 >
-                  <img
-                    src={
-                      listing?.image ||
-                      "https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?q=80&w=1200&auto=format&fit=crop"
-                    }
-                    alt={listing?.title || "Listing"}
-                    style={{
-                      width: "90px",
-                      height: "90px",
-                      objectFit: "cover",
-                      borderRadius: "18px",
-                    }}
-                  />
-
-                  <div>
-                    <div
-                      style={{
-                        display: "flex",
-                        flexWrap: "wrap",
-                        gap: "8px",
-                        alignItems: "center",
-                        marginBottom: "8px",
-                      }}
-                    >
-                      <span
-                        style={{
-                          padding: "6px 10px",
-                          borderRadius: "999px",
-                          background: "#eff6ff",
-                          color: "#1d4ed8",
-                          fontSize: "11px",
-                          fontWeight: 800,
-                        }}
-                      >
-                        {otherUser?.name ?? "Conversation"}
-                      </span>
-
-                      {listing?.isDonation ? (
-                        <span
-                          style={{
-                            padding: "6px 10px",
-                            borderRadius: "999px",
-                            background: "#dcfce7",
-                            color: "#166534",
-                            fontSize: "11px",
-                            fontWeight: 800,
-                          }}
-                        >
-                          Donation
-                        </span>
-                      ) : null}
-                    </div>
-
-                    <h3
-                      style={{
-                        fontSize: "18px",
-                        lineHeight: 1.25,
-                        marginBottom: "6px",
-                      }}
-                    >
-                      {listing?.title ?? "Listing conversation"}
-                    </h3>
-
-                    <p
-                      style={{
-                        color: "#475569",
-                        lineHeight: 1.6,
-                        marginBottom: "6px",
-                      }}
-                    >
-                      {lastMessage?.text ?? "No messages yet"}
-                    </p>
-
-                    <p
-                      style={{
-                        color: "#64748b",
-                        fontSize: "13px",
-                      }}
-                    >
-                      {listing?.location ?? "Marketplace"} · Updated{" "}
-                      {formatDate(conversation.updatedAt)}
-                    </p>
-                  </div>
-
                   <div
                     style={{
-                      minHeight: "38px",
-                      padding: "0 12px",
-                      borderRadius: "12px",
-                      background: "#0f172a",
-                      color: "#ffffff",
-                      display: "inline-flex",
+                      display: "grid",
+                      gridTemplateColumns: "90px 1fr auto",
+                      gap: "16px",
                       alignItems: "center",
-                      justifyContent: "center",
-                      fontSize: "12px",
-                      fontWeight: 800,
-                      whiteSpace: "nowrap",
                     }}
                   >
-                    Open chat
+                    <img
+                      src={
+                        listing?.image ||
+                        "https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?q=80&w=1200&auto=format&fit=crop"
+                      }
+                      alt={listing?.title || "Listing"}
+                      style={{
+                        width: "90px",
+                        height: "90px",
+                        objectFit: "cover",
+                        borderRadius: "18px",
+                      }}
+                    />
+
+                    <div>
+                      <span
+                        style={{
+                          fontSize: "12px",
+                          fontWeight: 800,
+                          color: "#2563eb",
+                        }}
+                      >
+                        {otherUser?.name ?? "User"}
+                      </span>
+
+                      <h3
+                        style={{
+                          fontSize: "18px",
+                          margin: "6px 0",
+                        }}
+                      >
+                        {listing?.title ?? "Listing"}
+                      </h3>
+
+                      <p
+                        style={{
+                          color: "#475569",
+                        }}
+                      >
+                        {lastMessage?.text ?? "No messages"}
+                      </p>
+
+                      <small
+                        style={{
+                          color: "#64748b",
+                        }}
+                      >
+                        Updated {formatDate(conversation.updatedAt)}
+                      </small>
+                    </div>
+
+                    <div
+                      style={{
+                        background: "#0f172a",
+                        color: "#fff",
+                        padding: "8px 12px",
+                        borderRadius: "12px",
+                        fontSize: "12px",
+                        fontWeight: 800,
+                      }}
+                    >
+                      Open
+                    </div>
                   </div>
-                </div>
-              </Link>
-            ))}
+                </Link>
+              );
+            })}
           </div>
         )}
       </div>

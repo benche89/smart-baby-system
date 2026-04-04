@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import MarketplaceCard from "@/components/MarketplaceCard";
 import {
   marketplaceListings,
@@ -12,16 +13,73 @@ import { getStoredMarketplaceListings } from "@/lib/marketplace-storage";
 
 type CategoryFilter = "all" | ListingCategory;
 type SortOption = "latest" | "price-low" | "price-high";
+type Locale = "en" | "fr";
 
-const categoryTabs: { label: string; value: CategoryFilter }[] = [
-  { label: "All", value: "all" },
-  { label: "Clothes", value: "clothes" },
-  { label: "Toys", value: "toys" },
-  { label: "Gear", value: "gear" },
-  { label: "Donations", value: "donation" },
-];
+const copy = {
+  en: {
+    eyebrow: "Smart Baby Marketplace",
+    title: "Buy, sell or donate baby items with ease",
+    description:
+      "A simple community space for parents to exchange clothes, toys and useful baby products.",
+    addListing: "Add listing",
+    myListings: "My listings",
+    messages: "Messages",
+    browseDonations: "Browse donations",
+    searchLabel: "Search listings",
+    searchPlaceholder: "Search clothes, toys, city, age range...",
+    sortLabel: "Sort by",
+    latest: "Latest",
+    priceLow: "Price: low to high",
+    priceHigh: "Price: high to low",
+    donationsOnly: "Donations only",
+    showingDonationsOnly: "Showing donations only",
+    all: "All",
+    clothes: "Clothes",
+    toys: "Toys",
+    gear: "Gear",
+    donations: "Donations",
+    latestListings: "Latest listings",
+    itemsFound: "items found",
+    resetFilters: "Reset filters",
+    noListings: "No listings found",
+    noListingsText: "Try changing the filters or search for something else.",
+  },
+  fr: {
+    eyebrow: "Marketplace Smart Baby",
+    title: "Achetez, vendez ou donnez des articles bébé facilement",
+    description:
+      "Un espace simple pour permettre aux parents d’échanger des vêtements, jouets et produits utiles pour bébé.",
+    addListing: "Ajouter une annonce",
+    myListings: "Mes annonces",
+    messages: "Messages",
+    browseDonations: "Voir les dons",
+    searchLabel: "Rechercher des annonces",
+    searchPlaceholder: "Rechercher vêtements, jouets, ville, tranche d’âge...",
+    sortLabel: "Trier par",
+    latest: "Les plus récentes",
+    priceLow: "Prix : croissant",
+    priceHigh: "Prix : décroissant",
+    donationsOnly: "Dons uniquement",
+    showingDonationsOnly: "Affichage des dons uniquement",
+    all: "Tous",
+    clothes: "Vêtements",
+    toys: "Jouets",
+    gear: "Équipement",
+    donations: "Dons",
+    latestListings: "Dernières annonces",
+    itemsFound: "articles trouvés",
+    resetFilters: "Réinitialiser les filtres",
+    noListings: "Aucune annonce trouvée",
+    noListingsText:
+      "Essayez de modifier les filtres ou de rechercher autre chose.",
+  },
+} satisfies Record<Locale, Record<string, string>>;
 
 export default function MarketplacePage() {
+  const pathname = usePathname();
+  const locale: Locale = pathname?.startsWith("/fr") ? "fr" : "en";
+  const t = copy[locale];
+
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] =
     useState<CategoryFilter>("all");
@@ -33,6 +91,16 @@ export default function MarketplacePage() {
     const stored = getStoredMarketplaceListings();
     setListings(stored);
   }, []);
+
+  const basePrefix = locale === "fr" ? "/fr" : "";
+
+  const categoryTabs: { label: string; value: CategoryFilter }[] = [
+    { label: t.all, value: "all" },
+    { label: t.clothes, value: "clothes" },
+    { label: t.toys, value: "toys" },
+    { label: t.gear, value: "gear" },
+    { label: t.donations, value: "donation" },
+  ];
 
   const filteredListings = useMemo(() => {
     let results = [...listings];
@@ -90,36 +158,31 @@ export default function MarketplacePage() {
     <main className="marketplacePage">
       <section className="marketplaceHero">
         <div className="marketplaceHero__text">
-          <span className="marketplaceHero__eyebrow">
-            Smart Baby Marketplace
-          </span>
-          <h1>Buy, sell or donate baby items with ease</h1>
-          <p>
-            A simple community space for parents to exchange clothes, toys and
-            useful baby products.
-          </p>
+          <span className="marketplaceHero__eyebrow">{t.eyebrow}</span>
+          <h1>{t.title}</h1>
+          <p>{t.description}</p>
         </div>
 
         <div className="marketplaceHero__actions">
           <Link
-            href="/marketplace/create"
+            href={`${basePrefix}/marketplace/create`}
             className="marketplaceBtn marketplaceBtn--primary"
           >
-            Add listing
+            {t.addListing}
           </Link>
 
           <Link
-            href="/marketplace/my-listings"
+            href={`${basePrefix}/marketplace/my-listings`}
             className="marketplaceBtn marketplaceBtn--secondary"
           >
-            My listings
+            {t.myListings}
           </Link>
 
           <Link
-            href="/messages"
+            href={`${basePrefix}/marketplace/messages`}
             className="marketplaceBtn marketplaceBtn--secondary"
           >
-            Messages
+            {t.messages}
           </Link>
 
           <button
@@ -130,7 +193,7 @@ export default function MarketplacePage() {
               setDonationsOnly(true);
             }}
           >
-            Browse donations
+            {t.browseDonations}
           </button>
         </div>
       </section>
@@ -138,12 +201,12 @@ export default function MarketplacePage() {
       <section className="marketplaceFilters">
         <div className="marketplaceSearch">
           <label htmlFor="marketplace-search" className="marketplaceLabel">
-            Search listings
+            {t.searchLabel}
           </label>
           <input
             id="marketplace-search"
             type="text"
-            placeholder="Search clothes, toys, city, age range..."
+            placeholder={t.searchPlaceholder}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="marketplaceInput"
@@ -153,7 +216,7 @@ export default function MarketplacePage() {
         <div className="marketplaceControls">
           <div className="marketplaceControl">
             <label htmlFor="marketplace-sort" className="marketplaceLabel">
-              Sort by
+              {t.sortLabel}
             </label>
             <select
               id="marketplace-sort"
@@ -161,9 +224,9 @@ export default function MarketplacePage() {
               onChange={(e) => setSortBy(e.target.value as SortOption)}
               className="marketplaceSelect"
             >
-              <option value="latest">Latest</option>
-              <option value="price-low">Price: low to high</option>
-              <option value="price-high">Price: high to low</option>
+              <option value="latest">{t.latest}</option>
+              <option value="price-low">{t.priceLow}</option>
+              <option value="price-high">{t.priceHigh}</option>
             </select>
           </div>
 
@@ -172,7 +235,7 @@ export default function MarketplacePage() {
             className={`marketplaceToggle ${donationsOnly ? "is-active" : ""}`}
             onClick={() => setDonationsOnly((prev) => !prev)}
           >
-            {donationsOnly ? "Showing donations only" : "Donations only"}
+            {donationsOnly ? t.showingDonationsOnly : t.donationsOnly}
           </button>
         </div>
 
@@ -197,8 +260,10 @@ export default function MarketplacePage() {
       <section className="marketplaceSection">
         <div className="marketplaceSection__header">
           <div>
-            <h2>Latest listings</h2>
-            <p>{filteredListings.length} items found</p>
+            <h2>{t.latestListings}</h2>
+            <p>
+              {filteredListings.length} {t.itemsFound}
+            </p>
           </div>
 
           {(search || selectedCategory !== "all" || donationsOnly) && (
@@ -212,7 +277,7 @@ export default function MarketplacePage() {
                 setSortBy("latest");
               }}
             >
-              Reset filters
+              {t.resetFilters}
             </button>
           )}
         </div>
@@ -225,8 +290,8 @@ export default function MarketplacePage() {
           </div>
         ) : (
           <div className="marketplaceEmpty">
-            <h3>No listings found</h3>
-            <p>Try changing the filters or search for something else.</p>
+            <h3>{t.noListings}</h3>
+            <p>{t.noListingsText}</p>
           </div>
         )}
       </section>
