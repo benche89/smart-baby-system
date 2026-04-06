@@ -1,134 +1,86 @@
 "use client";
 
 import { FormEvent, useMemo, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
-import { defaultLocale, isValidLocale } from "../../lib/i18n";
-import { createClient as createSupabaseClient } from "../../lib/supabase/client";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
 
-type Locale = "en" | "fr";
-type AuthMode = "login" | "signup";
-
-const copy = {
-  en: {
-    badge: "Smart Baby System",
-    title: "Welcome back",
-    subtitle: "Log in or create your account to sync your baby data securely.",
-    loginTab: "Log in",
-    signupTab: "Create account",
-    email: "Email",
-    password: "Password",
-    confirmPassword: "Confirm password",
-    loginButton: "Log in",
-    signupButton: "Create account",
-    loadingLogin: "Logging in...",
-    loadingSignup: "Creating account...",
-    passwordMismatch: "Passwords do not match.",
-    loginSuccess: "Login successful. Redirecting...",
-    signupSuccess: "Account created. Check your email to confirm your address.",
-    genericError: "Something went wrong. Please try again.",
-    missingSupabase:
-      "Supabase is not configured yet. Authentication is unavailable right now.",
-    backHome: "Back to home",
-  },
-  fr: {
-    badge: "Smart Baby System",
-    title: "Bon retour",
-    subtitle:
-      "Connectez-vous ou creez votre compte pour synchroniser les donnees de votre bebe en toute securite.",
-    loginTab: "Connexion",
-    signupTab: "Creer un compte",
-    email: "Email",
-    password: "Mot de passe",
-    confirmPassword: "Confirmer le mot de passe",
-    loginButton: "Se connecter",
-    signupButton: "Creer un compte",
-    loadingLogin: "Connexion...",
-    loadingSignup: "Creation du compte...",
-    passwordMismatch: "Les mots de passe ne correspondent pas.",
-    loginSuccess: "Connexion reussie. Redirection...",
-    signupSuccess: "Compte cree. Verifiez votre email pour confirmer votre adresse.",
-    genericError: "Une erreur est survenue. Veuillez reessayer.",
-    missingSupabase:
-      "Supabase n'est pas encore configure. L'authentification est indisponible pour le moment.",
-    backHome: "Retour a l'accueil",
-  },
-} as const;
+type Mode = "login" | "signup";
 
 export default function LoginPage() {
-  const params = useParams();
   const router = useRouter();
+  const supabase = useMemo(() => createClient(), []);
 
-  const rawLocale = typeof params?.locale === "string" ? params.locale : defaultLocale;
-  const locale: Locale = isValidLocale(rawLocale) ? (rawLocale as Locale) : "en";
-  const t = copy[locale];
-
-  const supabase = useMemo(() => createSupabaseClient(), []);
-  const [mode, setMode] = useState<AuthMode>("login");
+  const [mode, setMode] = useState<Mode>("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
-  const [messageType, setMessageType] = useState<"success" | "error" | "">("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    setLoading(true);
     setMessage("");
-    setMessageType("");
-
-    if (!supabase) {
-      setMessage(t.missingSupabase);
-      setMessageType("error");
-      return;
-    }
-
-    if (mode === "signup" && password !== confirmPassword) {
-      setMessage(t.passwordMismatch);
-      setMessageType("error");
-      return;
-    }
-
-    setIsSubmitting(true);
+    setErrorMessage("");
 
     try {
-      if (mode === "signup") {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-        });
+      const cleanEmail = email.trim().toLowerCase();
+      const cleanPassword = password.trim();
 
-        if (error) {
-          setMessage(error.message || t.genericError);
-          setMessageType("error");
+      if (!cleanEmail || !cleanPassword) {
+        setErrorMessage("Please enter your email and password.");
+        return;
+      }
+
+      if (mode === "signup") {
+        if (cleanPassword.length < 6) {
+          setErrorMessage("Password must have at least 6 characters.");
           return;
         }
 
-        setMessage(t.signupSuccess);
-        setMessageType("success");
+        if (cleanPassword !== confirmPassword.trim()) {
+          setErrorMessage("Passwords do not match.");
+          return;
+        }
+
+        const { error } = await supabase.auth.signUp({
+          email: cleanEmail,
+          password: cleanPassword,
+        });
+
+        if (error) {
+          setErrorMessage(error.message);
+          return;
+        }
+
+        setMessage(
+          "Account created. Check your email if email confirmation is enabled."
+        );
+        setTimeout(() => {
+          router.push("/dashboard");
+          router.refresh();
+        }, 1200);
         return;
       }
 
       const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+        email: cleanEmail,
+        password: cleanPassword,
       });
 
       if (error) {
-        setMessage(error.message || t.genericError);
-        setMessageType("error");
+        setErrorMessage(error.message);
         return;
       }
 
-      setMessage(t.loginSuccess);
-      setMessageType("success");
-      router.push(`/${locale}/dashboard`);
+      router.push("/dashboard");
       router.refresh();
-    } catch (error) {
-      console.error("Auth error:", error);
-      setMessage(t.genericError);
-      setMessageType("error");
+    } catch {
+      setErrorMessage("Something went wrong. Please try again.");
     } finally {
-      setIsSubmitting(false);
+      setLoading(false);
     }
   }
 
@@ -140,68 +92,69 @@ export default function LoginPage() {
         placeItems: "center",
         padding: "24px",
         background:
-          "radial-gradient(circle at top left, rgba(166, 210, 255, 0.18), transparent 26%), linear-gradient(180deg, #f7fbff 0%, #fcfdff 100%)",
+          "radial-gradient(circle at top left, rgba(166,210,255,0.18), transparent 26%), linear-gradient(180deg, #f7fbff 0%, #fcfdff 100%)",
       }}
     >
-      <section
+      <div
         style={{
           width: "100%",
-          maxWidth: "520px",
-          background: "rgba(255,255,255,0.92)",
-          border: "1px solid rgba(255,255,255,0.7)",
-          borderRadius: "28px",
-          padding: "28px",
+          maxWidth: 460,
+          background: "rgba(255,255,255,0.88)",
+          backdropFilter: "blur(14px)",
+          border: "1px solid rgba(15,23,42,0.08)",
+          borderRadius: 24,
           boxShadow: "0 20px 60px rgba(15,23,42,0.08)",
-          backdropFilter: "blur(12px)",
+          padding: 28,
         }}
       >
-        <div style={{ marginBottom: "22px" }}>
+        <div style={{ marginBottom: 22 }}>
           <p
             style={{
-              display: "inline-flex",
-              padding: "6px 12px",
-              borderRadius: "999px",
-              background: "#e0f2fe",
-              color: "#0369a1",
-              fontSize: "12px",
-              fontWeight: 700,
-              letterSpacing: "0.12em",
+              fontSize: 12,
+              letterSpacing: "0.14em",
               textTransform: "uppercase",
-              marginBottom: "12px",
+              color: "#64748b",
+              marginBottom: 10,
+              fontWeight: 700,
             }}
           >
-            {t.badge}
+            Smart Baby System
           </p>
 
           <h1
             style={{
-              fontSize: "30px",
-              lineHeight: 1.15,
-              margin: 0,
+              fontSize: 32,
+              lineHeight: 1.1,
+              fontWeight: 800,
               color: "#0f172a",
+              marginBottom: 10,
             }}
           >
-            {t.title}
+            {mode === "login" ? "Welcome back" : "Create your account"}
           </h1>
 
           <p
             style={{
-              marginTop: "10px",
-              fontSize: "14px",
-              lineHeight: 1.6,
               color: "#475569",
+              fontSize: 15,
+              lineHeight: 1.6,
             }}
           >
-            {t.subtitle}
+            {mode === "login"
+              ? "Sign in to access your baby dashboard, insights and tracking modules."
+              : "Create your Smart Baby System account and start saving your baby data securely."}
           </p>
         </div>
 
         <div
           style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: "10px",
-            marginBottom: "22px",
+            display: "flex",
+            gap: 10,
+            marginBottom: 20,
+            background: "#f8fafc",
+            padding: 6,
+            borderRadius: 14,
+            border: "1px solid rgba(15,23,42,0.06)",
           }}
         >
           <button
@@ -209,19 +162,22 @@ export default function LoginPage() {
             onClick={() => {
               setMode("login");
               setMessage("");
-              setMessageType("");
+              setErrorMessage("");
             }}
             style={{
-              border: mode === "login" ? "2px solid #0f172a" : "1px solid rgba(148,163,184,0.25)",
-              background: mode === "login" ? "#0f172a" : "#ffffff",
-              color: mode === "login" ? "#ffffff" : "#0f172a",
-              borderRadius: "16px",
+              flex: 1,
+              border: "none",
+              borderRadius: 10,
               padding: "12px 14px",
               fontWeight: 700,
               cursor: "pointer",
+              background: mode === "login" ? "#ffffff" : "transparent",
+              color: "#0f172a",
+              boxShadow:
+                mode === "login" ? "0 8px 24px rgba(15,23,42,0.06)" : "none",
             }}
           >
-            {t.loginTab}
+            Login
           </button>
 
           <button
@@ -229,144 +185,165 @@ export default function LoginPage() {
             onClick={() => {
               setMode("signup");
               setMessage("");
-              setMessageType("");
+              setErrorMessage("");
             }}
             style={{
-              border: mode === "signup" ? "2px solid #0f172a" : "1px solid rgba(148,163,184,0.25)",
-              background: mode === "signup" ? "#0f172a" : "#ffffff",
-              color: mode === "signup" ? "#ffffff" : "#0f172a",
-              borderRadius: "16px",
+              flex: 1,
+              border: "none",
+              borderRadius: 10,
               padding: "12px 14px",
               fontWeight: 700,
               cursor: "pointer",
+              background: mode === "signup" ? "#ffffff" : "transparent",
+              color: "#0f172a",
+              boxShadow:
+                mode === "signup" ? "0 8px 24px rgba(15,23,42,0.06)" : "none",
             }}
           >
-            {t.signupTab}
+            Sign up
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} style={{ display: "grid", gap: "16px" }}>
-          <label style={{ display: "grid", gap: "8px" }}>
-            <span style={{ fontSize: "14px", fontWeight: 600, color: "#334155" }}>
-              {t.email}
-            </span>
+        <form onSubmit={handleSubmit} style={{ display: "grid", gap: 14 }}>
+          <div>
+            <label
+              htmlFor="email"
+              style={{
+                display: "block",
+                marginBottom: 8,
+                fontSize: 14,
+                fontWeight: 700,
+                color: "#0f172a",
+              }}
+            >
+              Email
+            </label>
             <input
+              id="email"
               type="email"
+              autoComplete="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              required
-              style={{
-                borderRadius: "16px",
-                border: "1px solid #cbd5e1",
-                padding: "14px 16px",
-                fontSize: "14px",
-                outline: "none",
-              }}
+              placeholder="name@example.com"
+              style={inputStyle}
             />
-          </label>
+          </div>
 
-          <label style={{ display: "grid", gap: "8px" }}>
-            <span style={{ fontSize: "14px", fontWeight: 600, color: "#334155" }}>
-              {t.password}
-            </span>
+          <div>
+            <label
+              htmlFor="password"
+              style={{
+                display: "block",
+                marginBottom: 8,
+                fontSize: 14,
+                fontWeight: 700,
+                color: "#0f172a",
+              }}
+            >
+              Password
+            </label>
             <input
+              id="password"
               type="password"
+              autoComplete={mode === "login" ? "current-password" : "new-password"}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              required
-              style={{
-                borderRadius: "16px",
-                border: "1px solid #cbd5e1",
-                padding: "14px 16px",
-                fontSize: "14px",
-                outline: "none",
-              }}
+              placeholder="Minimum 6 characters"
+              style={inputStyle}
             />
-          </label>
+          </div>
 
-          {mode === "signup" ? (
-            <label style={{ display: "grid", gap: "8px" }}>
-              <span style={{ fontSize: "14px", fontWeight: 600, color: "#334155" }}>
-                {t.confirmPassword}
-              </span>
+          {mode === "signup" && (
+            <div>
+              <label
+                htmlFor="confirmPassword"
+                style={{
+                  display: "block",
+                  marginBottom: 8,
+                  fontSize: 14,
+                  fontWeight: 700,
+                  color: "#0f172a",
+                }}
+              >
+                Confirm password
+              </label>
               <input
+                id="confirmPassword"
                 type="password"
+                autoComplete="new-password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                required
-                style={{
-                  borderRadius: "16px",
-                  border: "1px solid #cbd5e1",
-                  padding: "14px 16px",
-                  fontSize: "14px",
-                  outline: "none",
-                }}
+                placeholder="Repeat your password"
+                style={inputStyle}
               />
-            </label>
-          ) : null}
-
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            style={{
-              marginTop: "6px",
-              border: "none",
-              borderRadius: "16px",
-              background: "#0f172a",
-              color: "#ffffff",
-              padding: "14px 18px",
-              fontSize: "14px",
-              fontWeight: 700,
-              cursor: isSubmitting ? "not-allowed" : "pointer",
-              opacity: isSubmitting ? 0.7 : 1,
-            }}
-          >
-            {isSubmitting
-              ? mode === "signup"
-                ? t.loadingSignup
-                : t.loadingLogin
-              : mode === "signup"
-                ? t.signupButton
-                : t.loginButton}
-          </button>
+            </div>
+          )}
 
           {message ? (
             <div
               style={{
-                padding: "14px 16px",
-                borderRadius: "16px",
-                border:
-                  messageType === "success"
-                    ? "1px solid rgba(34,197,94,0.25)"
-                    : "1px solid rgba(239,68,68,0.25)",
-                background:
-                  messageType === "success"
-                    ? "rgba(34,197,94,0.08)"
-                    : "rgba(239,68,68,0.08)",
-                color: messageType === "success" ? "#166534" : "#991b1b",
-                fontSize: "14px",
-                lineHeight: 1.5,
+                background: "#ecfeff",
+                color: "#155e75",
+                border: "1px solid #a5f3fc",
+                borderRadius: 14,
+                padding: "12px 14px",
+                fontSize: 14,
               }}
             >
               {message}
             </div>
           ) : null}
-        </form>
 
-        <div style={{ marginTop: "18px" }}>
-          <a
-            href={`/${locale}`}
+          {errorMessage ? (
+            <div
+              style={{
+                background: "#fff1f2",
+                color: "#be123c",
+                border: "1px solid #fecdd3",
+                borderRadius: 14,
+                padding: "12px 14px",
+                fontSize: 14,
+              }}
+            >
+              {errorMessage}
+            </div>
+          ) : null}
+
+          <button
+            type="submit"
+            disabled={loading}
             style={{
-              color: "#2563eb",
-              textDecoration: "none",
-              fontWeight: 600,
-              fontSize: "14px",
+              marginTop: 4,
+              border: "none",
+              borderRadius: 14,
+              padding: "14px 18px",
+              fontWeight: 800,
+              fontSize: 15,
+              cursor: loading ? "not-allowed" : "pointer",
+              background: "#0f172a",
+              color: "#ffffff",
+              opacity: loading ? 0.7 : 1,
             }}
           >
-            {t.backHome}
-          </a>
-        </div>
-      </section>
+            {loading
+              ? "Please wait..."
+              : mode === "login"
+              ? "Login"
+              : "Create account"}
+          </button>
+        </form>
+      </div>
     </main>
   );
 }
+
+const inputStyle: React.CSSProperties = {
+  width: "100%",
+  padding: "13px 14px",
+  borderRadius: 14,
+  border: "1px solid rgba(15,23,42,0.10)",
+  background: "#ffffff",
+  color: "#0f172a",
+  outline: "none",
+  fontSize: 15,
+};
