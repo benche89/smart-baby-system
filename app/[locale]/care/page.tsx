@@ -39,8 +39,12 @@ const copy = {
     loading: "Loading care data...",
     noEntries: "No care entries yet.",
     deleteEntry: "Delete",
+    deleting: "Deleting...",
     deletingError: "Failed to delete care entry.",
+    deletedSuccess: "Care entry deleted successfully.",
     saveError: "Failed to save care entry.",
+    savedSuccess: "Care entry saved successfully.",
+    validationError: "Please complete all required fields before saving.",
     loadError: "Failed to load care data.",
     secureStorage: "Your care logs are stored securely in Supabase.",
     aiMedicalNote: "AI suggestions are not medical advice.",
@@ -84,8 +88,12 @@ const copy = {
     loading: "Chargement des données soins...",
     noEntries: "Aucune entrée soins pour le moment.",
     deleteEntry: "Supprimer",
+    deleting: "Suppression...",
     deletingError: "Impossible de supprimer l’entrée soins.",
+    deletedSuccess: "Entrée soins supprimée avec succès.",
     saveError: "Impossible d’enregistrer l’entrée soins.",
+    savedSuccess: "Entrée soins enregistrée avec succès.",
+    validationError: "Veuillez compléter tous les champs obligatoires avant d’enregistrer.",
     loadError: "Impossible de charger les données soins.",
     secureStorage: "Vos logs soins sont stockés en toute sécurité dans Supabase.",
     aiMedicalNote: "Les suggestions IA ne constituent pas un avis médical.",
@@ -130,6 +138,7 @@ export default function CarePage() {
   const [todayLabel, setTodayLabel] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
   const [careEntries, setCareEntries] = useState<CareEntry[]>([]);
   const [statusMessage, setStatusMessage] = useState("");
   const [statusType, setStatusType] = useState<"success" | "error" | "">("");
@@ -195,8 +204,13 @@ export default function CarePage() {
   }
 
   async function handleAddCareEntry() {
-    if (!form.time.trim() || !form.careType.trim() || !form.status.trim()) {
-      setStatusMessage(t.saveError);
+    const cleanTime = form.time.trim();
+    const cleanCareType = form.careType.trim();
+    const cleanStatus = form.status.trim();
+    const cleanNote = form.note.trim();
+
+    if (!cleanTime || !cleanCareType || !cleanStatus) {
+      setStatusMessage(t.validationError);
       setStatusType("error");
       return;
     }
@@ -209,27 +223,35 @@ export default function CarePage() {
       const supabase = getSupabase();
 
       const result = await addCareEntry(supabase, {
-        time: form.time.trim(),
-        careType: form.careType.trim(),
-        status: form.status.trim(),
-        note: form.note.trim(),
+        time: cleanTime,
+        careType: cleanCareType,
+        status: cleanStatus,
+        note: cleanNote,
       });
 
-      if (!result.success || !result.entry) {
+      if (!result.success) {
         setStatusMessage(result.error || t.saveError);
         setStatusType("error");
         return;
       }
 
-      setCareEntries((prev) => [result.entry!, ...prev]);
+      const createdEntry = result.entry;
+
+      if (!createdEntry) {
+        setStatusMessage(t.saveError);
+        setStatusType("error");
+        return;
+      }
+
+      setCareEntries((prev) => [createdEntry, ...prev]);
       setForm({
         time: "",
         careType: locale === "fr" ? "Changement de couche" : "Diaper change",
         status: locale === "fr" ? "Terminé" : "Completed",
         note: "",
       });
-      setStatusMessage("");
-      setStatusType("");
+      setStatusMessage(t.savedSuccess);
+      setStatusType("success");
     } catch (error) {
       console.error("Failed to save care entry:", error);
       setStatusMessage(t.saveError);
@@ -240,6 +262,10 @@ export default function CarePage() {
   }
 
   async function handleDeleteCareEntry(id: number) {
+    setDeletingId(id);
+    setStatusMessage("");
+    setStatusType("");
+
     try {
       const supabase = getSupabase();
       const result = await deleteCareEntry(supabase, id);
@@ -251,10 +277,14 @@ export default function CarePage() {
       }
 
       setCareEntries((prev) => prev.filter((item) => item.id !== id));
+      setStatusMessage(t.deletedSuccess);
+      setStatusType("success");
     } catch (error) {
       console.error("Failed to delete care entry:", error);
       setStatusMessage(t.deletingError);
       setStatusType("error");
+    } finally {
+      setDeletingId(null);
     }
   }
 
@@ -443,8 +473,9 @@ export default function CarePage() {
                     type="button"
                     className="neoDash__secondaryBtn"
                     onClick={() => handleDeleteCareEntry(entry.id)}
+                    disabled={deletingId === entry.id}
                   >
-                    {t.deleteEntry}
+                    {deletingId === entry.id ? t.deleting : t.deleteEntry}
                   </button>
                 </div>
               </article>

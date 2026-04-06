@@ -32,6 +32,10 @@ export type CareEntry = {
   note: string;
 };
 
+type ActionResult<T = undefined> =
+  | { success: true; data?: T; entry?: T }
+  | { success: false; error: string; data?: T; entry?: T };
+
 const PROFILE_KEY = "smart-baby-profile";
 const SLEEP_KEY = "smart-baby-sleep";
 const FOOD_KEY = "smart-baby-food";
@@ -50,6 +54,7 @@ function isBrowser() {
 
 function safeParse<T>(value: string | null, fallback: T): T {
   if (!value) return fallback;
+
   try {
     return JSON.parse(value) as T;
   } catch {
@@ -84,24 +89,19 @@ function hasCareData(items: CareEntry[]) {
   return items.length > 0;
 }
 
-export function getLocalProfile(): BabyProfile {
-  if (!isBrowser()) {
-    return {
-      babyName: "",
-      ageMonths: "",
-      bedtime: "",
-      mainConcern: "",
-      notes: "",
-    };
-  }
-
-  return safeParse<BabyProfile>(localStorage.getItem(PROFILE_KEY), {
+function getDefaultProfile(): BabyProfile {
+  return {
     babyName: "",
     ageMonths: "",
     bedtime: "",
     mainConcern: "",
     notes: "",
-  });
+  };
+}
+
+export function getLocalProfile(): BabyProfile {
+  if (!isBrowser()) return getDefaultProfile();
+  return safeParse<BabyProfile>(localStorage.getItem(PROFILE_KEY), getDefaultProfile());
 }
 
 export function saveLocalProfile(profile: BabyProfile) {
@@ -141,8 +141,12 @@ export function saveLocalCareEntries(entries: CareEntry[]) {
 
 export function getLocalPlanTier(): PlanTier {
   if (!isBrowser()) return "basic";
+
   const value = localStorage.getItem(PLAN_KEY);
-  if (value === "premium" || value === "elite" || value === "basic") return value;
+  if (value === "basic" || value === "premium" || value === "elite") {
+    return value;
+  }
+
   return "basic";
 }
 
@@ -200,7 +204,10 @@ async function getUserOrNull(supabase: any) {
   try {
     const {
       data: { user },
+      error,
     } = await supabase.auth.getUser();
+
+    if (error) return null;
     return user ?? null;
   } catch {
     return null;
@@ -233,10 +240,36 @@ export async function getProfile(supabase: any): Promise<BabyProfile | null> {
   }
 }
 
+export async function getPlanTier(supabase: any): Promise<PlanTier> {
+  try {
+    if (!supabase) return getLocalPlanTier();
+
+    const user = await getUserOrNull(supabase);
+    if (!user) return getLocalPlanTier();
+
+    const { data, error } = await supabase
+      .from(PLAN_TABLE)
+      .select("plan_tier")
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    if (error || !data?.plan_tier) {
+      return getLocalPlanTier();
+    }
+
+    const plan = data.plan_tier as PlanTier;
+    saveLocalPlanTier(plan);
+    return plan;
+  } catch (error) {
+    console.error("getPlanTier error:", error);
+    return getLocalPlanTier();
+  }
+}
+
 export async function upsertProfile(
   supabase: any,
   profile: BabyProfile
-): Promise<{ success: boolean; error?: string }> {
+): Promise<ActionResult> {
   try {
     saveLocalProfile(profile);
 
@@ -303,7 +336,7 @@ export async function getSleepEntries(supabase: any): Promise<SleepEntry[]> {
 export async function addSleepEntry(
   supabase: any,
   entry: Omit<SleepEntry, "id">
-): Promise<{ success: boolean; error?: string; entry?: SleepEntry }> {
+): Promise<ActionResult<SleepEntry>> {
   try {
     const localEntries = getLocalSleepEntries();
     const newEntry: SleepEntry = {
@@ -347,7 +380,7 @@ export async function addSleepEntry(
 export async function deleteSleepEntry(
   supabase: any,
   id: number
-): Promise<{ success: boolean; error?: string }> {
+): Promise<ActionResult> {
   try {
     saveLocalSleepEntries(getLocalSleepEntries().filter((item) => item.id !== id));
 
@@ -362,7 +395,10 @@ export async function deleteSleepEntry(
       .eq("user_id", user.id)
       .eq("entry_id", id);
 
-    if (error) return { success: false, error: error.message };
+    if (error) {
+      return { success: false, error: error.message };
+    }
+
     return { success: true };
   } catch (error: any) {
     console.error("deleteSleepEntry error:", error);
@@ -399,7 +435,7 @@ export async function getFoodEntries(supabase: any): Promise<FoodEntry[]> {
 export async function addFoodEntry(
   supabase: any,
   entry: Omit<FoodEntry, "id">
-): Promise<{ success: boolean; error?: string; entry?: FoodEntry }> {
+): Promise<ActionResult<FoodEntry>> {
   try {
     const localEntries = getLocalFoodEntries();
     const newEntry: FoodEntry = {
@@ -445,7 +481,7 @@ export async function addFoodEntry(
 export async function deleteFoodEntry(
   supabase: any,
   id: number
-): Promise<{ success: boolean; error?: string }> {
+): Promise<ActionResult> {
   try {
     saveLocalFoodEntries(getLocalFoodEntries().filter((item) => item.id !== id));
 
@@ -460,7 +496,10 @@ export async function deleteFoodEntry(
       .eq("user_id", user.id)
       .eq("entry_id", id);
 
-    if (error) return { success: false, error: error.message };
+    if (error) {
+      return { success: false, error: error.message };
+    }
+
     return { success: true };
   } catch (error: any) {
     console.error("deleteFoodEntry error:", error);
@@ -497,7 +536,7 @@ export async function getCareEntries(supabase: any): Promise<CareEntry[]> {
 export async function addCareEntry(
   supabase: any,
   entry: Omit<CareEntry, "id">
-): Promise<{ success: boolean; error?: string; entry?: CareEntry }> {
+): Promise<ActionResult<CareEntry>> {
   try {
     const localEntries = getLocalCareEntries();
     const newEntry: CareEntry = {
@@ -542,7 +581,7 @@ export async function addCareEntry(
 export async function deleteCareEntry(
   supabase: any,
   id: number
-): Promise<{ success: boolean; error?: string }> {
+): Promise<ActionResult> {
   try {
     saveLocalCareEntries(getLocalCareEntries().filter((item) => item.id !== id));
 
@@ -557,7 +596,10 @@ export async function deleteCareEntry(
       .eq("user_id", user.id)
       .eq("entry_id", id);
 
-    if (error) return { success: false, error: error.message };
+    if (error) {
+      return { success: false, error: error.message };
+    }
+
     return { success: true };
   } catch (error: any) {
     console.error("deleteCareEntry error:", error);
@@ -568,7 +610,7 @@ export async function deleteCareEntry(
 export async function updatePlanTier(
   supabase: any,
   plan: PlanTier
-): Promise<{ success: boolean; error?: string }> {
+): Promise<ActionResult> {
   try {
     saveLocalPlanTier(plan);
 
@@ -587,7 +629,10 @@ export async function updatePlanTier(
       onConflict: "user_id",
     });
 
-    if (error) return { success: false, error: error.message };
+    if (error) {
+      return { success: false, error: error.message };
+    }
+
     return { success: true };
   } catch (error: any) {
     console.error("updatePlanTier error:", error);

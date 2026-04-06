@@ -36,8 +36,13 @@ const copy = {
     loading: "Loading sleep data...",
     noEntries: "No sleep entries yet.",
     deleteEntry: "Delete",
+    deleting: "Deleting...",
     deletingError: "Failed to delete sleep entry.",
+    deletedSuccess: "Sleep entry deleted successfully.",
     saveError: "Failed to save sleep entry.",
+    savedSuccess: "Sleep entry saved successfully.",
+    validationError: "Please complete all fields before saving.",
+    durationError: "Nap duration must be greater than 0.",
     loadError: "Failed to load sleep data.",
     secureStorage: "Your sleep logs are stored securely in Supabase.",
     aiMedicalNote: "AI suggestions are not medical advice.",
@@ -52,39 +57,44 @@ const copy = {
     durationLabel: "Duration",
   },
   fr: {
-    subtitle: "Suivez les siestes et la qualite du sommeil avec un stockage securise sur Supabase.",
+    subtitle: "Suivez les siestes et la qualité du sommeil avec un stockage sécurisé sur Supabase.",
     label: "Suivi sommeil",
     focusTitle: "Module sommeil",
     focusText:
-      "Enregistrez les siestes et la qualite du sommeil pour reveler de meilleurs rythmes et des predictions dashboard plus intelligentes.",
+      "Enregistrez les siestes et la qualité du sommeil pour révéler de meilleurs rythmes et des prédictions dashboard plus intelligentes.",
 
     pageLabel: "Sommeil",
     pageTitle: "Journal du sommeil",
     pageText:
       "Enregistrez chaque sieste pour construire de meilleurs insights sommeil et une guidance quotidienne plus utile.",
 
-    lastNapTime: "Heure de la derniere sieste",
-    napDuration: "Duree de la sieste (minutes)",
-    mood: "Qualite du sommeil",
-    addEntry: "Ajouter une entree sommeil",
+    lastNapTime: "Heure de la dernière sieste",
+    napDuration: "Durée de la sieste (minutes)",
+    mood: "Qualité du sommeil",
+    addEntry: "Ajouter une entrée sommeil",
     adding: "Enregistrement...",
-    loading: "Chargement des donnees sommeil...",
-    noEntries: "Aucune entree sommeil pour le moment.",
+    loading: "Chargement des données sommeil...",
+    noEntries: "Aucune entrée sommeil pour le moment.",
     deleteEntry: "Supprimer",
-    deletingError: "Impossible de supprimer l’entree sommeil.",
-    saveError: "Impossible d’enregistrer l’entree sommeil.",
-    loadError: "Impossible de charger les donnees sommeil.",
-    secureStorage: "Vos logs sommeil sont stockes en toute securite dans Supabase.",
-    aiMedicalNote: "Les suggestions IA ne constituent pas un avis medical.",
+    deleting: "Suppression...",
+    deletingError: "Impossible de supprimer l’entrée sommeil.",
+    deletedSuccess: "Entrée sommeil supprimée avec succès.",
+    saveError: "Impossible d’enregistrer l’entrée sommeil.",
+    savedSuccess: "Entrée sommeil enregistrée avec succès.",
+    validationError: "Veuillez compléter tous les champs avant d’enregistrer.",
+    durationError: "La durée de la sieste doit être supérieure à 0.",
+    loadError: "Impossible de charger les données sommeil.",
+    secureStorage: "Vos logs sommeil sont stockés en toute sécurité dans Supabase.",
+    aiMedicalNote: "Les suggestions IA ne constituent pas un avis médical.",
 
     excellent: "Excellent",
     good: "Bon",
     light: "Léger",
     poor: "Faible",
 
-    recentEntries: "Entrees sommeil recentes",
-    qualityLabel: "Qualite",
-    durationLabel: "Duree",
+    recentEntries: "Entrées sommeil récentes",
+    qualityLabel: "Qualité",
+    durationLabel: "Durée",
   },
 } as const;
 
@@ -110,6 +120,7 @@ export default function SleepPage() {
   const [todayLabel, setTodayLabel] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
   const [sleepEntries, setSleepEntries] = useState<SleepEntry[]>([]);
   const [statusMessage, setStatusMessage] = useState("");
   const [statusType, setStatusType] = useState<"success" | "error" | "">("");
@@ -173,8 +184,19 @@ export default function SleepPage() {
   }
 
   async function handleAddSleepEntry() {
-    if (!form.lastNapTime.trim() || !form.napDuration.trim() || !form.mood.trim()) {
-      setStatusMessage(t.saveError);
+    const cleanLastNapTime = form.lastNapTime.trim();
+    const cleanNapDuration = form.napDuration.trim();
+    const cleanMood = form.mood.trim();
+
+    if (!cleanLastNapTime || !cleanNapDuration || !cleanMood) {
+      setStatusMessage(t.validationError);
+      setStatusType("error");
+      return;
+    }
+
+    const numericDuration = Number(cleanNapDuration);
+    if (!Number.isFinite(numericDuration) || numericDuration <= 0) {
+      setStatusMessage(t.durationError);
       setStatusType("error");
       return;
     }
@@ -187,23 +209,33 @@ export default function SleepPage() {
       const supabase = getSupabase();
 
       const result = await addSleepEntry(supabase, {
-        lastNapTime: form.lastNapTime.trim(),
-        napDuration: form.napDuration.trim(),
-        mood: form.mood.trim(),
+        lastNapTime: cleanLastNapTime,
+        napDuration: String(numericDuration),
+        mood: cleanMood,
       });
 
-      if (!result.success || !result.entry) {
+      if (!result.success) {
         setStatusMessage(result.error || t.saveError);
         setStatusType("error");
         return;
       }
 
-      setSleepEntries((prev) => [result.entry!, ...prev]);
+      const createdEntry = result.entry;
+
+      if (!createdEntry) {
+        setStatusMessage(t.saveError);
+        setStatusType("error");
+        return;
+      }
+
+      setSleepEntries((prev) => [createdEntry, ...prev]);
       setForm({
         lastNapTime: "",
         napDuration: "",
         mood: locale === "fr" ? "Bon" : "Good",
       });
+      setStatusMessage(t.savedSuccess);
+      setStatusType("success");
     } catch (error) {
       console.error("Failed to save sleep entry:", error);
       setStatusMessage(t.saveError);
@@ -214,6 +246,10 @@ export default function SleepPage() {
   }
 
   async function handleDeleteSleepEntry(id: number) {
+    setDeletingId(id);
+    setStatusMessage("");
+    setStatusType("");
+
     try {
       const supabase = getSupabase();
       const result = await deleteSleepEntry(supabase, id);
@@ -225,10 +261,14 @@ export default function SleepPage() {
       }
 
       setSleepEntries((prev) => prev.filter((item) => item.id !== id));
+      setStatusMessage(t.deletedSuccess);
+      setStatusType("success");
     } catch (error) {
       console.error("Failed to delete sleep entry:", error);
       setStatusMessage(t.deletingError);
       setStatusType("error");
+    } finally {
+      setDeletingId(null);
     }
   }
 
@@ -294,6 +334,7 @@ export default function SleepPage() {
               <span>{t.napDuration}</span>
               <input
                 type="number"
+                min="1"
                 value={form.napDuration}
                 onChange={(e) => updateField("napDuration", e.target.value)}
                 placeholder="45"
@@ -398,8 +439,9 @@ export default function SleepPage() {
                     type="button"
                     className="neoDash__secondaryBtn"
                     onClick={() => handleDeleteSleepEntry(entry.id)}
+                    disabled={deletingId === entry.id}
                   >
-                    {t.deleteEntry}
+                    {deletingId === entry.id ? t.deleting : t.deleteEntry}
                   </button>
                 </div>
               </article>

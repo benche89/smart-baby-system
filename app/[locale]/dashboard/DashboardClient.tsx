@@ -10,9 +10,9 @@ import {
   getSleepEntries,
   getFoodEntries,
   getCareEntries,
+  getPlanTier,
   importLocalStorageToSupabase,
   updatePlanTier,
-  getLocalPlanTier,
   type BabyProfile,
   type SleepEntry,
   type FoodEntry,
@@ -376,17 +376,18 @@ export default function DashboardClient() {
       try {
         await importLocalStorageToSupabase(supabase);
 
-        const [dbProfile, dbSleep, dbFood, dbCare] = await Promise.all([
+        const [dbProfile, dbSleep, dbFood, dbCare, dbPlan] = await Promise.all([
           getProfile(supabase),
           getSleepEntries(supabase),
           getFoodEntries(supabase),
           getCareEntries(supabase),
+          getPlanTier(supabase),
         ]);
 
         if (!isMounted) return;
 
         setProfile(dbProfile);
-        setSelectedPlan(getLocalPlanTier());
+        setSelectedPlan(dbPlan);
         setSleepHistory(dbSleep);
         setFoodHistory(dbFood);
         setCareHistory(dbCare);
@@ -416,11 +417,14 @@ export default function DashboardClient() {
 
       if (!result.success) {
         console.error("Failed to update plan:", result.error);
-        setSelectedPlan(getLocalPlanTier());
+        const freshPlan = await getPlanTier(supabase);
+        setSelectedPlan(freshPlan);
       }
     } catch (error) {
       console.error("Failed to update plan:", error);
-      setSelectedPlan(getLocalPlanTier());
+      const supabase = getSupabase();
+      const freshPlan = await getPlanTier(supabase);
+      setSelectedPlan(freshPlan);
     }
   }
 

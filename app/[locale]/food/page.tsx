@@ -38,8 +38,12 @@ const copy = {
     loading: "Loading food data...",
     noEntries: "No food entries yet.",
     deleteEntry: "Delete",
+    deleting: "Deleting...",
     deletingError: "Failed to delete food entry.",
+    deletedSuccess: "Food entry deleted successfully.",
     saveError: "Failed to save food entry.",
+    savedSuccess: "Food entry saved successfully.",
+    validationError: "Please complete all fields before saving.",
     loadError: "Failed to load food data.",
     secureStorage: "Your food logs are stored securely in Supabase.",
     aiMedicalNote: "AI suggestions are not medical advice.",
@@ -65,11 +69,11 @@ const copy = {
     },
   },
   fr: {
-    subtitle: "Suivez les repas et reactions avec un stockage securise sur Supabase.",
+    subtitle: "Suivez les repas et réactions avec un stockage sécurisé sur Supabase.",
     label: "Suivi alimentation",
     focusTitle: "Module alimentation",
     focusText:
-      "Enregistrez les repas, quantites et reactions pour reveler de meilleurs schémas alimentaires et une guidance IA plus intelligente.",
+      "Enregistrez les repas, quantités et réactions pour révéler de meilleurs schémas alimentaires et une guidance IA plus intelligente.",
 
     pageLabel: "Alimentation",
     pageTitle: "Journal alimentaire",
@@ -79,22 +83,26 @@ const copy = {
     mealTime: "Heure du repas",
     mealType: "Type de repas",
     food: "Aliment",
-    quantity: "Quantite",
-    reaction: "Reaction",
-    addEntry: "Ajouter une entree alimentation",
+    quantity: "Quantité",
+    reaction: "Réaction",
+    addEntry: "Ajouter une entrée alimentation",
     adding: "Enregistrement...",
-    loading: "Chargement des donnees alimentation...",
-    noEntries: "Aucune entree alimentation pour le moment.",
+    loading: "Chargement des données alimentation...",
+    noEntries: "Aucune entrée alimentation pour le moment.",
     deleteEntry: "Supprimer",
-    deletingError: "Impossible de supprimer l’entree alimentation.",
-    saveError: "Impossible d’enregistrer l’entree alimentation.",
-    loadError: "Impossible de charger les donnees alimentation.",
-    secureStorage: "Vos logs alimentation sont stockes en toute securite dans Supabase.",
-    aiMedicalNote: "Les suggestions IA ne constituent pas un avis medical.",
+    deleting: "Suppression...",
+    deletingError: "Impossible de supprimer l’entrée alimentation.",
+    deletedSuccess: "Entrée alimentation supprimée avec succès.",
+    saveError: "Impossible d’enregistrer l’entrée alimentation.",
+    savedSuccess: "Entrée alimentation enregistrée avec succès.",
+    validationError: "Veuillez compléter tous les champs avant d’enregistrer.",
+    loadError: "Impossible de charger les données alimentation.",
+    secureStorage: "Vos logs alimentation sont stockés en toute sécurité dans Supabase.",
+    aiMedicalNote: "Les suggestions IA ne constituent pas un avis médical.",
 
-    breakfast: "Petit-dejeuner",
-    lunch: "Dejeuner",
-    dinner: "Diner",
+    breakfast: "Petit-déjeuner",
+    lunch: "Déjeuner",
+    dinner: "Dîner",
     snack: "Collation",
     bottle: "Biberon",
 
@@ -102,13 +110,13 @@ const copy = {
     unsure: "Incertaine",
     sensitive: "Sensible",
 
-    recentEntries: "Entrees alimentation recentes",
+    recentEntries: "Entrées alimentation récentes",
     typeLabel: "Type",
-    quantityLabel: "Quantite",
-    reactionLabel: "Reaction",
+    quantityLabel: "Quantité",
+    reactionLabel: "Réaction",
 
     placeholders: {
-      food: "ex. Puree de banane",
+      food: "ex. Purée de banane",
       quantity: "ex. 120 ml / demi-bol / 80 g",
     },
   },
@@ -136,13 +144,14 @@ export default function FoodPage() {
   const [todayLabel, setTodayLabel] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
   const [foodEntries, setFoodEntries] = useState<FoodEntry[]>([]);
   const [statusMessage, setStatusMessage] = useState("");
   const [statusType, setStatusType] = useState<"success" | "error" | "">("");
 
   const [form, setForm] = useState({
     mealTime: "",
-    mealType: locale === "fr" ? "Petit-dejeuner" : "Breakfast",
+    mealType: locale === "fr" ? "Petit-déjeuner" : "Breakfast",
     food: "",
     quantity: "",
     reaction: locale === "fr" ? "Bonne" : "Good",
@@ -152,7 +161,7 @@ export default function FoodPage() {
     setTodayLabel(getTodayLabel(locale));
     setForm({
       mealTime: "",
-      mealType: locale === "fr" ? "Petit-dejeuner" : "Breakfast",
+      mealType: locale === "fr" ? "Petit-déjeuner" : "Breakfast",
       food: "",
       quantity: "",
       reaction: locale === "fr" ? "Bonne" : "Good",
@@ -203,14 +212,14 @@ export default function FoodPage() {
   }
 
   async function handleAddFoodEntry() {
-    if (
-      !form.mealTime.trim() ||
-      !form.mealType.trim() ||
-      !form.food.trim() ||
-      !form.quantity.trim() ||
-      !form.reaction.trim()
-    ) {
-      setStatusMessage(t.saveError);
+    const cleanMealTime = form.mealTime.trim();
+    const cleanMealType = form.mealType.trim();
+    const cleanFood = form.food.trim();
+    const cleanQuantity = form.quantity.trim();
+    const cleanReaction = form.reaction.trim();
+
+    if (!cleanMealTime || !cleanMealType || !cleanFood || !cleanQuantity || !cleanReaction) {
+      setStatusMessage(t.validationError);
       setStatusType("error");
       return;
     }
@@ -223,27 +232,37 @@ export default function FoodPage() {
       const supabase = getSupabase();
 
       const result = await addFoodEntry(supabase, {
-        mealTime: form.mealTime.trim(),
-        mealType: form.mealType.trim(),
-        food: form.food.trim(),
-        quantity: form.quantity.trim(),
-        reaction: form.reaction.trim(),
+        mealTime: cleanMealTime,
+        mealType: cleanMealType,
+        food: cleanFood,
+        quantity: cleanQuantity,
+        reaction: cleanReaction,
       });
 
-      if (!result.success || !result.entry) {
+      if (!result.success) {
         setStatusMessage(result.error || t.saveError);
         setStatusType("error");
         return;
       }
 
-      setFoodEntries((prev) => [result.entry!, ...prev]);
+      const createdEntry = result.entry;
+
+      if (!createdEntry) {
+        setStatusMessage(t.saveError);
+        setStatusType("error");
+        return;
+      }
+
+      setFoodEntries((prev) => [createdEntry, ...prev]);
       setForm({
         mealTime: "",
-        mealType: locale === "fr" ? "Petit-dejeuner" : "Breakfast",
+        mealType: locale === "fr" ? "Petit-déjeuner" : "Breakfast",
         food: "",
         quantity: "",
         reaction: locale === "fr" ? "Bonne" : "Good",
       });
+      setStatusMessage(t.savedSuccess);
+      setStatusType("success");
     } catch (error) {
       console.error("Failed to save food entry:", error);
       setStatusMessage(t.saveError);
@@ -254,6 +273,10 @@ export default function FoodPage() {
   }
 
   async function handleDeleteFoodEntry(id: number) {
+    setDeletingId(id);
+    setStatusMessage("");
+    setStatusType("");
+
     try {
       const supabase = getSupabase();
       const result = await deleteFoodEntry(supabase, id);
@@ -265,10 +288,14 @@ export default function FoodPage() {
       }
 
       setFoodEntries((prev) => prev.filter((item) => item.id !== id));
+      setStatusMessage(t.deletedSuccess);
+      setStatusType("success");
     } catch (error) {
       console.error("Failed to delete food entry:", error);
       setStatusMessage(t.deletingError);
       setStatusType("error");
+    } finally {
+      setDeletingId(null);
     }
   }
 
@@ -467,8 +494,9 @@ export default function FoodPage() {
                     type="button"
                     className="neoDash__secondaryBtn"
                     onClick={() => handleDeleteFoodEntry(entry.id)}
+                    disabled={deletingId === entry.id}
                   >
-                    {t.deleteEntry}
+                    {deletingId === entry.id ? t.deleting : t.deleteEntry}
                   </button>
                 </div>
               </article>
