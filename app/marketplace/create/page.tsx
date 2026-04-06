@@ -18,9 +18,19 @@ export default function CreateMarketplaceListingPage() {
   const [category, setCategory] = useState<ListingCategory>("clothes");
   const [ageRange, setAgeRange] = useState("");
   const [location, setLocation] = useState("");
-  const [image, setImage] = useState("");
+  const [image, setImage] = useState<string>("");
   const [condition, setCondition] = useState<ConditionOption>("very-good");
   const [error, setError] = useState("");
+
+  function handleImageUpload(file: File) {
+    const reader = new FileReader();
+
+    reader.onloadend = () => {
+      setImage(reader.result as string);
+    };
+
+    reader.readAsDataURL(file);
+  }
 
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -54,7 +64,7 @@ export default function CreateMarketplaceListingPage() {
       ageRange: ageRange.trim(),
       location: location.trim(),
       image:
-        image.trim() ||
+        image ||
         "https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?q=80&w=1200&auto=format&fit=crop",
       condition,
       createdAt: new Date().toISOString(),
@@ -69,49 +79,37 @@ export default function CreateMarketplaceListingPage() {
       <section className="marketplaceCreateHero">
         <span className="marketplaceHero__eyebrow">New marketplace listing</span>
         <h1>Create a listing in minutes</h1>
-        <p>
-          Add baby clothes, toys, gear or even donations for other parents in your
-          community.
-        </p>
+        <p>Add baby items or donations for other parents.</p>
       </section>
 
       <section className="marketplaceFormWrap">
         <form className="marketplaceForm" onSubmit={handleSubmit}>
           <div className="marketplaceFormGrid">
+
+            {/* TITLE */}
             <div className="marketplaceField marketplaceField--full">
-              <label className="marketplaceLabel" htmlFor="listing-title">
-                Title *
-              </label>
+              <label className="marketplaceLabel">Title *</label>
               <input
-                id="listing-title"
                 className="marketplaceInput"
-                type="text"
-                placeholder="Example: Baby clothes bundle 3-6 months"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
               />
             </div>
 
+            {/* DESCRIPTION */}
             <div className="marketplaceField marketplaceField--full">
-              <label className="marketplaceLabel" htmlFor="listing-description">
-                Description *
-              </label>
+              <label className="marketplaceLabel">Description *</label>
               <textarea
-                id="listing-description"
                 className="marketplaceTextarea"
-                placeholder="Write a clear description of the item..."
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                rows={5}
               />
             </div>
 
+            {/* CATEGORY */}
             <div className="marketplaceField">
-              <label className="marketplaceLabel" htmlFor="listing-category">
-                Category
-              </label>
+              <label className="marketplaceLabel">Category</label>
               <select
-                id="listing-category"
                 className="marketplaceSelect"
                 value={category}
                 onChange={(e) => setCategory(e.target.value as ListingCategory)}
@@ -124,12 +122,10 @@ export default function CreateMarketplaceListingPage() {
               </select>
             </div>
 
+            {/* CONDITION */}
             <div className="marketplaceField">
-              <label className="marketplaceLabel" htmlFor="listing-condition">
-                Condition
-              </label>
+              <label className="marketplaceLabel">Condition</label>
               <select
-                id="listing-condition"
                 className="marketplaceSelect"
                 value={condition}
                 onChange={(e) => setCondition(e.target.value as ConditionOption)}
@@ -140,77 +136,81 @@ export default function CreateMarketplaceListingPage() {
               </select>
             </div>
 
+            {/* AGE */}
             <div className="marketplaceField">
-              <label className="marketplaceLabel" htmlFor="listing-age-range">
-                Age range *
-              </label>
+              <label className="marketplaceLabel">Age range *</label>
               <input
-                id="listing-age-range"
                 className="marketplaceInput"
-                type="text"
-                placeholder="Example: 6-12 months"
                 value={ageRange}
                 onChange={(e) => setAgeRange(e.target.value)}
               />
             </div>
 
+            {/* LOCATION */}
             <div className="marketplaceField">
-              <label className="marketplaceLabel" htmlFor="listing-location">
-                Location *
-              </label>
+              <label className="marketplaceLabel">Location *</label>
               <input
-                id="listing-location"
                 className="marketplaceInput"
-                type="text"
-                placeholder="Example: Brussels"
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
               />
             </div>
 
+            {/* PRICE */}
             <div className="marketplaceField">
-              <label className="marketplaceLabel" htmlFor="listing-price">
-                Price {!isDonation ? "*" : ""}
-              </label>
+              <label className="marketplaceLabel">Price</label>
               <input
-                id="listing-price"
                 className="marketplaceInput"
                 type="number"
-                min="0"
-                step="0.01"
-                placeholder={isDonation ? "Free donation" : "Example: 25"}
                 value={isDonation ? "0" : price}
                 onChange={(e) => setPrice(e.target.value)}
                 disabled={isDonation}
               />
             </div>
 
-            <div className="marketplaceField">
-              <label className="marketplaceLabel" htmlFor="listing-image">
-                Image URL
-              </label>
+            {/* IMAGE UPLOAD */}
+            <div className="marketplaceField marketplaceField--full">
+              <label className="marketplaceLabel">Upload image</label>
+
               <input
-                id="listing-image"
-                className="marketplaceInput"
-                type="text"
-                placeholder="Paste an image URL"
-                value={image}
-                onChange={(e) => setImage(e.target.value)}
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  if (e.target.files?.[0]) {
+                    handleImageUpload(e.target.files[0]);
+                  }
+                }}
               />
+
+              {image && (
+                <div style={{ marginTop: "12px" }}>
+                  <img
+                    src={image}
+                    alt="preview"
+                    style={{
+                      width: "200px",
+                      borderRadius: "12px",
+                      objectFit: "cover",
+                    }}
+                  />
+                </div>
+              )}
             </div>
 
+            {/* DONATION */}
             <div className="marketplaceField marketplaceField--full">
               <button
                 type="button"
                 className={`marketplaceDonationSwitch ${isDonation ? "is-active" : ""}`}
                 onClick={() => setIsDonation((prev) => !prev)}
               >
-                {isDonation ? "This listing is a donation" : "Mark as donation"}
+                {isDonation ? "Donation" : "Mark as donation"}
               </button>
             </div>
+
           </div>
 
-          {error ? <div className="marketplaceError">{error}</div> : null}
+          {error && <div className="marketplaceError">{error}</div>}
 
           <div className="marketplaceFormActions">
             <button
@@ -220,6 +220,7 @@ export default function CreateMarketplaceListingPage() {
             >
               Cancel
             </button>
+
             <button
               type="submit"
               className="marketplaceBtn marketplaceBtn--primary"
