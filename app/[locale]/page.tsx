@@ -20,47 +20,52 @@ const copy = {
       startFree: "Start free",
     },
     hero: {
-      badge: "Unified premium parenting app + marketplace",
-      title1: "One calm system",
-      title2: "for sleep, food, care, AI and parent marketplace",
+      badge: "AI-powered parenting guidance",
+      title1: "Understand your baby.",
+      title2: "Not just track.",
       text:
-        "Smart Baby System turns daily baby data into a premium product experience — clearer decisions, better routines and less mental overload for parents. And now it also helps families buy, sell and donate baby items in one safe ecosystem.",
-      newMarketplace: "New: Marketplace for clothes, toys, gear and donations",
-      askPlaceholder: "Ask AI anything… e.g. Why is my baby not sleeping well?",
+        "Stop guessing why your baby cries, wakes, or refuses to eat. Smart Baby System turns daily sleep, food and care data into clear AI-powered insights, so parents can make calmer decisions with more confidence.",
+      trust:
+        "Built for modern parents who want clarity, not confusion.",
+      askPlaceholder:
+        "Ask AI anything… e.g. Why did my baby sleep less today?",
       askAi: "Ask AI",
-      openApp: "Open app",
-      exploreMarketplace: "Explore marketplace",
-      sleepTitle: "Sleep",
-      sleepText: "Rhythm, naps, wake windows",
-      foodTitle: "Food",
-      foodText: "Meals, reactions, feeding patterns",
-      careTitle: "Care",
-      careText: "Routines, hygiene, daily consistency",
-      marketCardTitle: "Marketplace",
-      marketCardText: "Buy, sell or donate baby items inside the same parent ecosystem.",
-      chatCardTitle: "Private parent chat",
+      startFree: "Start for free",
+      seeHow: "See how it works",
+      benefit1: "See hidden sleep and feeding patterns",
+      benefit2: "Get AI suggestions based on real data",
+      benefit3: "Build calmer, more predictable routines",
+      statLabel1: "Sleep pattern",
+      statValue1: "Clearer",
+      statText1: "Recent naps and wake windows connected automatically.",
+      statLabel2: "Feeding rhythm",
+      statValue2: "Smarter",
+      statText2: "Meals and reactions translated into useful daily guidance.",
+      statLabel3: "Care routine",
+      statValue3: "Calmer",
+      statText3: "Daily consistency becomes easier to understand and improve.",
+      previewEyebrow: "Live product preview",
+      previewTitle: "One calm system for better daily parenting decisions",
+      previewText:
+        "Sleep, food, care and AI guidance work together inside one connected experience instead of scattered notes and separate tools.",
+      scoreTitle: "Today’s overview",
+      scoreText:
+        "The app connects daily rhythm, meal logs and care consistency into one simple picture parents can actually use.",
+      score1: "Sleep score",
+      score2: "Food score",
+      score3: "Care score",
+      aiCardBadge: "AI insight",
+      aiCardTitle: "Pattern detected",
+      aiCardText:
+        "Baby slept less after the last late nap. Try an earlier next sleep window today.",
+      marketCardBadge: "Marketplace",
+      marketCardTitle: "Parent marketplace",
+      marketCardText:
+        "Buy, sell or donate baby items inside the same trusted ecosystem.",
+      chatCardBadge: "Private chat",
+      chatCardTitle: "Safer conversations",
       chatCardText:
-        "Contact sellers safely through the platform without public phone numbers.",
-      unifiedPreview: "Unified app preview",
-      todaysOverview: "Today's overview",
-      unifiedText:
-        "One dashboard connects rhythm, meals, care consistency, marketplace activity and AI guidance into a single calmer parent experience.",
-      nextSleep: "Next sleep",
-      foodLogs: "Food logs",
-      careLogs: "Care logs",
-      aiBadge: "AI",
-      aiTitle: "Context-aware guidance",
-      aiText: "Ask one question and adapt the whole daily plan instantly.",
-      sleepBadge: "Sleep",
-      sleepPanelTitle: "Next likely sleep",
-      sleepPanelText: "Guidance built from recent nap rhythm and current age stage.",
-      marketBadge: "Marketplace",
-      marketPanelTitle: "Buy, sell & donate",
-      marketPanelText:
-        "Clothes, toys and baby gear inside a parent-friendly marketplace.",
-      msgBadge: "Messages",
-      msgTitle: "Private conversations",
-      msgText: "Contact buyers and sellers directly through safe in-platform messaging.",
+        "Parents can contact sellers inside the platform without sharing public phone numbers.",
     },
     modules: {
       eyebrow: "Core ecosystem",
@@ -203,51 +208,53 @@ const copy = {
       startFree: "Commencer",
     },
     hero: {
-      badge: "Application parentale premium + marketplace",
-      title1: "Un système apaisant",
-      title2: "pour le sommeil, l’alimentation, les soins, l’IA et le marketplace parents",
+      badge: "Guidance parentale alimentée par l’IA",
+      title1: "Comprenez votre bébé.",
+      title2: "Ne vous contentez pas de suivre.",
       text:
-        "Smart Baby System transforme les données quotidiennes de bébé en une expérience premium — des décisions plus claires, de meilleures routines et moins de charge mentale pour les parents. Et maintenant, il aide aussi les familles à acheter, vendre et donner des articles pour bébé dans un écosystème sûr.",
-      newMarketplace: "Nouveau : marketplace pour vêtements, jouets, matériel et dons",
+        "Arrêtez de deviner pourquoi votre bébé pleure, se réveille ou refuse de manger. Smart Baby System transforme les données quotidiennes de sommeil, d’alimentation et de soins en insights clairs grâce à l’IA, pour aider les parents à prendre des décisions plus sereines et plus sûres.",
+      trust:
+        "Conçu pour les parents modernes qui veulent de la clarté, pas de la confusion.",
       askPlaceholder:
-        "Posez une question à l’IA… ex. Pourquoi mon bébé dort-il mal ?",
+        "Posez une question à l’IA… ex. Pourquoi mon bébé a-t-il moins dormi aujourd’hui ?",
       askAi: "Demander à l’IA",
-      openApp: "Ouvrir l’app",
-      exploreMarketplace: "Explorer le marketplace",
-      sleepTitle: "Sommeil",
-      sleepText: "Rythme, siestes, fenêtres d’éveil",
-      foodTitle: "Alimentation",
-      foodText: "Repas, réactions, habitudes alimentaires",
-      careTitle: "Soins",
-      careText: "Routines, hygiène, cohérence quotidienne",
-      marketCardTitle: "Marketplace",
+      startFree: "Commencer gratuitement",
+      seeHow: "Voir comment ça marche",
+      benefit1: "Détectez les schémas cachés de sommeil et d’alimentation",
+      benefit2: "Recevez des suggestions IA basées sur de vraies données",
+      benefit3: "Construisez des routines plus calmes et prévisibles",
+      statLabel1: "Schéma de sommeil",
+      statValue1: "Plus clair",
+      statText1: "Les dernières siestes et fenêtres d’éveil sont reliées automatiquement.",
+      statLabel2: "Rythme alimentaire",
+      statValue2: "Plus intelligent",
+      statText2:
+        "Les repas et réactions sont transformés en guidance utile pour la journée.",
+      statLabel3: "Routine de soins",
+      statValue3: "Plus sereine",
+      statText3: "La cohérence quotidienne devient plus facile à comprendre et à améliorer.",
+      previewEyebrow: "Aperçu du produit",
+      previewTitle: "Un seul système apaisant pour de meilleures décisions parentales",
+      previewText:
+        "Sommeil, alimentation, soins et guidance IA travaillent ensemble dans une seule expérience connectée, au lieu de notes dispersées et d’outils séparés.",
+      scoreTitle: "Aperçu du jour",
+      scoreText:
+        "L’application relie le rythme quotidien, les repas et la cohérence des soins dans une vue simple que les parents peuvent réellement utiliser.",
+      score1: "Score sommeil",
+      score2: "Score alimentation",
+      score3: "Score soins",
+      aiCardBadge: "Insight IA",
+      aiCardTitle: "Schéma détecté",
+      aiCardText:
+        "Le bébé a moins dormi après la dernière sieste tardive. Essayez une fenêtre de sommeil plus tôt aujourd’hui.",
+      marketCardBadge: "Marketplace",
+      marketCardTitle: "Marketplace parents",
       marketCardText:
-        "Achetez, vendez ou donnez des articles pour bébé dans le même écosystème parental.",
-      chatCardTitle: "Chat privé entre parents",
+        "Achetez, vendez ou donnez des articles pour bébé dans le même écosystème de confiance.",
+      chatCardBadge: "Chat privé",
+      chatCardTitle: "Conversations plus sûres",
       chatCardText:
-        "Contactez les vendeurs en toute sécurité via la plateforme sans numéro public.",
-      unifiedPreview: "Aperçu unifié de l’app",
-      todaysOverview: "Aperçu du jour",
-      unifiedText:
-        "Un seul tableau de bord relie le rythme, les repas, la cohérence des soins, l’activité marketplace et la guidance IA dans une expérience parentale plus sereine.",
-      nextSleep: "Prochain sommeil",
-      foodLogs: "Logs repas",
-      careLogs: "Logs soins",
-      aiBadge: "IA",
-      aiTitle: "Guidance contextuelle",
-      aiText: "Posez une question et adaptez toute la journée instantanément.",
-      sleepBadge: "Sommeil",
-      sleepPanelTitle: "Prochain sommeil probable",
-      sleepPanelText:
-        "Une guidance basée sur le rythme récent des siestes et l’âge actuel.",
-      marketBadge: "Marketplace",
-      marketPanelTitle: "Acheter, vendre et donner",
-      marketPanelText:
-        "Vêtements, jouets et matériel bébé dans un marketplace pensé pour les parents.",
-      msgBadge: "Messages",
-      msgTitle: "Conversations privées",
-      msgText:
-        "Contactez acheteurs et vendeurs directement via une messagerie sécurisée intégrée.",
+        "Les parents peuvent contacter les vendeurs dans la plateforme sans partager de numéro public.",
     },
     modules: {
       eyebrow: "Écosystème principal",
@@ -493,12 +500,12 @@ export default function Home() {
 
           <h1
             style={{
-              fontSize: "clamp(34px, 4.3vw, 54px)",
-              lineHeight: 1.03,
-              letterSpacing: "-0.045em",
+              fontSize: "clamp(38px, 5vw, 66px)",
+              lineHeight: 0.98,
+              letterSpacing: "-0.05em",
               marginBottom: "18px",
               color: "#0f172a",
-              maxWidth: "820px",
+              maxWidth: "760px",
             }}
           >
             {t.hero.title1}
@@ -506,56 +513,50 @@ export default function Home() {
               style={{
                 display: "block",
                 marginTop: "8px",
-                fontSize: "0.68em",
-                lineHeight: 1.15,
-                fontWeight: 600,
-                letterSpacing: "-0.03em",
-                color: "#5d7ea3",
+                color: "#4f6f92",
+                fontWeight: 700,
+                fontSize: "0.82em",
+                lineHeight: 1.02,
+                letterSpacing: "-0.04em",
               }}
             >
               {t.hero.title2}
             </span>
           </h1>
 
-          <p className="homePremium__heroText">{t.hero.text}</p>
-
-          <div
+          <p
             style={{
-              marginTop: "16px",
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "10px",
-              padding: "10px 14px",
-              borderRadius: "999px",
-              background: "rgba(255,255,255,0.86)",
-              border: "1px solid rgba(148,163,184,0.16)",
-              color: "#334155",
-              fontSize: "13px",
-              fontWeight: 700,
-              boxShadow: "0 12px 30px rgba(15,23,42,0.05)",
+              maxWidth: "760px",
+              fontSize: "18px",
+              lineHeight: 1.75,
+              color: "#526377",
+              marginBottom: "14px",
             }}
           >
-            <span
-              style={{
-                width: "8px",
-                height: "8px",
-                borderRadius: "999px",
-                background: "#2563eb",
-                boxShadow: "0 0 0 6px rgba(37,99,235,0.12)",
-              }}
-            />
-            {t.hero.newMarketplace}
-          </div>
+            {t.hero.text}
+          </p>
+
+          <p
+            style={{
+              marginBottom: "18px",
+              color: "#6b7c8f",
+              fontSize: "14px",
+              fontWeight: 700,
+            }}
+          >
+            {t.hero.trust}
+          </p>
 
           <div
             style={{
-              marginTop: "20px",
+              marginTop: "0",
               padding: "12px",
               borderRadius: "18px",
               background: "rgba(255,255,255,0.88)",
               border: "1px solid rgba(148,163,184,0.18)",
               boxShadow: "0 16px 40px rgba(15,23,42,0.08)",
               backdropFilter: "blur(12px)",
+              maxWidth: "760px",
             }}
           >
             <form
@@ -601,38 +602,83 @@ export default function Home() {
               className="homePremium__primaryBtn"
               onClick={() => choosePlanAndGo("premium")}
             >
-              {t.nav.startFree}
+              {t.hero.startFree}
             </button>
 
-            <a href={`/${locale}/dashboard`} className="homePremium__ghostBtn">
-              {t.hero.openApp}
-            </a>
-
-            <a
-              href="/marketplace"
-              className="homePremium__ghostBtn"
-              style={{
-                border: "1px solid rgba(37,99,235,0.3)",
-                color: "#2563eb",
-                fontWeight: 700,
-              }}
-            >
-              {t.hero.exploreMarketplace}
+            <a href="#how" className="homePremium__ghostBtn">
+              {t.hero.seeHow}
             </a>
           </div>
 
-          <div className="homePremium__heroMeta">
-            <div className="homePremium__heroMetaItem">
-              <strong>{t.hero.sleepTitle}</strong>
-              <span>{t.hero.sleepText}</span>
+          <div
+            style={{
+              marginTop: "18px",
+              display: "grid",
+              gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+              gap: "12px",
+            }}
+          >
+            <div
+              style={{
+                padding: "16px",
+                borderRadius: "20px",
+                background: "rgba(255,255,255,0.76)",
+                border: "1px solid #e5edf5",
+                boxShadow: "0 14px 30px rgba(88,112,140,0.04)",
+              }}
+            >
+              <strong
+                style={{
+                  display: "block",
+                  marginBottom: "6px",
+                  fontSize: "15px",
+                  color: "#0f172a",
+                }}
+              >
+                {t.hero.benefit1}
+              </strong>
             </div>
-            <div className="homePremium__heroMetaItem">
-              <strong>{t.hero.foodTitle}</strong>
-              <span>{t.hero.foodText}</span>
+
+            <div
+              style={{
+                padding: "16px",
+                borderRadius: "20px",
+                background: "rgba(255,255,255,0.76)",
+                border: "1px solid #e5edf5",
+                boxShadow: "0 14px 30px rgba(88,112,140,0.04)",
+              }}
+            >
+              <strong
+                style={{
+                  display: "block",
+                  marginBottom: "6px",
+                  fontSize: "15px",
+                  color: "#0f172a",
+                }}
+              >
+                {t.hero.benefit2}
+              </strong>
             </div>
-            <div className="homePremium__heroMetaItem">
-              <strong>{t.hero.careTitle}</strong>
-              <span>{t.hero.careText}</span>
+
+            <div
+              style={{
+                padding: "16px",
+                borderRadius: "20px",
+                background: "rgba(255,255,255,0.76)",
+                border: "1px solid #e5edf5",
+                boxShadow: "0 14px 30px rgba(88,112,140,0.04)",
+              }}
+            >
+              <strong
+                style={{
+                  display: "block",
+                  marginBottom: "6px",
+                  fontSize: "15px",
+                  color: "#0f172a",
+                }}
+              >
+                {t.hero.benefit3}
+              </strong>
             </div>
           </div>
 
@@ -640,7 +686,7 @@ export default function Home() {
             style={{
               marginTop: "14px",
               display: "grid",
-              gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+              gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
               gap: "14px",
             }}
           >
@@ -653,15 +699,28 @@ export default function Home() {
                 boxShadow: "0 14px 30px rgba(88,112,140,0.04)",
               }}
             >
+              <span
+                style={{
+                  display: "block",
+                  marginBottom: "8px",
+                  color: "#73869a",
+                  fontSize: "12px",
+                  fontWeight: 800,
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                }}
+              >
+                {t.hero.statLabel1}
+              </span>
               <strong
                 style={{
                   display: "block",
                   marginBottom: "6px",
-                  fontSize: "17px",
+                  fontSize: "20px",
                   color: "#0f172a",
                 }}
               >
-                {t.hero.marketCardTitle}
+                {t.hero.statValue1}
               </strong>
               <span
                 style={{
@@ -670,7 +729,7 @@ export default function Home() {
                   lineHeight: 1.6,
                 }}
               >
-                {t.hero.marketCardText}
+                {t.hero.statText1}
               </span>
             </div>
 
@@ -683,15 +742,28 @@ export default function Home() {
                 boxShadow: "0 14px 30px rgba(88,112,140,0.04)",
               }}
             >
+              <span
+                style={{
+                  display: "block",
+                  marginBottom: "8px",
+                  color: "#73869a",
+                  fontSize: "12px",
+                  fontWeight: 800,
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                }}
+              >
+                {t.hero.statLabel2}
+              </span>
               <strong
                 style={{
                   display: "block",
                   marginBottom: "6px",
-                  fontSize: "17px",
+                  fontSize: "20px",
                   color: "#0f172a",
                 }}
               >
-                {t.hero.chatCardTitle}
+                {t.hero.statValue2}
               </strong>
               <span
                 style={{
@@ -700,7 +772,50 @@ export default function Home() {
                   lineHeight: 1.6,
                 }}
               >
-                {t.hero.chatCardText}
+                {t.hero.statText2}
+              </span>
+            </div>
+
+            <div
+              style={{
+                padding: "18px",
+                borderRadius: "20px",
+                background: "rgba(255,255,255,0.74)",
+                border: "1px solid #e5edf5",
+                boxShadow: "0 14px 30px rgba(88,112,140,0.04)",
+              }}
+            >
+              <span
+                style={{
+                  display: "block",
+                  marginBottom: "8px",
+                  color: "#73869a",
+                  fontSize: "12px",
+                  fontWeight: 800,
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                }}
+              >
+                {t.hero.statLabel3}
+              </span>
+              <strong
+                style={{
+                  display: "block",
+                  marginBottom: "6px",
+                  fontSize: "20px",
+                  color: "#0f172a",
+                }}
+              >
+                {t.hero.statValue3}
+              </strong>
+              <span
+                style={{
+                  color: "#657589",
+                  fontSize: "14px",
+                  lineHeight: 1.6,
+                }}
+              >
+                {t.hero.statText3}
               </span>
             </div>
           </div>
@@ -714,33 +829,33 @@ export default function Home() {
                 <span />
                 <span />
               </div>
-              <div className="homePremium__showcaseTitle">{t.hero.unifiedPreview}</div>
+              <div className="homePremium__showcaseTitle">{t.hero.previewEyebrow}</div>
             </div>
 
             <div className="homePremium__heroPanelBody">
               <div className="homePremium__heroPanelMainCard">
                 <div className="homePremium__heroPanelCardHead">
                   <div>
-                    <p className="homePremium__cardLabel">{t.hero.todaysOverview}</p>
-                    <h3>Sleep score 82 • Food score 76 • Care score 84</h3>
+                    <p className="homePremium__cardLabel">{t.hero.scoreTitle}</p>
+                    <h3>{t.hero.previewTitle}</h3>
                   </div>
                   <div className="homePremium__heroPanelPill">Premium</div>
                 </div>
 
-                <p className="homePremium__heroPanelText">{t.hero.unifiedText}</p>
+                <p className="homePremium__heroPanelText">{t.hero.previewText}</p>
 
                 <div className="homePremium__heroPanelMiniStats">
                   <div className="homePremium__heroPanelMiniStat">
-                    <span>{t.hero.nextSleep}</span>
-                    <strong>14:35</strong>
+                    <span>{t.hero.score1}</span>
+                    <strong>82</strong>
                   </div>
                   <div className="homePremium__heroPanelMiniStat">
-                    <span>{t.hero.foodLogs}</span>
-                    <strong>4 today</strong>
+                    <span>{t.hero.score2}</span>
+                    <strong>76</strong>
                   </div>
                   <div className="homePremium__heroPanelMiniStat">
-                    <span>{t.hero.careLogs}</span>
-                    <strong>5 today</strong>
+                    <span>{t.hero.score3}</span>
+                    <strong>84</strong>
                   </div>
                 </div>
               </div>
@@ -749,39 +864,39 @@ export default function Home() {
                 <div className="homePremium__heroSoftCard">
                   <div className="homePremium__dashboardCardTop">
                     <span className="homePremium__dashboardIcon">✨</span>
-                    <span className="homePremium__dashboardBadge">{t.hero.aiBadge}</span>
+                    <span className="homePremium__dashboardBadge">{t.hero.aiCardBadge}</span>
                   </div>
-                  <h4>{t.hero.aiTitle}</h4>
-                  <p>{t.hero.aiText}</p>
+                  <h4>{t.hero.aiCardTitle}</h4>
+                  <p>{t.hero.aiCardText}</p>
                 </div>
 
                 <div className="homePremium__heroSoftCard">
                   <div className="homePremium__dashboardCardTop">
-                    <span className="homePremium__dashboardIcon">☾</span>
-                    <span className="homePremium__dashboardBadge">{t.hero.sleepBadge}</span>
+                    <span className="homePremium__dashboardIcon">🛍</span>
+                    <span className="homePremium__dashboardBadge">{t.hero.marketCardBadge}</span>
                   </div>
-                  <h4>{t.hero.sleepPanelTitle}</h4>
-                  <p>{t.hero.sleepPanelText}</p>
+                  <h4>{t.hero.marketCardTitle}</h4>
+                  <p>{t.hero.marketCardText}</p>
                 </div>
               </div>
 
               <div className="homePremium__heroPanelRow">
                 <div className="homePremium__heroSoftCard">
                   <div className="homePremium__dashboardCardTop">
-                    <span className="homePremium__dashboardIcon">🛍</span>
-                    <span className="homePremium__dashboardBadge">{t.hero.marketBadge}</span>
+                    <span className="homePremium__dashboardIcon">💬</span>
+                    <span className="homePremium__dashboardBadge">{t.hero.chatCardBadge}</span>
                   </div>
-                  <h4>{t.hero.marketPanelTitle}</h4>
-                  <p>{t.hero.marketPanelText}</p>
+                  <h4>{t.hero.chatCardTitle}</h4>
+                  <p>{t.hero.chatCardText}</p>
                 </div>
 
                 <div className="homePremium__heroSoftCard">
                   <div className="homePremium__dashboardCardTop">
-                    <span className="homePremium__dashboardIcon">💬</span>
-                    <span className="homePremium__dashboardBadge">{t.hero.msgBadge}</span>
+                    <span className="homePremium__dashboardIcon">◌</span>
+                    <span className="homePremium__dashboardBadge">{t.hero.scoreTitle}</span>
                   </div>
-                  <h4>{t.hero.msgTitle}</h4>
-                  <p>{t.hero.msgText}</p>
+                  <h4>{t.hero.scoreTitle}</h4>
+                  <p>{t.hero.scoreText}</p>
                 </div>
               </div>
             </div>
