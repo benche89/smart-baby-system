@@ -1,10 +1,49 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 type Mode = "login" | "signup";
+
+const PROFILE_STORAGE_KEY = "sb_profile";
+const PLAN_STORAGE_KEY = "smartBabyPlanTier";
+const DEFAULT_LOCALE = "fr";
+
+function hasSavedProfile(): boolean {
+  if (typeof window === "undefined") return false;
+
+  try {
+    const raw = localStorage.getItem(PROFILE_STORAGE_KEY);
+    if (!raw) return false;
+
+    const parsed = JSON.parse(raw) as {
+      babyName?: string;
+      ageMonths?: string;
+      bedtime?: string;
+      mainConcern?: string;
+      notes?: string;
+    };
+
+    return Boolean(
+      parsed?.babyName ||
+        parsed?.ageMonths ||
+        parsed?.bedtime ||
+        parsed?.mainConcern ||
+        parsed?.notes
+    );
+  } catch {
+    return false;
+  }
+}
+
+function getSavedPlan(): "basic" | "premium" | "elite" {
+  if (typeof window === "undefined") return "premium";
+
+  const plan = localStorage.getItem(PLAN_STORAGE_KEY);
+  if (plan === "basic" || plan === "premium" || plan === "elite") return plan;
+  return "premium";
+}
 
 export default function LoginPage() {
   const router = useRouter();
@@ -16,8 +55,44 @@ export default function LoginPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const [loading, setLoading] = useState(false);
+  const [checkingSession, setCheckingSession] = useState(true);
   const [message, setMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+
+  useEffect(() => {
+    let mounted = true;
+
+    async function checkSession() {
+      try {
+        const { data, error } = await supabase.auth.getSession();
+
+        if (error) {
+          if (mounted) setCheckingSession(false);
+          return;
+        }
+
+        if (data.session) {
+          const goTo = hasSavedProfile()
+            ? `/${DEFAULT_LOCALE}/dashboard`
+            : `/${DEFAULT_LOCALE}/onboarding?plan=${getSavedPlan()}`;
+
+          router.replace(goTo);
+          router.refresh();
+          return;
+        }
+      } catch {
+        // ignore
+      }
+
+      if (mounted) setCheckingSession(false);
+    }
+
+    checkSession();
+
+    return () => {
+      mounted = false;
+    };
+  }, [router, supabase]);
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -46,6 +121,8 @@ export default function LoginPage() {
           return;
         }
 
+        const selectedPlan = getSavedPlan();
+
         const { error } = await supabase.auth.signUp({
           email: cleanEmail,
           password: cleanPassword,
@@ -61,7 +138,7 @@ export default function LoginPage() {
         );
 
         setTimeout(() => {
-          router.push("/fr");
+          router.push(`/${DEFAULT_LOCALE}/onboarding?plan=${selectedPlan}`);
           router.refresh();
         }, 1200);
 
@@ -78,13 +155,99 @@ export default function LoginPage() {
         return;
       }
 
-      router.push("/fr");
+      const goTo = hasSavedProfile()
+        ? `/${DEFAULT_LOCALE}/dashboard`
+        : `/${DEFAULT_LOCALE}/onboarding?plan=${getSavedPlan()}`;
+
+      router.push(goTo);
       router.refresh();
     } catch {
       setErrorMessage("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
+  }
+
+  if (checkingSession) {
+    return (
+      <main
+        style={{
+          minHeight: "100vh",
+          display: "grid",
+          placeItems: "center",
+          padding: "28px 20px",
+          background:
+            "radial-gradient(circle at top left, rgba(166,210,255,0.18), transparent 26%), linear-gradient(180deg, #f7fbff 0%, #fcfdff 100%)",
+        }}
+      >
+        <div
+          style={{
+            width: "100%",
+            maxWidth: 420,
+            background: "rgba(255,255,255,0.88)",
+            backdropFilter: "blur(16px)",
+            border: "1px solid rgba(148,163,184,0.14)",
+            borderRadius: 28,
+            boxShadow: "0 20px 60px rgba(15,23,42,0.06)",
+            padding: 28,
+            textAlign: "center",
+          }}
+        >
+          <div
+            style={{
+              width: 46,
+              height: 46,
+              borderRadius: 14,
+              display: "grid",
+              placeItems: "center",
+              background: "#0f172a",
+              color: "#fff",
+              fontWeight: 800,
+              fontSize: 14,
+              margin: "0 auto 14px",
+            }}
+          >
+            SB
+          </div>
+
+          <p
+            style={{
+              margin: 0,
+              fontSize: 12,
+              fontWeight: 800,
+              letterSpacing: "0.14em",
+              textTransform: "uppercase",
+              color: "#7288a3",
+              marginBottom: 10,
+            }}
+          >
+            Smart Baby System
+          </p>
+
+          <h1
+            style={{
+              margin: "0 0 10px",
+              fontSize: 30,
+              lineHeight: 1.08,
+              color: "#0f172a",
+            }}
+          >
+            Checking your session...
+          </h1>
+
+          <p
+            style={{
+              margin: 0,
+              color: "#607082",
+              lineHeight: 1.7,
+              fontSize: 15,
+            }}
+          >
+            Preparing the best next step for your account.
+          </p>
+        </div>
+      </main>
+    );
   }
 
   return (
@@ -122,7 +285,7 @@ export default function LoginPage() {
         >
           <div>
             <a
-              href="/fr"
+              href={`/${DEFAULT_LOCALE}`}
               style={{
                 display: "inline-flex",
                 alignItems: "center",
@@ -201,9 +364,7 @@ export default function LoginPage() {
                 maxWidth: 640,
               }}
             >
-              {mode === "login"
-                ? "Welcome back."
-                : "Create your account."}
+              {mode === "login" ? "Welcome back." : "Create your account."}
             </h1>
 
             <p
@@ -599,8 +760,8 @@ export default function LoginPage() {
 
             <div style={{ display: "grid", gap: 10 }}>
               {[
-                "Continue with your selected plan",
-                "Open your personalized dashboard",
+                "New account → onboarding",
+                "Existing user with profile → dashboard",
                 "Access sleep, food, care and AI guidance",
               ].map((item) => (
                 <div
