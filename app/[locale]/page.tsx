@@ -26,8 +26,7 @@ const copy = {
       title2: "Not just track.",
       text:
         "Stop guessing why your baby cries, wakes or refuses to eat. Smart Baby System turns daily sleep, food and care data into clear AI-powered insights, so parents can make calmer decisions with more confidence.",
-      trust:
-        "Built for modern parents who want clarity, not confusion.",
+      trust: "Built for modern parents who want clarity, not confusion.",
       askPlaceholder:
         "Ask AI anything… e.g. Why did my baby sleep less today?",
       askAi: "Ask AI",
@@ -44,7 +43,8 @@ const copy = {
       statText2: "Meals and reactions translated into useful daily guidance.",
       statLabel3: "Care routine",
       statValue3: "Calmer",
-      statText3: "Daily consistency becomes easier to understand and improve.",
+      statText3:
+        "Daily consistency becomes easier to understand and improve.",
       previewEyebrow: "Live product preview",
       previewTitle: "One calm system for better daily parenting decisions",
       previewText:
@@ -70,7 +70,8 @@ const copy = {
     },
     trust: {
       eyebrow: "Why parents stay",
-      title: "Because the product reduces uncertainty, not just adds logs.",
+      title:
+        "Because the product reduces uncertainty, not just adds logs.",
       text:
         "The value is not in collecting data. The value is in turning daily baby activity into clearer next steps, better routines and calmer decisions.",
       card1Title: "Less mental overload",
@@ -119,7 +120,8 @@ const copy = {
         "Receive meal structure, reaction clarity and simpler feeding suggestions.",
       careLabel: "Care AI",
       careQuestion: "“How can I improve baby routine?”",
-      careText: "Get calmer transitions, consistency ideas and daily care structure.",
+      careText:
+        "Get calmer transitions, consistency ideas and daily care structure.",
     },
     how: {
       eyebrow: "How it works",
@@ -187,31 +189,48 @@ const copy = {
     pricing: {
       eyebrow: "Pricing",
       title: "Choose the level of guidance your family needs.",
-      text: "Start simple, then unlock more AI depth and better daily planning.",
+      text:
+        "Start simple, then unlock deeper AI support, stronger planning and a more complete parenting system.",
+      badge: "Cancel anytime",
+      monthly: "Monthly plan",
+      yearly: "Coming soon: yearly savings",
       basic: "Basic",
       premium: "Premium",
       elite: "Elite",
+      basicPrice: "€7",
+      premiumPrice: "€11",
+      elitePrice: "€15",
+      perMonth: "/month",
       basicSub: "Essential access for parents who want the core system.",
       premiumSub:
         "Best balance of value, AI planning and premium parenting support.",
       eliteSub:
         "For families who want the deepest guidance and highest-value insights.",
       basic1: "Core module access",
-      basic2: "Basic logs",
+      basic2: "Basic logs and simple overview",
       basic3: "Short AI guidance",
-      basic4: "Simple overview",
+      basic4: "Good starting point for daily tracking",
       premium1: "Full AI action plans",
       premium2: "Sleep / Food / Care modules",
       premium3: "Premium dashboard experience",
-      premium4: "Better daily guidance",
+      premium4: "Stronger daily guidance and planning",
       elite1: "Everything in Premium",
       elite2: "Advanced AI insights",
       elite3: "Deeper recommendations",
-      elite4: "Highest-value experience",
+      elite4: "Highest-value experience for serious use",
+      basicFor: "Best for trying the system",
+      premiumFor: "Best for most families",
+      eliteFor: "Best for maximum clarity",
       mostPopular: "Most popular",
-      chooseBasic: "Choose Basic",
-      choosePremium: "Choose Premium",
-      getElite: "Get Elite",
+      chooseBasic: "Start Basic",
+      choosePremium: "Start Premium",
+      getElite: "Start Elite",
+      noteTitle: "What happens next",
+      note1: "Choose your plan",
+      note2: "Create your baby profile",
+      note3: "Start tracking and unlock AI guidance",
+      footnote:
+        "Billing integration can be connected to Stripe in the next step without changing this pricing structure.",
     },
     cta: {
       eyebrow: "Start now",
@@ -271,16 +290,19 @@ const copy = {
       benefit3: "Construisez des routines plus calmes et prévisibles",
       statLabel1: "Schéma de sommeil",
       statValue1: "Plus clair",
-      statText1: "Les dernières siestes et fenêtres d’éveil sont reliées automatiquement.",
+      statText1:
+        "Les dernières siestes et fenêtres d’éveil sont reliées automatiquement.",
       statLabel2: "Rythme alimentaire",
       statValue2: "Plus intelligent",
       statText2:
         "Les repas et réactions sont transformés en guidance utile pour la journée.",
       statLabel3: "Routine de soins",
       statValue3: "Plus sereine",
-      statText3: "La cohérence quotidienne devient plus facile à comprendre et à améliorer.",
+      statText3:
+        "La cohérence quotidienne devient plus facile à comprendre et à améliorer.",
       previewEyebrow: "Aperçu du produit",
-      previewTitle: "Un seul système apaisant pour de meilleures décisions parentales",
+      previewTitle:
+        "Un seul système apaisant pour de meilleures décisions parentales",
       previewText:
         "Sommeil, alimentation, soins et guidance IA travaillent ensemble dans une seule expérience connectée, au lieu de notes dispersées et d’outils séparés.",
       scoreTitle: "Aperçu du jour",
@@ -304,7 +326,8 @@ const copy = {
     },
     trust: {
       eyebrow: "Pourquoi les parents restent",
-      title: "Parce que le produit réduit l’incertitude, pas seulement ajoute des logs.",
+      title:
+        "Parce que le produit réduit l’incertitude, pas seulement ajoute des logs.",
       text:
         "La valeur n’est pas dans la collecte de données. La vraie valeur est de transformer l’activité quotidienne du bébé en prochaines étapes plus claires, en meilleures routines et en décisions plus sereines.",
       card1Title: "Moins de charge mentale",
@@ -325,7 +348,8 @@ const copy = {
     },
     modules: {
       eyebrow: "Écosystème principal",
-      title: "Tout fonctionne mieux lorsque les modules travaillent ensemble.",
+      title:
+        "Tout fonctionne mieux lorsque les modules travaillent ensemble.",
       text:
         "Au lieu d’utiliser plusieurs outils séparés, Smart Baby System relie les trois piliers dans une seule application premium.",
       premium: "Premium",
@@ -394,11 +418,13 @@ const copy = {
     vision: {
       eyebrow: "Une vision premium de la parentalité moderne",
       title1: "Construire un avenir lumineux",
-      title2: "pour vos enfants : des stratégies essentielles pour les parents.",
+      title2:
+        "pour vos enfants : des stratégies essentielles pour les parents.",
       text:
         "Être parent, ce n’est pas seulement traverser la journée. C’est construire des rythmes stables, des routines plus saines, de meilleures décisions et un environnement plus serein qui soutient la croissance à long terme de votre enfant avec plus de clarté et moins de stress.",
       why: "Pourquoi c’est important",
-      systemTitle: "Pas seulement du tracking. Un vrai système parental premium.",
+      systemTitle:
+        "Pas seulement du tracking. Un vrai système parental premium.",
       systemText:
         "Smart Baby System aide les parents à passer de notes dispersées et d’outils isolés à une expérience connectée où le sommeil, l’alimentation, les soins, l’IA et même les interactions marketplace travaillent ensemble pour créer de meilleures décisions quotidiennes et un parcours parental plus confiant.",
       calmTitle: "Routines apaisées",
@@ -406,28 +432,40 @@ const copy = {
       signalsTitle: "Meilleurs signaux",
       signalsText: "Voyez plus tôt ce qui compte et réagissez avec confiance.",
       longTermTitle: "Clarté à long terme",
-      longTermText: "Construisez de meilleures habitudes pour soutenir la croissance future.",
+      longTermText:
+        "Construisez de meilleures habitudes pour soutenir la croissance future.",
       sleepLabel: "Sommeil + rythme",
-      sleepTitle: "Un meilleur repos commence par une meilleure structure.",
+      sleepTitle:
+        "Un meilleur repos commence par une meilleure structure.",
       sleepText:
         "Un rythme de sommeil plus calme améliore la récupération, la cohérence des routines et la qualité de toute la journée pour les parents comme pour les enfants.",
       foodLabel: "Alimentation + soins",
-      foodTitle: "La cohérence quotidienne crée des bases plus solides.",
+      foodTitle:
+        "La cohérence quotidienne crée des bases plus solides.",
       foodText:
         "Les repas, les routines et les habitudes de soins façonnent le confort, le comportement et la stabilité d’une manière que les parents peuvent mieux comprendre avec le bon système.",
       ecoLabel: "Avantage écosystème",
-      ecoTitle: "Un seul système peut soutenir tout le parcours parental.",
+      ecoTitle:
+        "Un seul système peut soutenir tout le parcours parental.",
       ecoText:
         "Avec la guidance IA, des modules connectés et un marketplace de confiance, le produit devient plus qu’une app — il devient un écosystème parental premium.",
     },
     pricing: {
       eyebrow: "Tarifs",
-      title: "Choisissez le niveau de guidance dont votre famille a besoin.",
+      title:
+        "Choisissez le niveau de guidance dont votre famille a besoin.",
       text:
-        "Commencez simplement, puis débloquez plus de profondeur IA et une meilleure planification quotidienne.",
+        "Commencez simplement, puis débloquez plus de profondeur IA, une meilleure planification et un système parental plus complet.",
+      badge: "Résiliable à tout moment",
+      monthly: "Abonnement mensuel",
+      yearly: "Bientôt : économies en annuel",
       basic: "Basic",
       premium: "Premium",
       elite: "Elite",
+      basicPrice: "€7",
+      premiumPrice: "€11",
+      elitePrice: "€15",
+      perMonth: "/mois",
       basicSub:
         "Accès essentiel pour les parents qui veulent le système de base.",
       premiumSub:
@@ -435,21 +473,30 @@ const copy = {
       eliteSub:
         "Pour les familles qui veulent la guidance la plus approfondie et les insights les plus précieux.",
       basic1: "Accès aux modules principaux",
-      basic2: "Logs de base",
+      basic2: "Logs de base et vue simple",
       basic3: "Guidance IA courte",
-      basic4: "Vue simple",
+      basic4: "Bon point de départ pour le suivi quotidien",
       premium1: "Plans d’action IA complets",
       premium2: "Modules Sommeil / Alimentation / Soins",
       premium3: "Expérience dashboard premium",
-      premium4: "Meilleure guidance quotidienne",
+      premium4: "Guidance et planification plus fortes",
       elite1: "Tout ce qui est dans Premium",
       elite2: "Insights IA avancés",
       elite3: "Recommandations plus poussées",
-      elite4: "Expérience à plus haute valeur",
+      elite4: "Expérience la plus complète pour un usage sérieux",
+      basicFor: "Idéal pour essayer le système",
+      premiumFor: "Idéal pour la plupart des familles",
+      eliteFor: "Idéal pour une clarté maximale",
       mostPopular: "Le plus populaire",
-      chooseBasic: "Choisir Basic",
-      choosePremium: "Choisir Premium",
-      getElite: "Choisir Elite",
+      chooseBasic: "Commencer Basic",
+      choosePremium: "Commencer Premium",
+      getElite: "Commencer Elite",
+      noteTitle: "Ce qui se passe ensuite",
+      note1: "Choisissez votre formule",
+      note2: "Créez le profil de votre bébé",
+      note3: "Commencez le suivi et débloquez la guidance IA",
+      footnote:
+        "L’intégration de paiement peut être connectée à Stripe à l’étape suivante sans changer cette structure tarifaire.",
     },
     cta: {
       eyebrow: "Commencez maintenant",
@@ -477,7 +524,8 @@ const copy = {
       onboarding: "Onboarding",
       login: "Connexion",
       messages: "Messages",
-      bottom: "© 2026 Smart Baby System. Conçu pour une parentalité moderne et apaisée.",
+      bottom:
+        "© 2026 Smart Baby System. Conçu pour une parentalité moderne et apaisée.",
     },
   },
 } as const;
@@ -487,8 +535,11 @@ export default function Home() {
   const router = useRouter();
   const params = useParams();
 
-  const rawLocale = typeof params.locale === "string" ? params.locale : defaultLocale;
-  const locale: Locale = isValidLocale(rawLocale) ? (rawLocale as Locale) : "en";
+  const rawLocale =
+    typeof params.locale === "string" ? params.locale : defaultLocale;
+  const locale: Locale = isValidLocale(rawLocale)
+    ? (rawLocale as Locale)
+    : "en";
   const t = copy[locale];
 
   function handleAskAI() {
@@ -577,7 +628,10 @@ export default function Home() {
         </div>
       </header>
 
-      <section className="homePremium__hero homePremium__hero--luxury" id="overview">
+      <section
+        className="homePremium__hero homePremium__hero--luxury"
+        id="overview"
+      >
         <div className="homePremium__heroBackdrop" />
 
         <div className="homePremium__heroContent">
@@ -809,7 +863,9 @@ export default function Home() {
                 <span />
                 <span />
               </div>
-              <div className="homePremium__showcaseTitle">{t.hero.previewEyebrow}</div>
+              <div className="homePremium__showcaseTitle">
+                {t.hero.previewEyebrow}
+              </div>
             </div>
 
             <div className="homePremium__heroPanelBody">
@@ -822,7 +878,9 @@ export default function Home() {
                   <div className="homePremium__heroPanelPill">Premium</div>
                 </div>
 
-                <p className="homePremium__heroPanelText">{t.hero.previewText}</p>
+                <p className="homePremium__heroPanelText">
+                  {t.hero.previewText}
+                </p>
 
                 <div className="homePremium__heroPanelMiniStats">
                   <div className="homePremium__heroPanelMiniStat">
@@ -844,7 +902,9 @@ export default function Home() {
                 <div className="homePremium__heroSoftCard">
                   <div className="homePremium__dashboardCardTop">
                     <span className="homePremium__dashboardIcon">✨</span>
-                    <span className="homePremium__dashboardBadge">{t.hero.aiCardBadge}</span>
+                    <span className="homePremium__dashboardBadge">
+                      {t.hero.aiCardBadge}
+                    </span>
                   </div>
                   <h4>{t.hero.aiCardTitle}</h4>
                   <p>{t.hero.aiCardText}</p>
@@ -853,7 +913,9 @@ export default function Home() {
                 <div className="homePremium__heroSoftCard">
                   <div className="homePremium__dashboardCardTop">
                     <span className="homePremium__dashboardIcon">🛍</span>
-                    <span className="homePremium__dashboardBadge">{t.hero.marketCardBadge}</span>
+                    <span className="homePremium__dashboardBadge">
+                      {t.hero.marketCardBadge}
+                    </span>
                   </div>
                   <h4>{t.hero.marketCardTitle}</h4>
                   <p>{t.hero.marketCardText}</p>
@@ -864,7 +926,9 @@ export default function Home() {
                 <div className="homePremium__heroSoftCard">
                   <div className="homePremium__dashboardCardTop">
                     <span className="homePremium__dashboardIcon">💬</span>
-                    <span className="homePremium__dashboardBadge">{t.hero.chatCardBadge}</span>
+                    <span className="homePremium__dashboardBadge">
+                      {t.hero.chatCardBadge}
+                    </span>
                   </div>
                   <h4>{t.hero.chatCardTitle}</h4>
                   <p>{t.hero.chatCardText}</p>
@@ -873,7 +937,9 @@ export default function Home() {
                 <div className="homePremium__heroSoftCard">
                   <div className="homePremium__dashboardCardTop">
                     <span className="homePremium__dashboardIcon">◌</span>
-                    <span className="homePremium__dashboardBadge">{t.hero.scoreTitle}</span>
+                    <span className="homePremium__dashboardBadge">
+                      {t.hero.scoreTitle}
+                    </span>
                   </div>
                   <h4>{t.hero.scoreTitle}</h4>
                   <p>{t.hero.scoreText}</p>
@@ -905,7 +971,10 @@ export default function Home() {
               gap: "16px",
             }}
           >
-            <div className="homePremium__stepsGrid" style={{ gridTemplateColumns: "1fr" }}>
+            <div
+              className="homePremium__stepsGrid"
+              style={{ gridTemplateColumns: "1fr" }}
+            >
               <article className="homePremium__stepCard">
                 <span className="homePremium__stepNumber">01</span>
                 <h3>{t.how.step1Title}</h3>
@@ -1170,7 +1239,9 @@ export default function Home() {
           <a href={`/${locale}/sleep`} className="homePremium__moduleCard">
             <div className="homePremium__moduleTop">
               <span className="homePremium__moduleIcon">☾</span>
-              <span className="homePremium__moduleBadge">{t.modules.premium}</span>
+              <span className="homePremium__moduleBadge">
+                {t.modules.premium}
+              </span>
             </div>
             <h3>{t.modules.sleepTitle}</h3>
             <p>{t.modules.sleepText}</p>
@@ -1179,7 +1250,9 @@ export default function Home() {
           <a href={`/${locale}/food`} className="homePremium__moduleCard">
             <div className="homePremium__moduleTop">
               <span className="homePremium__moduleIcon">◔</span>
-              <span className="homePremium__moduleBadge">{t.modules.premium}</span>
+              <span className="homePremium__moduleBadge">
+                {t.modules.premium}
+              </span>
             </div>
             <h3>{t.modules.foodTitle}</h3>
             <p>{t.modules.foodText}</p>
@@ -1188,7 +1261,9 @@ export default function Home() {
           <a href={`/${locale}/care`} className="homePremium__moduleCard">
             <div className="homePremium__moduleTop">
               <span className="homePremium__moduleIcon">✦</span>
-              <span className="homePremium__moduleBadge">{t.modules.premium}</span>
+              <span className="homePremium__moduleBadge">
+                {t.modules.premium}
+              </span>
             </div>
             <h3>{t.modules.careTitle}</h3>
             <p>{t.modules.careText}</p>
@@ -1444,13 +1519,81 @@ export default function Home() {
           <p>{t.pricing.text}</p>
         </div>
 
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            gap: "12px",
+            marginBottom: "22px",
+            flexWrap: "wrap",
+          }}
+        >
+          <div
+            style={{
+              padding: "10px 14px",
+              borderRadius: "999px",
+              background: "rgba(255,255,255,0.88)",
+              border: "1px solid rgba(148,163,184,0.16)",
+              color: "#334155",
+              fontSize: "13px",
+              fontWeight: 700,
+            }}
+          >
+            {t.pricing.badge}
+          </div>
+
+          <div
+            style={{
+              padding: "10px 14px",
+              borderRadius: "999px",
+              background: "rgba(239,248,255,0.96)",
+              border: "1px solid rgba(148,163,184,0.16)",
+              color: "#2563eb",
+              fontSize: "13px",
+              fontWeight: 700,
+            }}
+          >
+            {t.pricing.monthly}
+          </div>
+
+          <div
+            style={{
+              padding: "10px 14px",
+              borderRadius: "999px",
+              background: "rgba(255,255,255,0.88)",
+              border: "1px solid rgba(148,163,184,0.16)",
+              color: "#64748b",
+              fontSize: "13px",
+              fontWeight: 700,
+            }}
+          >
+            {t.pricing.yearly}
+          </div>
+        </div>
+
         <div className="homePremium__pricingGrid">
           <article className="homePremium__priceCard">
             <p className="homePremium__priceLabel">{t.pricing.basic}</p>
             <h3>
-              €7<span>/month</span>
+              {t.pricing.basicPrice}
+              <span>{t.pricing.perMonth}</span>
             </h3>
             <p className="homePremium__priceSub">{t.pricing.basicSub}</p>
+
+            <div
+              style={{
+                marginBottom: "16px",
+                padding: "10px 12px",
+                borderRadius: "14px",
+                background: "#f8fafc",
+                color: "#334155",
+                fontSize: "13px",
+                fontWeight: 700,
+                border: "1px solid rgba(148,163,184,0.12)",
+              }}
+            >
+              {t.pricing.basicFor}
+            </div>
 
             <ul className="homePremium__priceList">
               <li>{t.pricing.basic1}</li>
@@ -1472,9 +1615,25 @@ export default function Home() {
             <div className="homePremium__priceBadge">{t.pricing.mostPopular}</div>
             <p className="homePremium__priceLabel">{t.pricing.premium}</p>
             <h3>
-              €11<span>/month</span>
+              {t.pricing.premiumPrice}
+              <span>{t.pricing.perMonth}</span>
             </h3>
             <p className="homePremium__priceSub">{t.pricing.premiumSub}</p>
+
+            <div
+              style={{
+                marginBottom: "16px",
+                padding: "10px 12px",
+                borderRadius: "14px",
+                background: "rgba(239,248,255,0.96)",
+                color: "#2563eb",
+                fontSize: "13px",
+                fontWeight: 800,
+                border: "1px solid rgba(37,99,235,0.14)",
+              }}
+            >
+              {t.pricing.premiumFor}
+            </div>
 
             <ul className="homePremium__priceList">
               <li>{t.pricing.premium1}</li>
@@ -1495,9 +1654,25 @@ export default function Home() {
           <article className="homePremium__priceCard">
             <p className="homePremium__priceLabel">{t.pricing.elite}</p>
             <h3>
-              €15<span>/month</span>
+              {t.pricing.elitePrice}
+              <span>{t.pricing.perMonth}</span>
             </h3>
             <p className="homePremium__priceSub">{t.pricing.eliteSub}</p>
+
+            <div
+              style={{
+                marginBottom: "16px",
+                padding: "10px 12px",
+                borderRadius: "14px",
+                background: "#f8fafc",
+                color: "#334155",
+                fontSize: "13px",
+                fontWeight: 700,
+                border: "1px solid rgba(148,163,184,0.12)",
+              }}
+            >
+              {t.pricing.eliteFor}
+            </div>
 
             <ul className="homePremium__priceList">
               <li>{t.pricing.elite1}</li>
@@ -1514,6 +1689,91 @@ export default function Home() {
               {t.pricing.getElite}
             </button>
           </article>
+        </div>
+
+        <div
+          style={{
+            marginTop: "22px",
+            padding: "22px",
+            borderRadius: "24px",
+            background:
+              "linear-gradient(135deg, rgba(239,248,255,0.96) 0%, rgba(252,253,255,0.98) 100%)",
+            border: "1px solid rgba(148,163,184,0.16)",
+            boxShadow: "0 16px 38px rgba(87,109,138,0.05)",
+          }}
+        >
+          <p
+            style={{
+              marginBottom: "12px",
+              fontSize: "12px",
+              fontWeight: 800,
+              letterSpacing: "0.08em",
+              textTransform: "uppercase",
+              color: "#7288a3",
+            }}
+          >
+            {t.pricing.noteTitle}
+          </p>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+              gap: "14px",
+              marginBottom: "14px",
+            }}
+          >
+            {[t.pricing.note1, t.pricing.note2, t.pricing.note3].map(
+              (item, index) => (
+                <div
+                  key={item}
+                  style={{
+                    padding: "16px",
+                    borderRadius: "18px",
+                    background: "rgba(255,255,255,0.88)",
+                    border: "1px solid #e5edf5",
+                  }}
+                >
+                  <div
+                    style={{
+                      width: "30px",
+                      height: "30px",
+                      borderRadius: "999px",
+                      display: "grid",
+                      placeItems: "center",
+                      marginBottom: "10px",
+                      background: "#0f172a",
+                      color: "#fff",
+                      fontWeight: 800,
+                      fontSize: "13px",
+                    }}
+                  >
+                    {index + 1}
+                  </div>
+                  <p
+                    style={{
+                      color: "#334155",
+                      lineHeight: 1.6,
+                      fontSize: "14px",
+                      fontWeight: 700,
+                    }}
+                  >
+                    {item}
+                  </p>
+                </div>
+              )
+            )}
+          </div>
+
+          <p
+            style={{
+              color: "#64748b",
+              fontSize: "14px",
+              lineHeight: 1.7,
+            }}
+          >
+            {t.pricing.footnote}
+          </p>
         </div>
       </section>
 
@@ -1544,7 +1804,10 @@ export default function Home() {
       <footer className="homePremium__footer">
         <div className="homePremium__footerInner">
           <div className="homePremium__footerBrandCol">
-            <a href={`/${locale}`} className="homePremium__brand homePremium__brand--footer">
+            <a
+              href={`/${locale}`}
+              className="homePremium__brand homePremium__brand--footer"
+            >
               <div className="homePremium__brandLogo">SB</div>
               <div>
                 <p className="homePremium__brandTitle">Smart Baby</p>
