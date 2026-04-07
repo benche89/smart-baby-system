@@ -1,10 +1,17 @@
 "use client";
 
+import {
+  useEffect,
+  useMemo,
+  useState,
+  type CSSProperties,
+  type FormEvent,
+} from "react";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useMemo, useState, type CSSProperties, type FormEvent } from "react";
-import { defaultLocale, getMessages, isValidLocale } from "../../../lib/i18n";
+import { defaultLocale, isValidLocale } from "../../../lib/i18n";
 
 type PlanTier = "basic" | "premium" | "elite";
+type Locale = "en" | "fr";
 
 type BabyProfile = {
   babyName: string;
@@ -17,57 +24,253 @@ type BabyProfile = {
 const PROFILE_STORAGE_KEY = "sb_profile";
 const PLAN_STORAGE_KEY = "smartBabyPlanTier";
 
-const PLAN_CONTENT: Record<
-  PlanTier,
-  {
-    title: string;
-    price: string;
-    subtitle: string;
-    features: string[];
+const copy = {
+  en: {
+    backHome: "Back to homepage",
+    badge: "Personalized onboarding",
+    title: "Set up your baby profile",
+    subtitle:
+      "This takes less than 2 minutes and helps Smart Baby System personalize sleep, food, care and AI guidance.",
+    selectedPlan: "Selected plan",
+    planHelper:
+      "You can change this later. Your onboarding will continue with the selected plan experience.",
+    plans: {
+      basic: {
+        name: "Basic",
+        price: "€7 / month",
+        text: "A simple starting point for daily tracking.",
+        tag: "Essential access",
+        features: [
+          "Basic sleep tracking",
+          "Simple food logs",
+          "Care overview",
+          "Short AI guidance",
+        ],
+      },
+      premium: {
+        name: "Premium",
+        price: "€11 / month",
+        text: "The best balance of guidance, AI and planning.",
+        tag: "Most popular",
+        features: [
+          "Advanced sleep insights",
+          "Food patterns and reactions",
+          "Smarter care summaries",
+          "Full AI action plan",
+          "Premium dashboard experience",
+        ],
+      },
+      elite: {
+        name: "Elite",
+        price: "€15 / month",
+        text: "The deepest guidance and highest-value experience.",
+        tag: "Full experience",
+        features: [
+          "Everything in Premium",
+          "Advanced AI guidance",
+          "Full tracking and optimization",
+          "Priority insights",
+        ],
+      },
+    },
+    steps: {
+      profile: "Profile",
+      routine: "Routine",
+      goals: "Goals",
+    },
+    labels: {
+      babyName: "Baby name",
+      ageMonths: "Age in months",
+      bedtime: "Usual bedtime",
+      mainConcern: "Main concern right now",
+      notes: "Extra notes",
+    },
+    placeholders: {
+      babyName: "e.g. Emma",
+      ageMonths: "e.g. 8",
+      bedtime: "e.g. 19:30",
+      mainConcern: "e.g. Sleep regression, feeding rhythm, daily routine",
+      notes:
+        "Anything useful for the AI to understand your current situation.",
+    },
+    helper: {
+      babyName: "This helps personalize the experience.",
+      ageMonths: "Used to adapt sleep, food and care guidance.",
+      bedtime: "Helps the system understand your daily rhythm.",
+      mainConcern: "The system will focus more on this area first.",
+      notes: "Optional, but useful for better context.",
+    },
+    concernOptions: {
+      chooseOne: "Choose one",
+      sleepRhythm: "Sleep rhythm",
+      shortNaps: "Short naps",
+      nightWaking: "Night waking",
+      foodReactions: "Food reactions",
+      feedingRoutine: "Feeding routine",
+      dailyRoutine: "Daily routine",
+      generalSupport: "General support",
+    },
+    benefitTitle: "What you unlock after onboarding",
+    benefits: [
+      "A more personalized dashboard",
+      "Stronger sleep, food and care suggestions",
+      "Better AI context from day one",
+    ],
+    trustTitle: "Why this matters",
+    trustText:
+      "Smart Baby System is more useful when it understands your baby’s age, rhythm and current priorities before giving suggestions.",
+    previewTitle: "What happens next",
+    previewSteps: [
+      "Your profile is saved securely",
+      "Your selected plan is applied",
+      "You continue to your personalized dashboard",
+    ],
+    whatYouGet: "What you get",
+    save: "Save and continue",
+    saving: "Saving...",
+    skip: "Skip for now",
+    errors: {
+      age: "Please enter a valid age in months.",
+      general: "Something went wrong. Please try again.",
+    },
+  },
+  fr: {
+    backHome: "Retour à l’accueil",
+    badge: "Onboarding personnalisé",
+    title: "Configurez le profil de votre bébé",
+    subtitle:
+      "Cela prend moins de 2 minutes et aide Smart Baby System à personnaliser le sommeil, l’alimentation, les soins et la guidance IA.",
+    selectedPlan: "Formule sélectionnée",
+    planHelper:
+      "Vous pourrez la modifier plus tard. L’onboarding continue avec l’expérience liée à la formule choisie.",
+    plans: {
+      basic: {
+        name: "Basic",
+        price: "€7 / mois",
+        text: "Un point de départ simple pour le suivi quotidien.",
+        tag: "Accès essentiel",
+        features: [
+          "Suivi sommeil de base",
+          "Logs repas simples",
+          "Vue générale des soins",
+          "Guidance IA courte",
+        ],
+      },
+      premium: {
+        name: "Premium",
+        price: "€11 / mois",
+        text: "Le meilleur équilibre entre guidance, IA et planification.",
+        tag: "Le plus populaire",
+        features: [
+          "Insights sommeil avancés",
+          "Schémas alimentaires et réactions",
+          "Résumés soins plus intelligents",
+          "Plan d’action IA complet",
+          "Expérience dashboard premium",
+        ],
+      },
+      elite: {
+        name: "Elite",
+        price: "€15 / mois",
+        text: "La guidance la plus approfondie et l’expérience la plus complète.",
+        tag: "Expérience complète",
+        features: [
+          "Tout ce qui est dans Premium",
+          "Guidance IA avancée",
+          "Suivi et optimisation complets",
+          "Insights prioritaires",
+        ],
+      },
+    },
+    steps: {
+      profile: "Profil",
+      routine: "Routine",
+      goals: "Objectifs",
+    },
+    labels: {
+      babyName: "Nom du bébé",
+      ageMonths: "Âge en mois",
+      bedtime: "Heure habituelle du coucher",
+      mainConcern: "Préoccupation principale du moment",
+      notes: "Notes supplémentaires",
+    },
+    placeholders: {
+      babyName: "ex. Emma",
+      ageMonths: "ex. 8",
+      bedtime: "ex. 19:30",
+      mainConcern: "ex. Régression du sommeil, rythme alimentaire, routine",
+      notes:
+        "Tout élément utile pour que l’IA comprenne mieux votre situation actuelle.",
+    },
+    helper: {
+      babyName: "Cela aide à personnaliser l’expérience.",
+      ageMonths:
+        "Utilisé pour adapter la guidance sommeil, alimentation et soins.",
+      bedtime: "Aide le système à comprendre votre rythme quotidien.",
+      mainConcern:
+        "Le système se concentrera davantage sur cette zone au départ.",
+      notes: "Optionnel, mais utile pour un meilleur contexte.",
+    },
+    concernOptions: {
+      chooseOne: "Choisissez une option",
+      sleepRhythm: "Rythme de sommeil",
+      shortNaps: "Siestes courtes",
+      nightWaking: "Réveils nocturnes",
+      foodReactions: "Réactions alimentaires",
+      feedingRoutine: "Routine alimentaire",
+      dailyRoutine: "Routine quotidienne",
+      generalSupport: "Support général",
+    },
+    benefitTitle: "Ce que vous débloquez après l’onboarding",
+    benefits: [
+      "Un dashboard plus personnalisé",
+      "De meilleures suggestions sommeil, alimentation et soins",
+      "Un meilleur contexte IA dès le premier jour",
+    ],
+    trustTitle: "Pourquoi c’est important",
+    trustText:
+      "Smart Baby System est plus utile lorsqu’il comprend l’âge, le rythme et les priorités actuelles de votre bébé avant de proposer des suggestions.",
+    previewTitle: "Ce qui se passe ensuite",
+    previewSteps: [
+      "Votre profil est enregistré en sécurité",
+      "Votre formule sélectionnée est appliquée",
+      "Vous continuez vers votre dashboard personnalisé",
+    ],
+    whatYouGet: "Ce que vous obtenez",
+    save: "Enregistrer et continuer",
+    saving: "Enregistrement...",
+    skip: "Passer pour l’instant",
+    errors: {
+      age: "Veuillez entrer un âge valide en mois.",
+      general: "Une erreur est survenue. Veuillez réessayer.",
+    },
+  },
+} as const;
+
+function getPlanFromUrl(): PlanTier {
+  if (typeof window === "undefined") return "premium";
+  const params = new URLSearchParams(window.location.search);
+  const fromUrl = params.get("plan");
+  if (fromUrl === "basic" || fromUrl === "premium" || fromUrl === "elite") {
+    return fromUrl;
   }
-> = {
-  basic: {
-    title: "Basic",
-    price: "€7 / month",
-    subtitle: "A simple entry point for parents who want the essentials.",
-    features: [
-      "Basic sleep tracking",
-      "Simple food logs",
-      "Care overview",
-      "Short AI guidance",
-    ],
-  },
-  premium: {
-    title: "Premium",
-    price: "€11 / month",
-    subtitle: "Better insights, smarter suggestions and a fuller parenting system.",
-    features: [
-      "Advanced sleep insights",
-      "Food patterns and reactions",
-      "Smarter care summaries",
-      "Full AI action plan",
-      "Premium dashboard experience",
-    ],
-  },
-  elite: {
-    title: "Elite",
-    price: "€15 / month",
-    subtitle: "For families who want the most complete and premium experience.",
-    features: [
-      "Everything in Premium",
-      "Advanced AI guidance",
-      "Full tracking and optimization",
-      "Priority insights",
-    ],
-  },
-};
+
+  const savedPlan = localStorage.getItem(PLAN_STORAGE_KEY);
+  if (savedPlan === "basic" || savedPlan === "premium" || savedPlan === "elite") {
+    return savedPlan;
+  }
+
+  return "premium";
+}
 
 export default function OnboardingPage() {
   const router = useRouter();
   const params = useParams();
-  const rawLocale = typeof params.locale === "string" ? params.locale : defaultLocale;
-  const locale = isValidLocale(rawLocale) ? rawLocale : defaultLocale;
-  const t = getMessages(locale);
+
+  const rawLocale =
+    typeof params.locale === "string" ? params.locale : defaultLocale;
+  const locale: Locale = isValidLocale(rawLocale) ? (rawLocale as Locale) : "en";
+  const t = copy[locale];
 
   const [selectedPlan, setSelectedPlan] = useState<PlanTier>("premium");
   const [isReady, setIsReady] = useState(false);
@@ -80,34 +283,26 @@ export default function OnboardingPage() {
     notes: "",
   });
 
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    const params = new URLSearchParams(window.location.search);
-    const planFromUrl = params.get("plan");
-    const savedPlan = localStorage.getItem(PLAN_STORAGE_KEY);
-
-    const normalizedPlan: PlanTier =
-      planFromUrl === "basic" || planFromUrl === "premium" || planFromUrl === "elite"
-        ? planFromUrl
-        : savedPlan === "basic" || savedPlan === "premium" || savedPlan === "elite"
-          ? savedPlan
-          : "premium";
-
+    const normalizedPlan = getPlanFromUrl();
     setSelectedPlan(normalizedPlan);
     localStorage.setItem(PLAN_STORAGE_KEY, normalizedPlan);
 
     const savedProfile = localStorage.getItem(PROFILE_STORAGE_KEY);
-
     if (savedProfile) {
       try {
-        const parsed = JSON.parse(savedProfile) as BabyProfile;
+        const parsed = JSON.parse(savedProfile) as Partial<BabyProfile>;
         setForm({
-          babyName: parsed.babyName || "",
-          ageMonths: parsed.ageMonths || "",
-          bedtime: parsed.bedtime || "",
-          mainConcern: parsed.mainConcern || "",
-          notes: parsed.notes || "",
+          babyName: parsed.babyName ?? "",
+          ageMonths: parsed.ageMonths ?? "",
+          bedtime: parsed.bedtime ?? "",
+          mainConcern: parsed.mainConcern ?? "",
+          notes: parsed.notes ?? "",
         });
       } catch {
         // ignore invalid saved data
@@ -124,26 +319,53 @@ export default function OnboardingPage() {
     }
   }
 
-  function handleSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-
-    if (typeof window !== "undefined") {
-      const profileData: BabyProfile = {
-        babyName: form.babyName,
-        ageMonths: form.ageMonths,
-        bedtime: form.bedtime,
-        mainConcern: form.mainConcern,
-        notes: form.notes,
-      };
-
-      localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(profileData));
-      localStorage.setItem(PLAN_STORAGE_KEY, selectedPlan);
-    }
-
-    router.push(`/${locale}/dashboard`);
+  function updateField<K extends keyof BabyProfile>(
+    key: K,
+    value: BabyProfile[K]
+  ) {
+    setForm((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
   }
 
-  const plan = useMemo(() => PLAN_CONTENT[selectedPlan], [selectedPlan]);
+  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setLoading(true);
+    setErrorMessage("");
+
+    try {
+      if (form.ageMonths.trim()) {
+        const age = Number(form.ageMonths);
+        if (Number.isNaN(age) || age < 0 || age > 72) {
+          setErrorMessage(t.errors.age);
+          setLoading(false);
+          return;
+        }
+      }
+
+      if (typeof window !== "undefined") {
+        const profileData: BabyProfile = {
+          babyName: form.babyName,
+          ageMonths: form.ageMonths,
+          bedtime: form.bedtime,
+          mainConcern: form.mainConcern,
+          notes: form.notes,
+        };
+
+        localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(profileData));
+        localStorage.setItem(PLAN_STORAGE_KEY, selectedPlan);
+      }
+
+      router.push(`/${locale}/dashboard`);
+      router.refresh();
+    } catch {
+      setErrorMessage(t.errors.general);
+      setLoading(false);
+    }
+  }
+
+  const plan = useMemo(() => t.plans[selectedPlan], [selectedPlan, t.plans]);
 
   return (
     <main
@@ -156,440 +378,737 @@ export default function OnboardingPage() {
     >
       <div
         style={{
-          maxWidth: "1180px",
+          maxWidth: "1240px",
           margin: "0 auto",
-          display: "grid",
-          gap: "24px",
-          gridTemplateColumns: "1.1fr 0.9fr",
         }}
       >
-        <section
+        <div
           style={{
-            background: "rgba(255,255,255,0.82)",
-            border: "1px solid rgba(148,163,184,0.16)",
-            borderRadius: "28px",
-            padding: "28px",
-            boxShadow: "0 18px 50px rgba(15,23,42,0.08)",
-            backdropFilter: "blur(14px)",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            gap: "16px",
+            flexWrap: "wrap",
+            marginBottom: "22px",
           }}
         >
-          <div style={{ marginBottom: "24px" }}>
-            <p
+          <a
+            href={`/${locale}`}
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "10px",
+              textDecoration: "none",
+              color: "#334155",
+              fontWeight: 700,
+            }}
+          >
+            <span
               style={{
-                margin: 0,
-                fontSize: "12px",
-                fontWeight: 700,
-                letterSpacing: "0.18em",
-                textTransform: "uppercase",
-                color: "#4f8cff",
+                width: "36px",
+                height: "36px",
+                borderRadius: "12px",
+                display: "grid",
+                placeItems: "center",
+                background: "#0f172a",
+                color: "#fff",
+                fontSize: "13px",
+                fontWeight: 800,
               }}
             >
-              Smart Baby System
-            </p>
-
-            <h1
-              style={{
-                margin: "10px 0 10px",
-                fontSize: "40px",
-                lineHeight: 1.05,
-                color: "#0f172a",
-              }}
-            >
-              {t.onboarding.title}
-            </h1>
-
-            <p
-              style={{
-                margin: 0,
-                fontSize: "16px",
-                lineHeight: 1.7,
-                color: "#475569",
-                maxWidth: "760px",
-              }}
-            >
-              {t.onboarding.subtitle}
-            </p>
-          </div>
+              SB
+            </span>
+            {t.backHome}
+          </a>
 
           <div
             style={{
-              display: "grid",
-              gap: "14px",
-              gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-              marginBottom: "24px",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "8px",
+              padding: "10px 14px",
+              borderRadius: "999px",
+              background: "rgba(255,255,255,0.82)",
+              border: "1px solid rgba(148,163,184,0.16)",
+              color: "#475569",
+              fontWeight: 700,
+              fontSize: "13px",
             }}
           >
-            <button
-              type="button"
-              onClick={() => choosePlan("basic")}
+            <span
               style={{
-                borderRadius: "20px",
-                padding: "18px",
-                textAlign: "left",
-                border:
-                  selectedPlan === "basic"
-                    ? "2px solid #0f172a"
-                    : "1px solid rgba(148,163,184,0.22)",
-                background: "#fff",
-                cursor: "pointer",
+                width: "8px",
+                height: "8px",
+                borderRadius: "999px",
+                background: "#2563eb",
+                boxShadow: "0 0 0 6px rgba(37,99,235,0.12)",
               }}
-            >
-              <div
-                style={{
-                  fontSize: "12px",
-                  fontWeight: 700,
-                  letterSpacing: "0.12em",
-                  textTransform: "uppercase",
-                  color: "#64748b",
-                }}
-              >
-                Basic
-              </div>
-
-              <div
-                style={{
-                  marginTop: "8px",
-                  fontSize: "28px",
-                  fontWeight: 700,
-                  color: "#0f172a",
-                }}
-              >
-                €7
-              </div>
-
-              <div style={{ marginTop: "6px", color: "#64748b", fontSize: "14px" }}>
-                Essential access
-              </div>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => choosePlan("premium")}
-              style={{
-                borderRadius: "20px",
-                padding: "18px",
-                textAlign: "left",
-                border:
-                  selectedPlan === "premium"
-                    ? "2px solid #0f172a"
-                    : "1px solid rgba(148,163,184,0.22)",
-                background: selectedPlan === "premium" ? "#0f172a" : "#fff",
-                color: selectedPlan === "premium" ? "#fff" : "#0f172a",
-                cursor: "pointer",
-                boxShadow:
-                  selectedPlan === "premium" ? "0 18px 40px rgba(15,23,42,0.16)" : "none",
-              }}
-            >
-              <div
-                style={{
-                  fontSize: "12px",
-                  fontWeight: 700,
-                  letterSpacing: "0.12em",
-                  textTransform: "uppercase",
-                  color: selectedPlan === "premium" ? "#cbd5e1" : "#64748b",
-                }}
-              >
-                Premium
-              </div>
-
-              <div
-                style={{
-                  marginTop: "8px",
-                  fontSize: "28px",
-                  fontWeight: 700,
-                }}
-              >
-                €11
-              </div>
-
-              <div
-                style={{
-                  marginTop: "6px",
-                  color: selectedPlan === "premium" ? "#cbd5e1" : "#64748b",
-                  fontSize: "14px",
-                }}
-              >
-                Most popular
-              </div>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => choosePlan("elite")}
-              style={{
-                borderRadius: "20px",
-                padding: "18px",
-                textAlign: "left",
-                border:
-                  selectedPlan === "elite"
-                    ? "2px solid #0f172a"
-                    : "1px solid rgba(148,163,184,0.22)",
-                background: "#fff",
-                cursor: "pointer",
-              }}
-            >
-              <div
-                style={{
-                  fontSize: "12px",
-                  fontWeight: 700,
-                  letterSpacing: "0.12em",
-                  textTransform: "uppercase",
-                  color: "#64748b",
-                }}
-              >
-                Elite
-              </div>
-
-              <div
-                style={{
-                  marginTop: "8px",
-                  fontSize: "28px",
-                  fontWeight: 700,
-                  color: "#0f172a",
-                }}
-              >
-                €15
-              </div>
-
-              <div style={{ marginTop: "6px", color: "#64748b", fontSize: "14px" }}>
-                Full experience
-              </div>
-            </button>
+            />
+            {t.badge}
           </div>
+        </div>
 
-          <form onSubmit={handleSubmit}>
+        <div
+          style={{
+            display: "grid",
+            gap: "24px",
+            gridTemplateColumns: "1.08fr 0.92fr",
+            alignItems: "start",
+          }}
+        >
+          <section
+            style={{
+              background: "rgba(255,255,255,0.86)",
+              border: "1px solid rgba(148,163,184,0.16)",
+              borderRadius: "30px",
+              padding: "28px",
+              boxShadow: "0 18px 50px rgba(15,23,42,0.08)",
+              backdropFilter: "blur(14px)",
+            }}
+          >
+            <div style={{ marginBottom: "24px" }}>
+              <p
+                style={{
+                  margin: 0,
+                  fontSize: "12px",
+                  fontWeight: 800,
+                  letterSpacing: "0.14em",
+                  textTransform: "uppercase",
+                  color: "#7288a3",
+                  marginBottom: "10px",
+                }}
+              >
+                Smart Baby System
+              </p>
+
+              <h1
+                style={{
+                  margin: "0 0 12px",
+                  fontSize: "clamp(34px, 4.8vw, 56px)",
+                  lineHeight: 1.02,
+                  letterSpacing: "-0.05em",
+                  color: "#0f172a",
+                  maxWidth: "760px",
+                }}
+              >
+                {t.title}
+              </h1>
+
+              <p
+                style={{
+                  margin: 0,
+                  fontSize: "17px",
+                  lineHeight: 1.8,
+                  color: "#5b6b7e",
+                  maxWidth: "760px",
+                }}
+              >
+                {t.subtitle}
+              </p>
+            </div>
+
+            <div
+              style={{
+                marginBottom: "22px",
+                padding: "18px",
+                borderRadius: "22px",
+                background:
+                  "linear-gradient(135deg, rgba(239,248,255,0.96) 0%, rgba(252,253,255,0.98) 100%)",
+                border: "1px solid rgba(148,163,184,0.16)",
+              }}
+            >
+              <p
+                style={{
+                  margin: "0 0 10px",
+                  fontSize: "12px",
+                  fontWeight: 800,
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                  color: "#7288a3",
+                }}
+              >
+                {t.selectedPlan}
+              </p>
+
+              <div
+                style={{
+                  display: "grid",
+                  gap: "12px",
+                  gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+                }}
+              >
+                {(["basic", "premium", "elite"] as PlanTier[]).map((item) => {
+                  const active = item === selectedPlan;
+                  const itemContent = t.plans[item];
+
+                  return (
+                    <button
+                      key={item}
+                      type="button"
+                      onClick={() => choosePlan(item)}
+                      style={{
+                        borderRadius: "20px",
+                        padding: "16px",
+                        textAlign: "left",
+                        border: active
+                          ? "1px solid rgba(37,99,235,0.24)"
+                          : "1px solid rgba(148,163,184,0.14)",
+                        background: active ? "rgba(239,248,255,0.96)" : "#fff",
+                        boxShadow: active
+                          ? "0 16px 34px rgba(37,99,235,0.08)"
+                          : "0 10px 24px rgba(15,23,42,0.03)",
+                        cursor: "pointer",
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: "8px",
+                          marginBottom: "8px",
+                        }}
+                      >
+                        <span
+                          style={{
+                            width: "10px",
+                            height: "10px",
+                            borderRadius: "999px",
+                            background: active ? "#2563eb" : "#cbd5e1",
+                          }}
+                        />
+                        <strong
+                          style={{
+                            fontSize: "16px",
+                            color: "#0f172a",
+                          }}
+                        >
+                          {itemContent.name}
+                        </strong>
+                      </div>
+
+                      <div
+                        style={{
+                          fontSize: "24px",
+                          fontWeight: 800,
+                          color: "#0f172a",
+                          marginBottom: "6px",
+                        }}
+                      >
+                        {itemContent.price.split(" / ")[0]}
+                      </div>
+
+                      <p
+                        style={{
+                          margin: 0,
+                          color: "#64748b",
+                          fontSize: "14px",
+                          lineHeight: 1.65,
+                        }}
+                      >
+                        {itemContent.tag}
+                      </p>
+                    </button>
+                  );
+                })}
+              </div>
+
+              <p
+                style={{
+                  margin: "12px 0 0",
+                  fontSize: "14px",
+                  lineHeight: 1.7,
+                  color: "#64748b",
+                }}
+              >
+                {t.planHelper}
+              </p>
+            </div>
+
             <div
               style={{
                 display: "grid",
-                gap: "16px",
-                gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+                gap: "12px",
+                gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+                marginBottom: "22px",
               }}
             >
-              <label style={{ display: "grid", gap: "8px" }}>
-                <span style={labelStyle}>{t.onboarding.babyName}</span>
-                <input
-                  type="text"
-                  value={form.babyName}
-                  onChange={(e) => setForm((prev) => ({ ...prev, babyName: e.target.value }))}
-                  placeholder="e.g. Emma"
-                  style={inputStyle}
-                />
-              </label>
+              {[t.steps.profile, t.steps.routine, t.steps.goals].map(
+                (item, index) => (
+                  <div
+                    key={item}
+                    style={{
+                      padding: "14px",
+                      borderRadius: "18px",
+                      background: "rgba(255,255,255,0.84)",
+                      border: "1px solid rgba(148,163,184,0.14)",
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: "30px",
+                        height: "30px",
+                        borderRadius: "999px",
+                        display: "grid",
+                        placeItems: "center",
+                        marginBottom: "10px",
+                        background: "#0f172a",
+                        color: "#fff",
+                        fontWeight: 800,
+                        fontSize: "13px",
+                      }}
+                    >
+                      {index + 1}
+                    </div>
+                    <p
+                      style={{
+                        margin: 0,
+                        color: "#0f172a",
+                        fontWeight: 700,
+                        fontSize: "14px",
+                      }}
+                    >
+                      {item}
+                    </p>
+                  </div>
+                )
+              )}
+            </div>
 
-              <label style={{ display: "grid", gap: "8px" }}>
-                <span style={labelStyle}>{t.onboarding.ageMonths}</span>
-                <input
-                  type="number"
-                  value={form.ageMonths}
-                  onChange={(e) => setForm((prev) => ({ ...prev, ageMonths: e.target.value }))}
-                  placeholder="e.g. 8"
-                  style={inputStyle}
-                />
-              </label>
-
-              <label style={{ display: "grid", gap: "8px" }}>
-                <span style={labelStyle}>{t.onboarding.bedtime}</span>
-                <input
-                  type="time"
-                  value={form.bedtime}
-                  onChange={(e) => setForm((prev) => ({ ...prev, bedtime: e.target.value }))}
-                  style={inputStyle}
-                />
-              </label>
-
-              <label style={{ display: "grid", gap: "8px" }}>
-                <span style={labelStyle}>{t.onboarding.mainConcern}</span>
-                <select
-                  value={form.mainConcern}
-                  onChange={(e) => setForm((prev) => ({ ...prev, mainConcern: e.target.value }))}
-                  style={inputStyle}
-                >
-                  <option value="">{t.onboarding.chooseOne}</option>
-                  <option value="Sleep rhythm">Sleep rhythm</option>
-                  <option value="Short naps">Short naps</option>
-                  <option value="Night waking">Night waking</option>
-                  <option value="Food reactions">Food reactions</option>
-                  <option value="Feeding routine">Feeding routine</option>
-                  <option value="Daily routine">Daily routine</option>
-                  <option value="General support">General support</option>
-                </select>
-              </label>
-
-              <label
+            <form onSubmit={handleSubmit}>
+              <div
                 style={{
                   display: "grid",
-                  gap: "8px",
-                  gridColumn: "1 / -1",
+                  gap: "16px",
                 }}
               >
-                <span style={labelStyle}>{t.onboarding.notes}</span>
-                <textarea
-                  value={form.notes}
-                  onChange={(e) => setForm((prev) => ({ ...prev, notes: e.target.value }))}
-                  placeholder="Anything useful about naps, meals, allergies, routines, signals..."
-                  rows={5}
-                  style={{
-                    ...inputStyle,
-                    resize: "vertical",
-                    minHeight: "120px",
-                    paddingTop: "14px",
-                  }}
+                <Field
+                  label={t.labels.babyName}
+                  helper={t.helper.babyName}
+                  value={form.babyName}
+                  placeholder={t.placeholders.babyName}
+                  onChange={(value) => updateField("babyName", value)}
                 />
-              </label>
+
+                <div
+                  style={{
+                    display: "grid",
+                    gap: "16px",
+                    gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+                  }}
+                >
+                  <Field
+                    label={t.labels.ageMonths}
+                    helper={t.helper.ageMonths}
+                    value={form.ageMonths}
+                    placeholder={t.placeholders.ageMonths}
+                    onChange={(value) => updateField("ageMonths", value)}
+                    inputMode="numeric"
+                  />
+
+                  <Field
+                    label={t.labels.bedtime}
+                    helper={t.helper.bedtime}
+                    value={form.bedtime}
+                    placeholder={t.placeholders.bedtime}
+                    onChange={(value) => updateField("bedtime", value)}
+                    type="time"
+                  />
+                </div>
+
+                <SelectField
+                  label={t.labels.mainConcern}
+                  helper={t.helper.mainConcern}
+                  value={form.mainConcern}
+                  onChange={(value) => updateField("mainConcern", value)}
+                  options={[
+                    { value: "", label: t.concernOptions.chooseOne },
+                    {
+                      value: t.concernOptions.sleepRhythm,
+                      label: t.concernOptions.sleepRhythm,
+                    },
+                    {
+                      value: t.concernOptions.shortNaps,
+                      label: t.concernOptions.shortNaps,
+                    },
+                    {
+                      value: t.concernOptions.nightWaking,
+                      label: t.concernOptions.nightWaking,
+                    },
+                    {
+                      value: t.concernOptions.foodReactions,
+                      label: t.concernOptions.foodReactions,
+                    },
+                    {
+                      value: t.concernOptions.feedingRoutine,
+                      label: t.concernOptions.feedingRoutine,
+                    },
+                    {
+                      value: t.concernOptions.dailyRoutine,
+                      label: t.concernOptions.dailyRoutine,
+                    },
+                    {
+                      value: t.concernOptions.generalSupport,
+                      label: t.concernOptions.generalSupport,
+                    },
+                  ]}
+                />
+
+                <TextAreaField
+                  label={t.labels.notes}
+                  helper={t.helper.notes}
+                  value={form.notes}
+                  placeholder={t.placeholders.notes}
+                  onChange={(value) => updateField("notes", value)}
+                />
+              </div>
+
+              {errorMessage ? (
+                <div
+                  style={{
+                    marginTop: "18px",
+                    background: "#fff1f2",
+                    color: "#be123c",
+                    border: "1px solid #fecdd3",
+                    borderRadius: "16px",
+                    padding: "12px 14px",
+                    fontSize: "14px",
+                  }}
+                >
+                  {errorMessage}
+                </div>
+              ) : null}
+
+              <div
+                style={{
+                  display: "flex",
+                  gap: "12px",
+                  flexWrap: "wrap",
+                  marginTop: "24px",
+                }}
+              >
+                <button
+                  type="submit"
+                  disabled={loading}
+                  style={{
+                    ...primaryButtonStyle,
+                    opacity: loading ? 0.72 : 1,
+                    cursor: loading ? "not-allowed" : "pointer",
+                  }}
+                >
+                  {loading ? t.saving : t.save}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => router.push(`/${locale}/dashboard`)}
+                  style={secondaryButtonStyle}
+                >
+                  {t.skip}
+                </button>
+              </div>
+            </form>
+          </section>
+
+          <aside
+            style={{
+              background: "linear-gradient(180deg, #0f172a 0%, #172554 100%)",
+              color: "#fff",
+              borderRadius: "30px",
+              padding: "28px",
+              boxShadow: "0 22px 60px rgba(15,23,42,0.18)",
+              minHeight: "100%",
+              display: "grid",
+              gap: "18px",
+            }}
+          >
+            <div>
+              <p
+                style={{
+                  margin: 0,
+                  fontSize: "12px",
+                  fontWeight: 800,
+                  letterSpacing: "0.14em",
+                  textTransform: "uppercase",
+                  color: "#93c5fd",
+                }}
+              >
+                {t.selectedPlan}
+              </p>
+
+              <h2
+                style={{
+                  margin: "12px 0 6px",
+                  fontSize: "34px",
+                  lineHeight: 1.1,
+                }}
+              >
+                {isReady ? plan.name : "Loading..."}
+              </h2>
+
+              <p
+                style={{
+                  margin: "0 0 8px",
+                  fontSize: "18px",
+                  fontWeight: 700,
+                  color: "#fff",
+                }}
+              >
+                {isReady ? plan.price : ""}
+              </p>
+
+              <p
+                style={{
+                  margin: 0,
+                  lineHeight: 1.7,
+                  color: "#cbd5e1",
+                }}
+              >
+                {isReady ? plan.text : ""}
+              </p>
             </div>
 
             <div
               style={{
-                display: "flex",
-                gap: "12px",
-                flexWrap: "wrap",
-                marginTop: "24px",
+                padding: "18px",
+                borderRadius: "22px",
+                background: "rgba(255,255,255,0.06)",
+                border: "1px solid rgba(255,255,255,0.08)",
               }}
             >
-              <button type="submit" style={primaryButtonStyle}>
-                {t.onboarding.save}
-              </button>
-
-              <button
-                type="button"
-                onClick={() => router.push(`/${locale}/dashboard`)}
-                style={secondaryButtonStyle}
+              <p
+                style={{
+                  margin: "0 0 12px",
+                  fontSize: "12px",
+                  fontWeight: 800,
+                  letterSpacing: "0.12em",
+                  textTransform: "uppercase",
+                  color: "#93c5fd",
+                }}
               >
-                {t.onboarding.skip}
-              </button>
+                {t.whatYouGet}
+              </p>
+
+              <div style={{ display: "grid", gap: "10px" }}>
+                {isReady &&
+                  plan.features.map((feature) => (
+                    <div
+                      key={feature}
+                      style={{
+                        color: "#e2e8f0",
+                        lineHeight: 1.6,
+                        fontSize: "14px",
+                      }}
+                    >
+                      • {feature}
+                    </div>
+                  ))}
+              </div>
             </div>
-          </form>
-        </section>
 
-        <aside
-          style={{
-            background: "linear-gradient(180deg, #0f172a 0%, #172554 100%)",
-            color: "#fff",
-            borderRadius: "28px",
-            padding: "28px",
-            boxShadow: "0 22px 60px rgba(15,23,42,0.18)",
-            minHeight: "100%",
-          }}
-        >
-          <p
-            style={{
-              margin: 0,
-              fontSize: "12px",
-              fontWeight: 700,
-              letterSpacing: "0.18em",
-              textTransform: "uppercase",
-              color: "#93c5fd",
-            }}
-          >
-            Selected plan
-          </p>
-
-          <h2
-            style={{
-              margin: "12px 0 6px",
-              fontSize: "34px",
-              lineHeight: 1.1,
-            }}
-          >
-            {isReady ? plan.title : "Loading..."}
-          </h2>
-
-          <p
-            style={{
-              margin: "0 0 8px",
-              fontSize: "18px",
-              fontWeight: 700,
-              color: "#fff",
-            }}
-          >
-            {isReady ? plan.price : ""}
-          </p>
-
-          <p
-            style={{
-              margin: "0 0 20px",
-              lineHeight: 1.7,
-              color: "#cbd5e1",
-            }}
-          >
-            {isReady ? plan.subtitle : ""}
-          </p>
-
-          <div
-            style={{
-              padding: "18px",
-              borderRadius: "22px",
-              background: "rgba(255,255,255,0.06)",
-              border: "1px solid rgba(255,255,255,0.08)",
-            }}
-          >
-            <p
+            <div
               style={{
-                margin: "0 0 12px",
-                fontSize: "12px",
-                fontWeight: 700,
-                letterSpacing: "0.14em",
-                textTransform: "uppercase",
-                color: "#93c5fd",
+                padding: "18px",
+                borderRadius: "22px",
+                background: "rgba(255,255,255,0.06)",
+                border: "1px solid rgba(255,255,255,0.08)",
               }}
             >
-              What you get
-            </p>
+              <p
+                style={{
+                  margin: "0 0 10px",
+                  fontSize: "12px",
+                  fontWeight: 800,
+                  letterSpacing: "0.12em",
+                  textTransform: "uppercase",
+                  color: "#93c5fd",
+                }}
+              >
+                {t.trustTitle}
+              </p>
 
-            <div style={{ display: "grid", gap: "10px" }}>
-              {isReady &&
-                plan.features.map((feature) => (
-                  <div key={feature} style={{ color: "#e2e8f0", lineHeight: 1.5 }}>
-                    • {feature}
+              <p
+                style={{
+                  margin: 0,
+                  color: "#cbd5e1",
+                  lineHeight: 1.7,
+                  fontSize: "15px",
+                }}
+              >
+                {t.trustText}
+              </p>
+            </div>
+
+            <div
+              style={{
+                padding: "18px",
+                borderRadius: "22px",
+                background: "rgba(255,255,255,0.06)",
+                border: "1px solid rgba(255,255,255,0.08)",
+              }}
+            >
+              <p
+                style={{
+                  margin: "0 0 12px",
+                  fontSize: "12px",
+                  fontWeight: 800,
+                  letterSpacing: "0.12em",
+                  textTransform: "uppercase",
+                  color: "#93c5fd",
+                }}
+              >
+                {t.previewTitle}
+              </p>
+
+              <div style={{ display: "grid", gap: "10px" }}>
+                {t.previewSteps.map((item, index) => (
+                  <div
+                    key={item}
+                    style={{
+                      display: "flex",
+                      gap: "10px",
+                      alignItems: "flex-start",
+                      color: "#e2e8f0",
+                      lineHeight: 1.6,
+                      fontSize: "14px",
+                    }}
+                  >
+                    <span
+                      style={{
+                        width: "22px",
+                        height: "22px",
+                        borderRadius: "999px",
+                        display: "grid",
+                        placeItems: "center",
+                        background: "rgba(255,255,255,0.14)",
+                        color: "#fff",
+                        fontWeight: 800,
+                        fontSize: "12px",
+                        flexShrink: 0,
+                        marginTop: "1px",
+                      }}
+                    >
+                      {index + 1}
+                    </span>
+                    <span>{item}</span>
                   </div>
                 ))}
+              </div>
             </div>
-          </div>
-
-          <div
-            style={{
-              marginTop: "18px",
-              padding: "18px",
-              borderRadius: "22px",
-              background: "rgba(255,255,255,0.06)",
-              border: "1px solid rgba(255,255,255,0.08)",
-            }}
-          >
-            <p
-              style={{
-                margin: "0 0 10px",
-                fontSize: "12px",
-                fontWeight: 700,
-                letterSpacing: "0.14em",
-                textTransform: "uppercase",
-                color: "#93c5fd",
-              }}
-            >
-              Why this matters
-            </p>
-
-            <p
-              style={{
-                margin: 0,
-                color: "#cbd5e1",
-                lineHeight: 1.7,
-              }}
-            >
-              The better your profile, the more useful the dashboard becomes. Sleep guidance,
-              food patterns and care suggestions work best when the system understands your
-              baby&apos;s real context.
-            </p>
-          </div>
-        </aside>
+          </aside>
+        </div>
       </div>
     </main>
   );
 }
 
+function Field({
+  label,
+  helper,
+  value,
+  placeholder,
+  onChange,
+  type = "text",
+  inputMode,
+}: {
+  label: string;
+  helper: string;
+  value: string;
+  placeholder: string;
+  onChange: (value: string) => void;
+  type?: string;
+  inputMode?: React.HTMLAttributes<HTMLInputElement>["inputMode"];
+}) {
+  return (
+    <label style={{ display: "grid", gap: "8px" }}>
+      <span style={labelStyle}>{label}</span>
+      <input
+        type={type}
+        inputMode={inputMode}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        style={inputStyle}
+      />
+      <span style={helperStyle}>{helper}</span>
+    </label>
+  );
+}
+
+function SelectField({
+  label,
+  helper,
+  value,
+  onChange,
+  options,
+}: {
+  label: string;
+  helper: string;
+  value: string;
+  onChange: (value: string) => void;
+  options: Array<{ value: string; label: string }>;
+}) {
+  return (
+    <label style={{ display: "grid", gap: "8px" }}>
+      <span style={labelStyle}>{label}</span>
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        style={inputStyle}
+      >
+        {options.map((option) => (
+          <option key={`${option.value}-${option.label}`} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+      <span style={helperStyle}>{helper}</span>
+    </label>
+  );
+}
+
+function TextAreaField({
+  label,
+  helper,
+  value,
+  placeholder,
+  onChange,
+}: {
+  label: string;
+  helper: string;
+  value: string;
+  placeholder: string;
+  onChange: (value: string) => void;
+}) {
+  return (
+    <label style={{ display: "grid", gap: "8px" }}>
+      <span style={labelStyle}>{label}</span>
+      <textarea
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        rows={5}
+        style={{
+          ...inputStyle,
+          resize: "vertical",
+          minHeight: "120px",
+          paddingTop: "14px",
+        }}
+      />
+      <span style={helperStyle}>{helper}</span>
+    </label>
+  );
+}
+
 const labelStyle: CSSProperties = {
   fontSize: "14px",
-  fontWeight: 600,
+  fontWeight: 700,
   color: "#0f172a",
+};
+
+const helperStyle: CSSProperties = {
+  fontSize: "13px",
+  color: "#64748b",
+  lineHeight: 1.6,
 };
 
 const inputStyle: CSSProperties = {
@@ -609,7 +1128,7 @@ const primaryButtonStyle: CSSProperties = {
   padding: "14px 22px",
   background: "#0f172a",
   color: "#fff",
-  fontWeight: 700,
+  fontWeight: 800,
   cursor: "pointer",
   boxShadow: "0 12px 30px rgba(15,23,42,0.16)",
 };
@@ -620,6 +1139,6 @@ const secondaryButtonStyle: CSSProperties = {
   background: "#fff",
   color: "#0f172a",
   border: "1px solid rgba(148,163,184,0.25)",
-  fontWeight: 700,
+  fontWeight: 800,
   cursor: "pointer",
 };
