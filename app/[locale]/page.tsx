@@ -15,6 +15,7 @@ const copy = {
       ai: "AI",
       pricing: "Pricing",
       how: "How it works",
+      proof: "Why parents stay",
       marketplace: "Marketplace",
       login: "Log in",
       startFree: "Start free",
@@ -24,7 +25,7 @@ const copy = {
       title1: "Understand your baby.",
       title2: "Not just track.",
       text:
-        "Stop guessing why your baby cries, wakes, or refuses to eat. Smart Baby System turns daily sleep, food and care data into clear AI-powered insights, so parents can make calmer decisions with more confidence.",
+        "Stop guessing why your baby cries, wakes or refuses to eat. Smart Baby System turns daily sleep, food and care data into clear AI-powered insights, so parents can make calmer decisions with more confidence.",
       trust:
         "Built for modern parents who want clarity, not confusion.",
       askPlaceholder:
@@ -67,6 +68,27 @@ const copy = {
       chatCardText:
         "Parents can contact sellers inside the platform without sharing public phone numbers.",
     },
+    trust: {
+      eyebrow: "Why parents stay",
+      title: "Because the product reduces uncertainty, not just adds logs.",
+      text:
+        "The value is not in collecting data. The value is in turning daily baby activity into clearer next steps, better routines and calmer decisions.",
+      card1Title: "Less mental overload",
+      card1Text:
+        "Parents no longer need to remember everything across naps, meals and care events.",
+      card2Title: "More useful signals",
+      card2Text:
+        "Patterns become easier to spot before the day starts to feel chaotic.",
+      card3Title: "One connected system",
+      card3Text:
+        "Sleep, food, care, AI and marketplace all live in the same premium experience.",
+      quote1:
+        "“I don’t just track anymore. I actually understand what may be affecting the day.”",
+      quote2:
+        "“It feels calmer because everything is finally connected in one place.”",
+      quote3:
+        "“The AI suggestions feel more useful because they are tied to real routines.”",
+    },
     modules: {
       eyebrow: "Core ecosystem",
       title: "Everything works better when the modules work together.",
@@ -98,6 +120,40 @@ const copy = {
       careLabel: "Care AI",
       careQuestion: "“How can I improve baby routine?”",
       careText: "Get calmer transitions, consistency ideas and daily care structure.",
+    },
+    how: {
+      eyebrow: "How it works",
+      title: "From daily baby data to clear next steps.",
+      text:
+        "Smart Baby System helps parents move from scattered notes and uncertainty to clear, connected decisions.",
+      step1Title: "Log what happened",
+      step1Text:
+        "Add sleep, meals and care in a simple daily flow built for real parent routines.",
+      step2Title: "Let the AI detect patterns",
+      step2Text:
+        "The system connects wake windows, feeding rhythm, reactions and care consistency to surface what matters.",
+      step3Title: "Get clear guidance",
+      step3Text:
+        "Receive practical suggestions that help you adjust the day with more calm, structure and confidence.",
+      card1Label: "Input",
+      card1Title: "Real daily data",
+      card1Text:
+        "Sleep times, meals, reactions, routine notes and daily care logs become one connected picture.",
+      card2Label: "Analysis",
+      card2Title: "Context-aware AI",
+      card2Text:
+        "Instead of generic tips, the system looks at your baby’s real rhythm and recent signals before suggesting anything.",
+      card3Label: "Outcome",
+      card3Title: "Better decisions",
+      card3Text:
+        "Parents can spot patterns earlier, reduce guesswork and build calmer routines over time.",
+      demoLabel: "Example insight",
+      demoTitle: "What parents actually get",
+      demoText:
+        "“Your baby slept less after a later nap yesterday. Try an earlier next sleep window and keep the bedtime routine stable tonight.”",
+      point1: "Less guessing",
+      point2: "More structure",
+      point3: "Clearer daily decisions",
     },
     vision: {
       eyebrow: "A premium vision for modern parenting",
@@ -157,17 +213,6 @@ const copy = {
       choosePremium: "Choose Premium",
       getElite: "Get Elite",
     },
-    how: {
-      eyebrow: "How it works",
-      title: "Simple for parents. Strong underneath.",
-      step1Title: "Choose a plan",
-      step1Text: "Start with the level of guidance that fits your family best.",
-      step2Title: "Set up your profile",
-      step2Text: "Add your baby’s context so the system can personalize guidance.",
-      step3Title: "Use the full ecosystem",
-      step3Text:
-        "Track sleep, food, care and explore the marketplace in one connected experience.",
-    },
     cta: {
       eyebrow: "Start now",
       title: "Turn daily baby data into calmer parenting decisions.",
@@ -203,6 +248,7 @@ const copy = {
       ai: "IA",
       pricing: "Tarifs",
       how: "Comment ça marche",
+      proof: "Pourquoi les parents restent",
       marketplace: "Marketplace",
       login: "Connexion",
       startFree: "Commencer",
@@ -256,6 +302,27 @@ const copy = {
       chatCardText:
         "Les parents peuvent contacter les vendeurs dans la plateforme sans partager de numéro public.",
     },
+    trust: {
+      eyebrow: "Pourquoi les parents restent",
+      title: "Parce que le produit réduit l’incertitude, pas seulement ajoute des logs.",
+      text:
+        "La valeur n’est pas dans la collecte de données. La vraie valeur est de transformer l’activité quotidienne du bébé en prochaines étapes plus claires, en meilleures routines et en décisions plus sereines.",
+      card1Title: "Moins de charge mentale",
+      card1Text:
+        "Les parents n’ont plus besoin de tout retenir entre les siestes, les repas et les soins.",
+      card2Title: "Des signaux plus utiles",
+      card2Text:
+        "Les schémas deviennent plus faciles à repérer avant que la journée devienne chaotique.",
+      card3Title: "Un système connecté",
+      card3Text:
+        "Sommeil, alimentation, soins, IA et marketplace vivent dans la même expérience premium.",
+      quote1:
+        "« Je ne fais plus seulement du tracking. Je comprends enfin ce qui peut influencer la journée. »",
+      quote2:
+        "« C’est plus apaisant parce que tout est enfin connecté au même endroit. »",
+      quote3:
+        "« Les suggestions IA semblent plus utiles parce qu’elles sont liées aux vraies routines. »",
+    },
     modules: {
       eyebrow: "Écosystème principal",
       title: "Tout fonctionne mieux lorsque les modules travaillent ensemble.",
@@ -289,6 +356,40 @@ const copy = {
       careQuestion: "« Comment améliorer la routine de mon bébé ? »",
       careText:
         "Obtenez des transitions plus calmes, des idées de cohérence et une meilleure structure quotidienne.",
+    },
+    how: {
+      eyebrow: "Comment ça marche",
+      title: "Des données quotidiennes de bébé vers des décisions claires.",
+      text:
+        "Smart Baby System aide les parents à passer de notes dispersées et de l’incertitude à des décisions plus claires et connectées.",
+      step1Title: "Enregistrez ce qui s’est passé",
+      step1Text:
+        "Ajoutez le sommeil, les repas et les soins dans un flux quotidien simple, pensé pour la vraie vie des parents.",
+      step2Title: "Laissez l’IA détecter les schémas",
+      step2Text:
+        "Le système relie les fenêtres d’éveil, le rythme alimentaire, les réactions et la cohérence des soins pour faire ressortir ce qui compte.",
+      step3Title: "Recevez une guidance claire",
+      step3Text:
+        "Obtenez des suggestions pratiques pour ajuster la journée avec plus de calme, de structure et de confiance.",
+      card1Label: "Entrée",
+      card1Title: "De vraies données quotidiennes",
+      card1Text:
+        "Horaires de sommeil, repas, réactions, notes de routine et logs de soins deviennent une seule vue connectée.",
+      card2Label: "Analyse",
+      card2Title: "IA contextuelle",
+      card2Text:
+        "Au lieu de conseils génériques, le système analyse le vrai rythme de votre bébé et ses signaux récents avant de suggérer quoi que ce soit.",
+      card3Label: "Résultat",
+      card3Title: "De meilleures décisions",
+      card3Text:
+        "Les parents repèrent plus tôt les schémas, réduisent les suppositions et construisent des routines plus sereines au fil du temps.",
+      demoLabel: "Exemple d’insight",
+      demoTitle: "Ce que les parents reçoivent vraiment",
+      demoText:
+        "« Votre bébé a moins dormi après une sieste plus tardive hier. Essayez une prochaine fenêtre de sommeil plus tôt et gardez une routine du soir stable ce soir. »",
+      point1: "Moins d’hésitation",
+      point2: "Plus de structure",
+      point3: "Des décisions quotidiennes plus claires",
     },
     vision: {
       eyebrow: "Une vision premium de la parentalité moderne",
@@ -350,19 +451,6 @@ const copy = {
       choosePremium: "Choisir Premium",
       getElite: "Choisir Elite",
     },
-    how: {
-      eyebrow: "Comment ça marche",
-      title: "Simple pour les parents. Solide en profondeur.",
-      step1Title: "Choisissez une formule",
-      step1Text:
-        "Commencez avec le niveau de guidance qui convient le mieux à votre famille.",
-      step2Title: "Configurez votre profil",
-      step2Text:
-        "Ajoutez le contexte de votre bébé pour personnaliser la guidance.",
-      step3Title: "Utilisez tout l’écosystème",
-      step3Text:
-        "Suivez le sommeil, l’alimentation, les soins et explorez le marketplace dans une seule expérience connectée.",
-    },
     cta: {
       eyebrow: "Commencez maintenant",
       title:
@@ -406,7 +494,6 @@ export default function Home() {
   function handleAskAI() {
     const cleanQuestion = question.trim();
     if (!cleanQuestion) return;
-
     router.push(`/${locale}/dashboard?q=${encodeURIComponent(cleanQuestion)}`);
   }
 
@@ -431,8 +518,9 @@ export default function Home() {
             <a href="#overview">{t.nav.overview}</a>
             <a href="#modules">{t.nav.modules}</a>
             <a href="#ai">{t.nav.ai}</a>
-            <a href="#pricing">{t.nav.pricing}</a>
             <a href="#how">{t.nav.how}</a>
+            <a href="#proof">{t.nav.proof}</a>
+            <a href="#pricing">{t.nav.pricing}</a>
             <a
               href="/marketplace"
               style={{
@@ -457,7 +545,7 @@ export default function Home() {
               }}
             >
               <a
-                href={`/en`}
+                href="/en"
                 className="homePremium__navTextBtn"
                 style={{
                   fontWeight: locale === "en" ? 800 : 600,
@@ -467,7 +555,7 @@ export default function Home() {
                 EN
               </a>
               <a
-                href={`/fr`}
+                href="/fr"
                 className="homePremium__navTextBtn"
                 style={{
                   fontWeight: locale === "fr" ? 800 : 600,
@@ -549,7 +637,6 @@ export default function Home() {
 
           <div
             style={{
-              marginTop: "0",
               padding: "12px",
               borderRadius: "18px",
               background: "rgba(255,255,255,0.88)",
@@ -618,68 +705,28 @@ export default function Home() {
               gap: "12px",
             }}
           >
-            <div
-              style={{
-                padding: "16px",
-                borderRadius: "20px",
-                background: "rgba(255,255,255,0.76)",
-                border: "1px solid #e5edf5",
-                boxShadow: "0 14px 30px rgba(88,112,140,0.04)",
-              }}
-            >
-              <strong
+            {[t.hero.benefit1, t.hero.benefit2, t.hero.benefit3].map((item) => (
+              <div
+                key={item}
                 style={{
-                  display: "block",
-                  marginBottom: "6px",
-                  fontSize: "15px",
-                  color: "#0f172a",
+                  padding: "16px",
+                  borderRadius: "20px",
+                  background: "rgba(255,255,255,0.76)",
+                  border: "1px solid #e5edf5",
+                  boxShadow: "0 14px 30px rgba(88,112,140,0.04)",
                 }}
               >
-                {t.hero.benefit1}
-              </strong>
-            </div>
-
-            <div
-              style={{
-                padding: "16px",
-                borderRadius: "20px",
-                background: "rgba(255,255,255,0.76)",
-                border: "1px solid #e5edf5",
-                boxShadow: "0 14px 30px rgba(88,112,140,0.04)",
-              }}
-            >
-              <strong
-                style={{
-                  display: "block",
-                  marginBottom: "6px",
-                  fontSize: "15px",
-                  color: "#0f172a",
-                }}
-              >
-                {t.hero.benefit2}
-              </strong>
-            </div>
-
-            <div
-              style={{
-                padding: "16px",
-                borderRadius: "20px",
-                background: "rgba(255,255,255,0.76)",
-                border: "1px solid #e5edf5",
-                boxShadow: "0 14px 30px rgba(88,112,140,0.04)",
-              }}
-            >
-              <strong
-                style={{
-                  display: "block",
-                  marginBottom: "6px",
-                  fontSize: "15px",
-                  color: "#0f172a",
-                }}
-              >
-                {t.hero.benefit3}
-              </strong>
-            </div>
+                <strong
+                  style={{
+                    display: "block",
+                    fontSize: "15px",
+                    color: "#0f172a",
+                  }}
+                >
+                  {item}
+                </strong>
+              </div>
+            ))}
           </div>
 
           <div
@@ -690,134 +737,67 @@ export default function Home() {
               gap: "14px",
             }}
           >
-            <div
-              style={{
-                padding: "18px",
-                borderRadius: "20px",
-                background: "rgba(255,255,255,0.74)",
-                border: "1px solid #e5edf5",
-                boxShadow: "0 14px 30px rgba(88,112,140,0.04)",
-              }}
-            >
-              <span
+            {[
+              {
+                label: t.hero.statLabel1,
+                value: t.hero.statValue1,
+                text: t.hero.statText1,
+              },
+              {
+                label: t.hero.statLabel2,
+                value: t.hero.statValue2,
+                text: t.hero.statText2,
+              },
+              {
+                label: t.hero.statLabel3,
+                value: t.hero.statValue3,
+                text: t.hero.statText3,
+              },
+            ].map((item) => (
+              <div
+                key={item.label}
                 style={{
-                  display: "block",
-                  marginBottom: "8px",
-                  color: "#73869a",
-                  fontSize: "12px",
-                  fontWeight: 800,
-                  letterSpacing: "0.08em",
-                  textTransform: "uppercase",
+                  padding: "18px",
+                  borderRadius: "20px",
+                  background: "rgba(255,255,255,0.74)",
+                  border: "1px solid #e5edf5",
+                  boxShadow: "0 14px 30px rgba(88,112,140,0.04)",
                 }}
               >
-                {t.hero.statLabel1}
-              </span>
-              <strong
-                style={{
-                  display: "block",
-                  marginBottom: "6px",
-                  fontSize: "20px",
-                  color: "#0f172a",
-                }}
-              >
-                {t.hero.statValue1}
-              </strong>
-              <span
-                style={{
-                  color: "#657589",
-                  fontSize: "14px",
-                  lineHeight: 1.6,
-                }}
-              >
-                {t.hero.statText1}
-              </span>
-            </div>
-
-            <div
-              style={{
-                padding: "18px",
-                borderRadius: "20px",
-                background: "rgba(255,255,255,0.74)",
-                border: "1px solid #e5edf5",
-                boxShadow: "0 14px 30px rgba(88,112,140,0.04)",
-              }}
-            >
-              <span
-                style={{
-                  display: "block",
-                  marginBottom: "8px",
-                  color: "#73869a",
-                  fontSize: "12px",
-                  fontWeight: 800,
-                  letterSpacing: "0.08em",
-                  textTransform: "uppercase",
-                }}
-              >
-                {t.hero.statLabel2}
-              </span>
-              <strong
-                style={{
-                  display: "block",
-                  marginBottom: "6px",
-                  fontSize: "20px",
-                  color: "#0f172a",
-                }}
-              >
-                {t.hero.statValue2}
-              </strong>
-              <span
-                style={{
-                  color: "#657589",
-                  fontSize: "14px",
-                  lineHeight: 1.6,
-                }}
-              >
-                {t.hero.statText2}
-              </span>
-            </div>
-
-            <div
-              style={{
-                padding: "18px",
-                borderRadius: "20px",
-                background: "rgba(255,255,255,0.74)",
-                border: "1px solid #e5edf5",
-                boxShadow: "0 14px 30px rgba(88,112,140,0.04)",
-              }}
-            >
-              <span
-                style={{
-                  display: "block",
-                  marginBottom: "8px",
-                  color: "#73869a",
-                  fontSize: "12px",
-                  fontWeight: 800,
-                  letterSpacing: "0.08em",
-                  textTransform: "uppercase",
-                }}
-              >
-                {t.hero.statLabel3}
-              </span>
-              <strong
-                style={{
-                  display: "block",
-                  marginBottom: "6px",
-                  fontSize: "20px",
-                  color: "#0f172a",
-                }}
-              >
-                {t.hero.statValue3}
-              </strong>
-              <span
-                style={{
-                  color: "#657589",
-                  fontSize: "14px",
-                  lineHeight: 1.6,
-                }}
-              >
-                {t.hero.statText3}
-              </span>
-            </div>
+                <span
+                  style={{
+                    display: "block",
+                    marginBottom: "8px",
+                    color: "#73869a",
+                    fontSize: "12px",
+                    fontWeight: 800,
+                    letterSpacing: "0.08em",
+                    textTransform: "uppercase",
+                  }}
+                >
+                  {item.label}
+                </span>
+                <strong
+                  style={{
+                    display: "block",
+                    marginBottom: "6px",
+                    fontSize: "20px",
+                    color: "#0f172a",
+                  }}
+                >
+                  {item.value}
+                </strong>
+                <span
+                  style={{
+                    color: "#657589",
+                    fontSize: "14px",
+                    lineHeight: 1.6,
+                  }}
+                >
+                  {item.text}
+                </span>
+              </div>
+            ))}
           </div>
         </div>
 
@@ -901,6 +881,281 @@ export default function Home() {
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      <section className="homePremium__section" id="how">
+        <div className="homePremium__sectionHead">
+          <p className="homePremium__eyebrow">{t.how.eyebrow}</p>
+          <h2>{t.how.title}</h2>
+          <p>{t.how.text}</p>
+        </div>
+
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1.1fr 0.9fr",
+            gap: "20px",
+            alignItems: "stretch",
+          }}
+        >
+          <div
+            style={{
+              display: "grid",
+              gap: "16px",
+            }}
+          >
+            <div className="homePremium__stepsGrid" style={{ gridTemplateColumns: "1fr" }}>
+              <article className="homePremium__stepCard">
+                <span className="homePremium__stepNumber">01</span>
+                <h3>{t.how.step1Title}</h3>
+                <p>{t.how.step1Text}</p>
+              </article>
+
+              <article className="homePremium__stepCard">
+                <span className="homePremium__stepNumber">02</span>
+                <h3>{t.how.step2Title}</h3>
+                <p>{t.how.step2Text}</p>
+              </article>
+
+              <article className="homePremium__stepCard">
+                <span className="homePremium__stepNumber">03</span>
+                <h3>{t.how.step3Title}</h3>
+                <p>{t.how.step3Text}</p>
+              </article>
+            </div>
+
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+                gap: "14px",
+              }}
+            >
+              {[
+                {
+                  label: t.how.card1Label,
+                  title: t.how.card1Title,
+                  text: t.how.card1Text,
+                },
+                {
+                  label: t.how.card2Label,
+                  title: t.how.card2Title,
+                  text: t.how.card2Text,
+                },
+                {
+                  label: t.how.card3Label,
+                  title: t.how.card3Title,
+                  text: t.how.card3Text,
+                },
+              ].map((item) => (
+                <div
+                  key={item.label}
+                  style={{
+                    padding: "18px",
+                    borderRadius: "22px",
+                    background: "rgba(255,255,255,0.88)",
+                    border: "1px solid rgba(148,163,184,0.14)",
+                    boxShadow: "0 14px 34px rgba(15,23,42,0.05)",
+                  }}
+                >
+                  <p
+                    style={{
+                      marginBottom: "8px",
+                      fontSize: "12px",
+                      fontWeight: 800,
+                      letterSpacing: "0.08em",
+                      textTransform: "uppercase",
+                      color: "#7288a3",
+                    }}
+                  >
+                    {item.label}
+                  </p>
+                  <h4
+                    style={{
+                      fontSize: "20px",
+                      marginBottom: "8px",
+                      color: "#0f172a",
+                    }}
+                  >
+                    {item.title}
+                  </h4>
+                  <p
+                    style={{
+                      color: "#607082",
+                      lineHeight: 1.7,
+                      fontSize: "14px",
+                    }}
+                  >
+                    {item.text}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div
+            style={{
+              padding: "24px",
+              borderRadius: "28px",
+              background:
+                "linear-gradient(135deg, rgba(239,248,255,0.96) 0%, rgba(252,253,255,0.98) 100%)",
+              border: "1px solid rgba(148, 163, 184, 0.16)",
+              boxShadow: "0 18px 45px rgba(15, 23, 42, 0.05)",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-between",
+            }}
+          >
+            <div>
+              <p
+                style={{
+                  marginBottom: "10px",
+                  fontSize: "12px",
+                  fontWeight: 800,
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                  color: "#7288a3",
+                }}
+              >
+                {t.how.demoLabel}
+              </p>
+
+              <h3
+                style={{
+                  fontSize: "30px",
+                  lineHeight: 1.08,
+                  letterSpacing: "-0.03em",
+                  marginBottom: "14px",
+                  color: "#0f172a",
+                }}
+              >
+                {t.how.demoTitle}
+              </h3>
+
+              <p
+                style={{
+                  color: "#607082",
+                  lineHeight: 1.85,
+                  fontSize: "17px",
+                  marginBottom: "18px",
+                }}
+              >
+                {t.how.demoText}
+              </p>
+            </div>
+
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+                gap: "12px",
+              }}
+            >
+              {[t.how.point1, t.how.point2, t.how.point3].map((item) => (
+                <div
+                  key={item}
+                  style={{
+                    padding: "14px",
+                    borderRadius: "18px",
+                    background: "rgba(255,255,255,0.86)",
+                    border: "1px solid #e5edf5",
+                    textAlign: "center",
+                    fontWeight: 700,
+                    color: "#0f172a",
+                  }}
+                >
+                  {item}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="homePremium__section" id="proof">
+        <div className="homePremium__sectionHead">
+          <p className="homePremium__eyebrow">{t.trust.eyebrow}</p>
+          <h2>{t.trust.title}</h2>
+          <p>{t.trust.text}</p>
+        </div>
+
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+            gap: "16px",
+            marginBottom: "18px",
+          }}
+        >
+          {[
+            { title: t.trust.card1Title, text: t.trust.card1Text },
+            { title: t.trust.card2Title, text: t.trust.card2Text },
+            { title: t.trust.card3Title, text: t.trust.card3Text },
+          ].map((item) => (
+            <div
+              key={item.title}
+              style={{
+                padding: "22px",
+                borderRadius: "24px",
+                background: "rgba(255,255,255,0.92)",
+                border: "1px solid rgba(148,163,184,0.14)",
+                boxShadow: "0 16px 38px rgba(87,109,138,0.05)",
+              }}
+            >
+              <h3
+                style={{
+                  fontSize: "22px",
+                  marginBottom: "10px",
+                  color: "#0f172a",
+                }}
+              >
+                {item.title}
+              </h3>
+              <p
+                style={{
+                  color: "#607082",
+                  lineHeight: 1.75,
+                  fontSize: "15px",
+                }}
+              >
+                {item.text}
+              </p>
+            </div>
+          ))}
+        </div>
+
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+            gap: "16px",
+          }}
+        >
+          {[t.trust.quote1, t.trust.quote2, t.trust.quote3].map((quote) => (
+            <div
+              key={quote}
+              style={{
+                padding: "22px",
+                borderRadius: "24px",
+                background:
+                  "linear-gradient(135deg, rgba(239,248,255,0.96) 0%, rgba(252,253,255,0.98) 100%)",
+                border: "1px solid rgba(148,163,184,0.16)",
+                boxShadow: "0 16px 38px rgba(87,109,138,0.05)",
+              }}
+            >
+              <p
+                style={{
+                  color: "#415366",
+                  lineHeight: 1.8,
+                  fontSize: "16px",
+                  fontWeight: 600,
+                }}
+              >
+                {quote}
+              </p>
+            </div>
+          ))}
         </div>
       </section>
 
@@ -1071,92 +1326,41 @@ export default function Home() {
                 gap: "14px",
               }}
             >
-              <div
-                style={{
-                  padding: "16px",
-                  borderRadius: "20px",
-                  background: "rgba(255,255,255,0.84)",
-                  border: "1px solid #e5edf5",
-                }}
-              >
-                <strong
+              {[
+                { title: t.vision.calmTitle, text: t.vision.calmText },
+                { title: t.vision.signalsTitle, text: t.vision.signalsText },
+                { title: t.vision.longTermTitle, text: t.vision.longTermText },
+              ].map((item) => (
+                <div
+                  key={item.title}
                   style={{
-                    display: "block",
-                    marginBottom: "6px",
-                    fontSize: "17px",
-                    color: "#0f172a",
+                    padding: "16px",
+                    borderRadius: "20px",
+                    background: "rgba(255,255,255,0.84)",
+                    border: "1px solid #e5edf5",
                   }}
                 >
-                  {t.vision.calmTitle}
-                </strong>
-                <span
-                  style={{
-                    color: "#6b7c8f",
-                    lineHeight: 1.6,
-                    fontSize: "14px",
-                  }}
-                >
-                  {t.vision.calmText}
-                </span>
-              </div>
-
-              <div
-                style={{
-                  padding: "16px",
-                  borderRadius: "20px",
-                  background: "rgba(255,255,255,0.84)",
-                  border: "1px solid #e5edf5",
-                }}
-              >
-                <strong
-                  style={{
-                    display: "block",
-                    marginBottom: "6px",
-                    fontSize: "17px",
-                    color: "#0f172a",
-                  }}
-                >
-                  {t.vision.signalsTitle}
-                </strong>
-                <span
-                  style={{
-                    color: "#6b7c8f",
-                    lineHeight: 1.6,
-                    fontSize: "14px",
-                  }}
-                >
-                  {t.vision.signalsText}
-                </span>
-              </div>
-
-              <div
-                style={{
-                  padding: "16px",
-                  borderRadius: "20px",
-                  background: "rgba(255,255,255,0.84)",
-                  border: "1px solid #e5edf5",
-                }}
-              >
-                <strong
-                  style={{
-                    display: "block",
-                    marginBottom: "6px",
-                    fontSize: "17px",
-                    color: "#0f172a",
-                  }}
-                >
-                  {t.vision.longTermTitle}
-                </strong>
-                <span
-                  style={{
-                    color: "#6b7c8f",
-                    lineHeight: 1.6,
-                    fontSize: "14px",
-                  }}
-                >
-                  {t.vision.longTermText}
-                </span>
-              </div>
+                  <strong
+                    style={{
+                      display: "block",
+                      marginBottom: "6px",
+                      fontSize: "17px",
+                      color: "#0f172a",
+                    }}
+                  >
+                    {item.title}
+                  </strong>
+                  <span
+                    style={{
+                      color: "#6b7c8f",
+                      lineHeight: 1.6,
+                      fontSize: "14px",
+                    }}
+                  >
+                    {item.text}
+                  </span>
+                </div>
+              ))}
             </div>
           </div>
 
@@ -1166,126 +1370,69 @@ export default function Home() {
               gap: "16px",
             }}
           >
-            <div
-              style={{
-                padding: "22px",
-                borderRadius: "26px",
-                background: "rgba(255,255,255,0.9)",
-                border: "1px solid rgba(148, 163, 184, 0.14)",
-                boxShadow: "0 16px 38px rgba(87, 109, 138, 0.05)",
-              }}
-            >
-              <p
+            {[
+              {
+                label: t.vision.sleepLabel,
+                title: t.vision.sleepTitle,
+                text: t.vision.sleepText,
+                gradient: false,
+              },
+              {
+                label: t.vision.foodLabel,
+                title: t.vision.foodTitle,
+                text: t.vision.foodText,
+                gradient: false,
+              },
+              {
+                label: t.vision.ecoLabel,
+                title: t.vision.ecoTitle,
+                text: t.vision.ecoText,
+                gradient: true,
+              },
+            ].map((item) => (
+              <div
+                key={item.title}
                 style={{
-                  marginBottom: "8px",
-                  fontSize: "12px",
-                  fontWeight: 800,
-                  letterSpacing: "0.08em",
-                  textTransform: "uppercase",
-                  color: "#7288a3",
+                  padding: "22px",
+                  borderRadius: "26px",
+                  background: item.gradient
+                    ? "linear-gradient(135deg, rgba(239,248,255,0.96) 0%, rgba(252,253,255,0.98) 100%)"
+                    : "rgba(255,255,255,0.9)",
+                  border: "1px solid rgba(148, 163, 184, 0.14)",
+                  boxShadow: "0 16px 38px rgba(87, 109, 138, 0.05)",
                 }}
               >
-                {t.vision.sleepLabel}
-              </p>
-              <h4
-                style={{
-                  fontSize: "22px",
-                  marginBottom: "8px",
-                  color: "#0f172a",
-                }}
-              >
-                {t.vision.sleepTitle}
-              </h4>
-              <p
-                style={{
-                  color: "#607082",
-                  lineHeight: 1.7,
-                }}
-              >
-                {t.vision.sleepText}
-              </p>
-            </div>
-
-            <div
-              style={{
-                padding: "22px",
-                borderRadius: "26px",
-                background: "rgba(255,255,255,0.9)",
-                border: "1px solid rgba(148, 163, 184, 0.14)",
-                boxShadow: "0 16px 38px rgba(87, 109, 138, 0.05)",
-              }}
-            >
-              <p
-                style={{
-                  marginBottom: "8px",
-                  fontSize: "12px",
-                  fontWeight: 800,
-                  letterSpacing: "0.08em",
-                  textTransform: "uppercase",
-                  color: "#7288a3",
-                }}
-              >
-                {t.vision.foodLabel}
-              </p>
-              <h4
-                style={{
-                  fontSize: "22px",
-                  marginBottom: "8px",
-                  color: "#0f172a",
-                }}
-              >
-                {t.vision.foodTitle}
-              </h4>
-              <p
-                style={{
-                  color: "#607082",
-                  lineHeight: 1.7,
-                }}
-              >
-                {t.vision.foodText}
-              </p>
-            </div>
-
-            <div
-              style={{
-                padding: "22px",
-                borderRadius: "26px",
-                background:
-                  "linear-gradient(135deg, rgba(239,248,255,0.96) 0%, rgba(252,253,255,0.98) 100%)",
-                border: "1px solid rgba(148, 163, 184, 0.16)",
-                boxShadow: "0 16px 38px rgba(87, 109, 138, 0.05)",
-              }}
-            >
-              <p
-                style={{
-                  marginBottom: "8px",
-                  fontSize: "12px",
-                  fontWeight: 800,
-                  letterSpacing: "0.08em",
-                  textTransform: "uppercase",
-                  color: "#7288a3",
-                }}
-              >
-                {t.vision.ecoLabel}
-              </p>
-              <h4
-                style={{
-                  fontSize: "22px",
-                  marginBottom: "8px",
-                  color: "#0f172a",
-                }}
-              >
-                {t.vision.ecoTitle}
-              </h4>
-              <p
-                style={{
-                  color: "#607082",
-                  lineHeight: 1.7,
-                }}
-              >
-                {t.vision.ecoText}
-              </p>
-            </div>
+                <p
+                  style={{
+                    marginBottom: "8px",
+                    fontSize: "12px",
+                    fontWeight: 800,
+                    letterSpacing: "0.08em",
+                    textTransform: "uppercase",
+                    color: "#7288a3",
+                  }}
+                >
+                  {item.label}
+                </p>
+                <h4
+                  style={{
+                    fontSize: "22px",
+                    marginBottom: "8px",
+                    color: "#0f172a",
+                  }}
+                >
+                  {item.title}
+                </h4>
+                <p
+                  style={{
+                    color: "#607082",
+                    lineHeight: 1.7,
+                  }}
+                >
+                  {item.text}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -1370,33 +1517,6 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="how" className="homePremium__section">
-        <div className="homePremium__sectionHead">
-          <p className="homePremium__eyebrow">{t.how.eyebrow}</p>
-          <h2>{t.how.title}</h2>
-        </div>
-
-        <div className="homePremium__stepsGrid">
-          <article className="homePremium__stepCard">
-            <span className="homePremium__stepNumber">01</span>
-            <h3>{t.how.step1Title}</h3>
-            <p>{t.how.step1Text}</p>
-          </article>
-
-          <article className="homePremium__stepCard">
-            <span className="homePremium__stepNumber">02</span>
-            <h3>{t.how.step2Title}</h3>
-            <p>{t.how.step2Text}</p>
-          </article>
-
-          <article className="homePremium__stepCard">
-            <span className="homePremium__stepNumber">03</span>
-            <h3>{t.how.step3Title}</h3>
-            <p>{t.how.step3Text}</p>
-          </article>
-        </div>
-      </section>
-
       <section className="homePremium__section homePremium__section--cta">
         <div className="homePremium__ctaBox">
           <p className="homePremium__eyebrow">{t.cta.eyebrow}</p>
@@ -1447,6 +1567,7 @@ export default function Home() {
               <a href="#overview">{t.nav.overview}</a>
               <a href="#modules">{t.nav.modules}</a>
               <a href="#ai">{t.nav.ai}</a>
+              <a href="#how">{t.nav.how}</a>
               <a href="#pricing">{t.nav.pricing}</a>
             </div>
 
