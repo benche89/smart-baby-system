@@ -8,20 +8,19 @@ export type BabyProfile = {
 
 export type SleepEntry = {
   id: number;
-  start?: string;
-  end?: string;
-  duration?: string;
-  quality?: string;
-  note?: string;
+  lastNapTime?: string;
+  napDuration?: string;
+  mood?: string;
   createdAt?: string;
 };
 
 export type FoodEntry = {
   id: number;
-  time?: string;
-  type?: string;
-  amount?: string;
-  note?: string;
+  mealTime?: string;
+  mealType?: string;
+  food?: string;
+  quantity?: string;
+  reaction?: string;
   createdAt?: string;
 };
 
@@ -50,10 +49,10 @@ export type BabyContext = {
   };
 };
 
-const PROFILE_KEY = "sb_profile";
-const SLEEP_KEY = "sb_sleep_entries";
-const FOOD_KEY = "sb_food_entries";
-const CARE_KEY = "sb_care_entries";
+const PROFILE_KEY = "smart-baby-profile";
+const SLEEP_KEY = "smart-baby-sleep";
+const FOOD_KEY = "smart-baby-food";
+const CARE_KEY = "smart-baby-care";
 
 function safeParse<T>(value: string | null, fallback: T): T {
   if (!value) return fallback;
@@ -103,6 +102,54 @@ function sortNewestFirst<T extends { createdAt?: string; id?: number }>(items: T
   });
 }
 
+function normalizeProfile(data: any): BabyProfile | null {
+  if (!data || typeof data !== "object") return null;
+
+  return {
+    babyName: data?.babyName ?? "",
+    ageMonths:
+      data?.ageMonths !== null && data?.ageMonths !== undefined
+        ? String(data.ageMonths)
+        : "",
+    bedtime: data?.bedtime ?? "",
+    mainConcern: data?.mainConcern ?? "",
+    notes: data?.notes ?? "",
+  };
+}
+
+function normalizeSleepEntry(data: any): SleepEntry {
+  return {
+    id: Number(data?.id ?? Date.now()),
+    lastNapTime: data?.lastNapTime ?? "",
+    napDuration: data?.napDuration ?? "",
+    mood: data?.mood ?? "",
+    createdAt: data?.createdAt ?? "",
+  };
+}
+
+function normalizeFoodEntry(data: any): FoodEntry {
+  return {
+    id: Number(data?.id ?? Date.now()),
+    mealTime: data?.mealTime ?? "",
+    mealType: data?.mealType ?? "",
+    food: data?.food ?? "",
+    quantity: data?.quantity ?? "",
+    reaction: data?.reaction ?? "",
+    createdAt: data?.createdAt ?? "",
+  };
+}
+
+function normalizeCareEntry(data: any): CareEntry {
+  return {
+    id: Number(data?.id ?? Date.now()),
+    time: data?.time ?? "",
+    careType: data?.careType ?? "",
+    status: data?.status ?? "",
+    note: data?.note ?? "",
+    createdAt: data?.createdAt ?? "",
+  };
+}
+
 export function getBabyContext(): BabyContext {
   if (typeof window === "undefined") {
     return {
@@ -122,29 +169,23 @@ export function getBabyContext(): BabyContext {
     };
   }
 
-  const profile = safeParse<BabyProfile | null>(
-    window.localStorage.getItem(PROFILE_KEY),
-    null
-  );
+  const rawProfile = safeParse<any | null>(window.localStorage.getItem(PROFILE_KEY), null);
+  const rawSleep = safeParse<any[]>(window.localStorage.getItem(SLEEP_KEY), []);
+  const rawFood = safeParse<any[]>(window.localStorage.getItem(FOOD_KEY), []);
+  const rawCare = safeParse<any[]>(window.localStorage.getItem(CARE_KEY), []);
 
-  const sleepEntries = sortNewestFirst(
-    safeParse<SleepEntry[]>(window.localStorage.getItem(SLEEP_KEY), [])
-  );
+  const profile = normalizeProfile(rawProfile);
 
-  const foodEntries = sortNewestFirst(
-    safeParse<FoodEntry[]>(window.localStorage.getItem(FOOD_KEY), [])
-  );
-
-  const careEntries = sortNewestFirst(
-    safeParse<CareEntry[]>(window.localStorage.getItem(CARE_KEY), [])
-  );
+  const sleepEntries = sortNewestFirst(rawSleep.map(normalizeSleepEntry));
+  const foodEntries = sortNewestFirst(rawFood.map(normalizeFoodEntry));
+  const careEntries = sortNewestFirst(rawCare.map(normalizeCareEntry));
 
   const sleep24h = sleepEntries.filter((item) => isWithinLast24h(item.createdAt));
   const food24h = foodEntries.filter((item) => isWithinLast24h(item.createdAt));
   const care24h = careEntries.filter((item) => isWithinLast24h(item.createdAt));
 
   const totalSleepHours24h = sleep24h.reduce((sum, item) => {
-    return sum + parseDurationToHours(item.duration);
+    return sum + parseDurationToHours(item.napDuration);
   }, 0);
 
   return {

@@ -24,14 +24,18 @@ type AnalysisSignals = {
   dataQuality: string;
   bedtimeRisk: string;
   confidence: string;
+  strongestDriver: string;
+  trackingCompleteness: string;
 };
 
 function toNumber(value: unknown): number | null {
   if (typeof value === "number" && Number.isFinite(value)) return value;
+
   if (typeof value === "string" && value.trim() !== "") {
     const parsed = Number(value);
     return Number.isFinite(parsed) ? parsed : null;
   }
+
   return null;
 }
 
@@ -84,6 +88,8 @@ function analyzeSignals(body: AiRequestBody): AnalysisSignals {
   let dataQuality = "limited";
   let bedtimeRisk = "unclear";
   let confidence = "low";
+  let strongestDriver = "insufficient structured data";
+  let trackingCompleteness = "partial";
 
   let availableMetrics = 0;
   if (totalSleepHours24h !== null) availableMetrics += 1;
@@ -94,19 +100,21 @@ function analyzeSignals(body: AiRequestBody): AnalysisSignals {
   if (availableMetrics >= 3) {
     dataQuality = "good";
     confidence = "moderate";
+    trackingCompleteness = "good";
   }
 
   if (availableMetrics === 4) {
     dataQuality = "strong";
     confidence = "good";
+    trackingCompleteness = "strong";
   }
 
   if (totalSleepHours24h !== null) {
-    if (totalSleepHours24h < range.min - 1) {
+    if (totalSleepHours24h < range.min - 1.5) {
       sleepSignal = `sleep appears clearly below the expected ${range.label}`;
     } else if (totalSleepHours24h < range.min) {
       sleepSignal = `sleep appears slightly below the expected ${range.label}`;
-    } else if (totalSleepHours24h > range.max + 1) {
+    } else if (totalSleepHours24h > range.max + 1.5) {
       sleepSignal = `sleep appears clearly above the expected ${range.label}`;
     } else if (totalSleepHours24h > range.max) {
       sleepSignal = `sleep appears slightly above the expected ${range.label}`;
@@ -117,25 +125,28 @@ function analyzeSignals(body: AiRequestBody): AnalysisSignals {
 
   if (sleepCount24h !== null) {
     if (sleepCount24h === 0) {
-      routineSignal = "no sleep sessions were logged, so the record may be incomplete";
+      routineSignal = "no sleep sessions were logged, so tracking may be incomplete";
     } else if (sleepCount24h === 1) {
-      routineSignal = "very few sleep sessions were logged, which may reflect incomplete tracking or a disrupted day";
+      routineSignal =
+        "very few sleep sessions were logged, which may reflect incomplete tracking or a disrupted day";
     } else if (sleepCount24h >= 2 && sleepCount24h <= 5) {
       routineSignal = "sleep session count suggests a trackable daily rhythm";
-    } else if (sleepCount24h > 5) {
-      routineSignal = "many sleep sessions were logged, which can sometimes reflect fragmented sleep";
+    } else {
+      routineSignal = "many sleep sessions were logged, which can reflect fragmented sleep";
     }
   }
 
   if (foodCount24h !== null) {
     if (foodCount24h === 0) {
-      feedingSignal = "no feeds were logged, so the feeding record may be incomplete";
+      feedingSignal = "no feeds were logged, so feeding data may be incomplete";
     } else if (foodCount24h === 1) {
-      feedingSignal = "very few feeds were logged, which may indicate incomplete tracking or an unusual day";
+      feedingSignal =
+        "very little feeding activity was logged, which may indicate incomplete tracking or an unusual day";
     } else if (foodCount24h >= 2 && foodCount24h <= 8) {
       feedingSignal = "feeding activity suggests a usable routine signal";
-    } else if (foodCount24h > 8) {
-      feedingSignal = "frequent feeds may reflect cluster feeding, comfort feeding, or a disrupted day";
+    } else {
+      feedingSignal =
+        "frequent feeds may reflect cluster feeding, comfort feeding, or a more unsettled day";
     }
   }
 
@@ -143,20 +154,24 @@ function analyzeSignals(body: AiRequestBody): AnalysisSignals {
     if (careCount24h === 0) {
       careSignal = "there are no recent care logs";
     } else if (careCount24h <= 2) {
-      careSignal = "care logs are light but usable";
+      careSignal = "care logs are light but still somewhat usable";
     } else if (careCount24h <= 6) {
       careSignal = "care logging suggests a reasonably documented day";
     } else {
-      careSignal = "many care logs may indicate a busy or unsettled day";
+      careSignal = "many care logs may reflect a busy, uncomfortable, or unsettled day";
     }
   }
 
   const lowSleep =
     totalSleepHours24h !== null && totalSleepHours24h < range.min;
   const veryLowSleep =
-    totalSleepHours24h !== null && totalSleepHours24h < range.min - 1;
+    totalSleepHours24h !== null && totalSleepHours24h < range.min - 1.5;
+  const highSleep =
+    totalSleepHours24h !== null && totalSleepHours24h > range.max;
   const fragmentedSleep =
     sleepCount24h !== null && sleepCount24h > 5;
+  const stableSleepRhythm =
+    sleepCount24h !== null && sleepCount24h >= 2 && sleepCount24h <= 5;
   const lowFeeds =
     foodCount24h !== null && foodCount24h <= 1;
   const frequentFeeds =
@@ -164,55 +179,72 @@ function analyzeSignals(body: AiRequestBody): AnalysisSignals {
   const heavyCare =
     careCount24h !== null && careCount24h > 6;
 
-  if (veryLowSleep && fragmentedSleep) {
+  if (availableMetrics <= 1) {
+    overallPattern =
+      "there is not enough structured data yet to infer a reliable pattern";
+    dataQuality = "very limited";
+    confidence = "low";
+    strongestDriver = "insufficient data";
+    bedtimeRisk = "unclear";
+  } else if (veryLowSleep && fragmentedSleep) {
     overallPattern =
       "the strongest pattern is overtiredness risk linked to reduced and fragmented sleep";
     bedtimeRisk = "elevated";
     confidence = availableMetrics >= 3 ? "good" : confidence;
+    strongestDriver = "low total sleep combined with fragmented sleep";
   } else if (lowSleep && fragmentedSleep) {
     overallPattern =
-      "the strongest pattern is a disrupted sleep rhythm that may contribute to fussiness";
+      "the strongest pattern is a disrupted sleep rhythm that may contribute to fussiness and harder settling";
     bedtimeRisk = "elevated";
+    strongestDriver = "fragmented sleep with below-range total sleep";
+  } else if (lowSleep && frequentFeeds) {
+    overallPattern =
+      "the logs suggest a more unsettled day with lower sleep and frequent feeding activity";
+    bedtimeRisk = "moderate";
+    strongestDriver = "lower sleep plus frequent feeding";
   } else if (lowSleep) {
     overallPattern =
-      "the strongest pattern is lower-than-expected sleep, which may affect mood and settling";
+      "the strongest pattern is lower-than-expected sleep, which may affect mood, regulation, and settling";
     bedtimeRisk = "moderate";
+    strongestDriver = "lower-than-expected sleep";
   } else if (fragmentedSleep) {
     overallPattern =
-      "the strongest pattern is fragmented sleep, which can reduce restorative rest even if total hours look acceptable";
+      "the strongest pattern is fragmented sleep, which can reduce restorative rest even when total hours look acceptable";
     bedtimeRisk = "moderate";
-  } else if (lowFeeds && lowSleep) {
+    strongestDriver = "fragmented sleep";
+  } else if (frequentFeeds && heavyCare) {
     overallPattern =
-      "the data suggests both low feeding and low sleep activity, but tracking may also be incomplete";
+      "the day appears more active and possibly unsettled, with frequent feeding and many care-related events";
     bedtimeRisk = "moderate";
-  } else if (frequentFeeds && fragmentedSleep) {
-    overallPattern =
-      "the pattern may reflect an unsettled day with frequent feeding and fragmented sleep";
-    bedtimeRisk = "moderate";
+    strongestDriver = "high feeding and care activity";
   } else if (heavyCare && (lowSleep || fragmentedSleep)) {
     overallPattern =
       "the logs suggest a busy or unsettled day alongside a less stable sleep pattern";
     bedtimeRisk = "moderate";
+    strongestDriver = "busy care pattern with unstable sleep";
   } else if (
     totalSleepHours24h !== null &&
-    sleepCount24h !== null &&
-    foodCount24h !== null &&
     totalSleepHours24h >= range.min &&
     totalSleepHours24h <= range.max &&
-    sleepCount24h >= 2 &&
+    stableSleepRhythm &&
+    foodCount24h !== null &&
     foodCount24h >= 2
   ) {
     overallPattern =
       "the recent routine looks broadly stable based on the available logs";
     bedtimeRisk = "low";
     confidence = availableMetrics === 4 ? "good" : confidence;
-  }
-
-  if (availableMetrics <= 1) {
+    strongestDriver = "stable sleep and feeding rhythm";
+  } else if (highSleep && !fragmentedSleep) {
     overallPattern =
-      "there is not enough structured data yet to infer a strong pattern";
-    dataQuality = "very limited";
-    confidence = "low";
+      "the routine may reflect a more sleepy or recovery-type day, though context still matters";
+    bedtimeRisk = "low";
+    strongestDriver = "higher total sleep";
+  } else {
+    overallPattern =
+      "the logs show some usable signals, but no single dominant pattern stands out clearly";
+    bedtimeRisk = "unclear";
+    strongestDriver = "mixed routine signals";
   }
 
   return {
@@ -224,6 +256,8 @@ function analyzeSignals(body: AiRequestBody): AnalysisSignals {
     dataQuality,
     bedtimeRisk,
     confidence,
+    strongestDriver,
+    trackingCompleteness,
   };
 }
 
@@ -241,11 +275,12 @@ Your tone:
 
 Your job:
 - answer the parent's question using the provided baby data first
-- identify likely patterns from sleep, food and care
-- explain clearly what is supported by the data
+- identify likely patterns from sleep, feeding, and care
+- clearly separate observations from possibilities
+- explain what is supported by the logs and what is less certain
 - avoid generic filler
-- give practical same-day suggestions
-- make the answer feel personalized and useful
+- give realistic same-day suggestions
+- make the answer feel personalized and genuinely useful
 
 Safety rules:
 - do not diagnose
@@ -266,12 +301,14 @@ When to get medical advice
 Style rules:
 - write in English
 - no emojis
-- no markdown bullet overload
+- no markdown bullets unless truly needed
 - short paragraphs only
 - mention the strongest pattern first
-- separate observation from possibility
+- be specific with the available data
+- avoid sounding robotic or repetitive
 - do not say "as an AI"
-- do not mention tokens, models, prompts, or internal analysis
+- do not mention prompts, tokens, models, or internal analysis
+- do not overuse warnings when nothing urgent is present
 `;
 }
 
@@ -301,22 +338,26 @@ Internal analysis signals:
 - Feeding signal: ${signals.feedingSignal}
 - Care signal: ${signals.careSignal}
 - Strongest overall pattern: ${signals.overallPattern}
+- Strongest driver: ${signals.strongestDriver}
 - Bedtime risk: ${signals.bedtimeRisk}
 - Data quality: ${signals.dataQuality}
 - Confidence level: ${signals.confidence}
+- Tracking completeness: ${signals.trackingCompleteness}
 
 Detailed Smart Baby System context:
 ${babyContext}
 
 Instructions for the answer:
-- answer the parent's question directly
+- answer the parent's exact question directly
 - start from the strongest data-backed pattern
-- if the logs are limited, say so naturally
+- mention the strongest driver in natural language when useful
+- if data is limited, say that naturally without sounding repetitive
 - if sleep appears fragmented, mention that clearly
 - if sleep appears low for age, mention that clearly
-- if routine looks stable, say that too
-- give practical steps that a parent can try today
-- do not overstate certainty
+- if the routine looks broadly stable, say that clearly
+- suggest practical actions for today or tonight
+- keep the advice realistic and simple
+- avoid overclaiming
 `;
 }
 

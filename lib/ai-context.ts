@@ -1,19 +1,24 @@
 import { BabyContext } from "./baby-data";
 
+function formatValue(value?: string) {
+  const clean = value?.trim();
+  return clean ? clean : "-";
+}
+
 export function buildBabyAiContext(context: BabyContext): string {
   const { profile, summary, sleepEntries, foodEntries, careEntries } = context;
 
-  const latestSleep = sleepEntries.slice(0, 3);
-  const latestFood = foodEntries.slice(0, 3);
-  const latestCare = careEntries.slice(0, 3);
+  const latestSleep = sleepEntries.slice(0, 5);
+  const latestFood = foodEntries.slice(0, 5);
+  const latestCare = careEntries.slice(0, 5);
 
   return `
 BABY PROFILE
-- Name: ${profile?.babyName || "Unknown"}
-- Age in months: ${profile?.ageMonths || "Unknown"}
-- Usual bedtime: ${profile?.bedtime || "Unknown"}
-- Main concern: ${profile?.mainConcern || "None provided"}
-- Notes: ${profile?.notes || "None"}
+- Name: ${formatValue(profile?.babyName)}
+- Age in months: ${formatValue(profile?.ageMonths)}
+- Usual bedtime: ${formatValue(profile?.bedtime)}
+- Main concern: ${formatValue(profile?.mainConcern)}
+- Notes: ${formatValue(profile?.notes)}
 
 LAST 24 HOURS SUMMARY
 - Total sleep: ${summary.totalSleepHours24h} hours
@@ -21,37 +26,45 @@ LAST 24 HOURS SUMMARY
 - Feeding events: ${summary.foodCount24h}
 - Care events: ${summary.careCount24h}
 
-RECENT SLEEP ENTRIES
+MOST RECENT SLEEP LOGS
 ${
   latestSleep.length
     ? latestSleep
         .map(
           (entry) =>
-            `- Start: ${entry.start || "-"}, End: ${entry.end || "-"}, Duration: ${entry.duration || "-"}, Quality: ${entry.quality || "-"}, Note: ${entry.note || "-"}`
+            `- Last nap time: ${formatValue(entry.lastNapTime)}, Duration: ${formatValue(
+              entry.napDuration
+            )}, Mood: ${formatValue(entry.mood)}`
         )
         .join("\n")
     : "- No recent sleep entries"
 }
 
-RECENT FOOD ENTRIES
+MOST RECENT FEEDING LOGS
 ${
   latestFood.length
     ? latestFood
         .map(
           (entry) =>
-            `- Time: ${entry.time || "-"}, Type: ${entry.type || "-"}, Amount: ${entry.amount || "-"}, Note: ${entry.note || "-"}`
+            `- Meal time: ${formatValue(entry.mealTime)}, Meal type: ${formatValue(
+              entry.mealType
+            )}, Food: ${formatValue(entry.food)}, Quantity: ${formatValue(
+              entry.quantity
+            )}, Reaction: ${formatValue(entry.reaction)}`
         )
         .join("\n")
     : "- No recent food entries"
 }
 
-RECENT CARE ENTRIES
+MOST RECENT CARE LOGS
 ${
   latestCare.length
     ? latestCare
         .map(
           (entry) =>
-            `- Time: ${entry.time || "-"}, Care type: ${entry.careType || "-"}, Status: ${entry.status || "-"}, Note: ${entry.note || "-"}`
+            `- Time: ${formatValue(entry.time)}, Care type: ${formatValue(
+              entry.careType
+            )}, Status: ${formatValue(entry.status)}, Note: ${formatValue(entry.note)}`
         )
         .join("\n")
     : "- No recent care entries"
