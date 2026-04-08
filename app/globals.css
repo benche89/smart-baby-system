@@ -3194,5 +3194,86 @@ textarea {
   .myListingsEmpty__actions .marketplaceBtn,
   .myListingsHero__actions .marketplaceBtn {
     width: 100%;
+    .hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+
+  background:
+    radial-gradient(circle at top left, rgba(166, 210, 255, 0.2), transparent 30%),
+    linear-gradient(180deg, #f7fbff 0%, #ffffff 100%);
+}
+
+.hero__content {
+  max-width: 800px;
+}
+
+.hero__title {
+  font-size: 52px;
+  font-weight: 800;
+  line-height: 1.1;
+  margin-bottom: 20px;
+}
+
+.hero__title span {
+  color: #4f9cff;
+}
+
+.hero__subtitle {
+  font-size: 18px;
+  color: #475569;
+  margin-bottom: 16px;
+}
+
+.hero__trust {
+  font-size: 14px;
+  color: #94a3b8;
+  margin-bottom: 30px;
+}
+
+.hero__cta {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-bottom: 30px;
+}
+
+.hero__benefits {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: #334155;
+  font-size: 14px;
+}
+
+/* BUTTONS */
+.btn {
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+}
+
+.btn--primary {
+  background: #4f9cff;
+  color: white;
+}
+
+.btn--primary:hover {
+  background: #3b82f6;
+}
+
+.btn--secondary {
+  background: #eef4fb;
+  color: #0f172a;
+}
+
+.btn--secondary:hover {
+  background: #e2ecf7;
+}
   }
 }
