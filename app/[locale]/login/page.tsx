@@ -1,6 +1,7 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import type { CSSProperties, FormEvent } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { defaultLocale, isValidLocale } from "../../../lib/i18n";
 import { createClient as createSupabaseClient } from "../../../lib/supabase/client";
@@ -8,8 +9,8 @@ import { createClient as createSupabaseClient } from "../../../lib/supabase/clie
 type Locale = "en" | "fr";
 type AuthMode = "login" | "signup";
 
-const PROFILE_STORAGE_KEY = "sb_profile";
-const PLAN_STORAGE_KEY = "smartBabyPlanTier";
+const PROFILE_STORAGE_KEY = "smart-baby-profile";
+const PLAN_STORAGE_KEY = "smart-baby-plan-tier";
 
 const copy = {
   en: {
@@ -655,8 +656,8 @@ export default function LoginPage() {
                   ? "Accès au compte"
                   : "Account access"
                 : locale === "fr"
-                ? "Nouveau compte"
-                : "New account"}
+                  ? "Nouveau compte"
+                  : "New account"}
             </p>
 
             <h2
@@ -804,8 +805,8 @@ export default function LoginPage() {
                     ? t.loadingSignup
                     : t.loadingLogin
                   : mode === "signup"
-                  ? t.signupButton
-                  : t.loginButton}
+                    ? t.signupButton
+                    : t.loginButton}
               </button>
 
               {message ? (
@@ -875,13 +876,13 @@ export default function LoginPage() {
   );
 }
 
-const darkLabelStyle: React.CSSProperties = {
+const darkLabelStyle: CSSProperties = {
   fontSize: "14px",
   fontWeight: 700,
   color: "#ffffff",
 };
 
-const darkInputStyle: React.CSSProperties = {
+const darkInputStyle: CSSProperties = {
   width: "100%",
   padding: "13px 14px",
   borderRadius: "16px",
