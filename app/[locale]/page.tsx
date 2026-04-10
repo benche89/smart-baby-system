@@ -584,17 +584,11 @@ export default function Home() {
           </nav>
 
           <div className="homePremium__navActions">
-            <a href="/login" className="homePremium__navTextBtn">
+            <a href={`/${locale}/login`} className="homePremium__navTextBtn">
               {t.nav.login}
             </a>
 
-            <div
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "8px",
-              }}
-            >
+            <div className="homePremium__langSwitch">
               <a
                 href="/en"
                 className="homePremium__navTextBtn"
@@ -689,28 +683,13 @@ export default function Home() {
             {t.hero.trust}
           </p>
 
-          <div
-            style={{
-              padding: "12px",
-              borderRadius: "18px",
-              background: "rgba(255,255,255,0.88)",
-              border: "1px solid rgba(148,163,184,0.18)",
-              boxShadow: "0 16px 40px rgba(15,23,42,0.08)",
-              backdropFilter: "blur(12px)",
-              maxWidth: "760px",
-            }}
-          >
+          <div className="homePremium__askBox">
             <form
               onSubmit={(e) => {
                 e.preventDefault();
                 handleAskAI();
               }}
-              style={{
-                display: "flex",
-                gap: "10px",
-                alignItems: "center",
-                flexWrap: "wrap",
-              }}
+              className="homePremium__askForm"
             >
               <input
                 type="text"
@@ -719,16 +698,7 @@ export default function Home() {
                 value={question}
                 onChange={(e) => setQuestion(e.target.value)}
                 placeholder={t.hero.askPlaceholder}
-                style={{
-                  flex: 1,
-                  minWidth: "220px",
-                  border: "1px solid rgba(148,163,184,0.22)",
-                  borderRadius: "14px",
-                  padding: "14px 16px",
-                  fontSize: "14px",
-                  outline: "none",
-                  background: "#fff",
-                }}
+                className="homePremium__askInput"
               />
 
               <button type="submit" className="homePremium__primaryBtn">
@@ -751,25 +721,9 @@ export default function Home() {
             </a>
           </div>
 
-          <div
-            style={{
-              marginTop: "18px",
-              display: "grid",
-              gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
-              gap: "12px",
-            }}
-          >
+          <div className="homePremium__grid3" style={{ marginTop: "18px" }}>
             {[t.hero.benefit1, t.hero.benefit2, t.hero.benefit3].map((item) => (
-              <div
-                key={item}
-                style={{
-                  padding: "16px",
-                  borderRadius: "20px",
-                  background: "rgba(255,255,255,0.76)",
-                  border: "1px solid #e5edf5",
-                  boxShadow: "0 14px 30px rgba(88,112,140,0.04)",
-                }}
-              >
+              <div key={item} className="homePremium__simpleCard">
                 <strong
                   style={{
                     display: "block",
@@ -783,14 +737,7 @@ export default function Home() {
             ))}
           </div>
 
-          <div
-            style={{
-              marginTop: "14px",
-              display: "grid",
-              gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
-              gap: "14px",
-            }}
-          >
+          <div className="homePremium__grid3">
             {[
               {
                 label: t.hero.statLabel1,
@@ -808,16 +755,7 @@ export default function Home() {
                 text: t.hero.statText3,
               },
             ].map((item) => (
-              <div
-                key={item.label}
-                style={{
-                  padding: "18px",
-                  borderRadius: "20px",
-                  background: "rgba(255,255,255,0.74)",
-                  border: "1px solid #e5edf5",
-                  boxShadow: "0 14px 30px rgba(88,112,140,0.04)",
-                }}
-              >
+              <div key={item.label} className="homePremium__simpleCard">
                 <span
                   style={{
                     display: "block",
@@ -957,24 +895,9 @@ export default function Home() {
           <p>{t.how.text}</p>
         </div>
 
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1.1fr 0.9fr",
-            gap: "20px",
-            alignItems: "stretch",
-          }}
-        >
-          <div
-            style={{
-              display: "grid",
-              gap: "16px",
-            }}
-          >
-            <div
-              className="homePremium__stepsGrid"
-              style={{ gridTemplateColumns: "1fr" }}
-            >
+        <div className="homePremium__splitGrid">
+          <div className="homePremium__stackGap">
+            <div className="homePremium__stepsGrid" style={{ gridTemplateColumns: "1fr" }}>
               <article className="homePremium__stepCard">
                 <span className="homePremium__stepNumber">01</span>
                 <h3>{t.how.step1Title}</h3>
@@ -994,13 +917,7 @@ export default function Home() {
               </article>
             </div>
 
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
-                gap: "14px",
-              }}
-            >
+            <div className="homePremium__grid3">
               {[
                 {
                   label: t.how.card1Label,
@@ -1018,16 +935,7 @@ export default function Home() {
                   text: t.how.card3Text,
                 },
               ].map((item) => (
-                <div
-                  key={item.label}
-                  style={{
-                    padding: "18px",
-                    borderRadius: "22px",
-                    background: "rgba(255,255,255,0.88)",
-                    border: "1px solid rgba(148,163,184,0.14)",
-                    boxShadow: "0 14px 34px rgba(15,23,42,0.05)",
-                  }}
-                >
+                <div key={item.label} className="homePremium__simpleCard">
                   <p
                     style={{
                       marginBottom: "8px",
@@ -1064,9 +972,8 @@ export default function Home() {
           </div>
 
           <div
+            className="homePremium__padLg"
             style={{
-              padding: "24px",
-              borderRadius: "28px",
               background:
                 "linear-gradient(135deg, rgba(239,248,255,0.96) 0%, rgba(252,253,255,0.98) 100%)",
               border: "1px solid rgba(148, 163, 184, 0.16)",
@@ -1114,13 +1021,7 @@ export default function Home() {
               </p>
             </div>
 
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
-                gap: "12px",
-              }}
-            >
+            <div className="homePremium__grid3">
               {[t.how.point1, t.how.point2, t.how.point3].map((item) => (
                 <div
                   key={item}
@@ -1149,14 +1050,7 @@ export default function Home() {
           <p>{t.trust.text}</p>
         </div>
 
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
-            gap: "16px",
-            marginBottom: "18px",
-          }}
-        >
+        <div className="homePremium__grid3" style={{ marginBottom: "18px" }}>
           {[
             { title: t.trust.card1Title, text: t.trust.card1Text },
             { title: t.trust.card2Title, text: t.trust.card2Text },
@@ -1164,13 +1058,8 @@ export default function Home() {
           ].map((item) => (
             <div
               key={item.title}
-              style={{
-                padding: "22px",
-                borderRadius: "24px",
-                background: "rgba(255,255,255,0.92)",
-                border: "1px solid rgba(148,163,184,0.14)",
-                boxShadow: "0 16px 38px rgba(87,109,138,0.05)",
-              }}
+              className="homePremium__simpleCard"
+              style={{ padding: "22px", borderRadius: "24px" }}
             >
               <h3
                 style={{
@@ -1194,23 +1083,16 @@ export default function Home() {
           ))}
         </div>
 
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
-            gap: "16px",
-          }}
-        >
+        <div className="homePremium__grid3">
           {[t.trust.quote1, t.trust.quote2, t.trust.quote3].map((quote) => (
             <div
               key={quote}
+              className="homePremium__simpleCard"
               style={{
                 padding: "22px",
                 borderRadius: "24px",
                 background:
                   "linear-gradient(135deg, rgba(239,248,255,0.96) 0%, rgba(252,253,255,0.98) 100%)",
-                border: "1px solid rgba(148,163,184,0.16)",
-                boxShadow: "0 16px 38px rgba(87,109,138,0.05)",
               }}
             >
               <p
@@ -1340,17 +1222,12 @@ export default function Home() {
         </div>
 
         <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1.15fr 0.85fr",
-            gap: "20px",
-            alignItems: "stretch",
-          }}
+          className="homePremium__splitGrid"
+          style={{ gridTemplateColumns: "1.15fr 0.85fr" }}
         >
           <div
+            className="homePremium__padLg"
             style={{
-              padding: "28px",
-              borderRadius: "30px",
               background:
                 "linear-gradient(135deg, rgba(239,248,255,0.96) 0%, rgba(252,253,255,0.98) 100%)",
               border: "1px solid rgba(148, 163, 184, 0.16)",
@@ -1394,13 +1271,7 @@ export default function Home() {
               {t.vision.systemText}
             </p>
 
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
-                gap: "14px",
-              }}
-            >
+            <div className="homePremium__grid3">
               {[
                 { title: t.vision.calmTitle, text: t.vision.calmText },
                 { title: t.vision.signalsTitle, text: t.vision.signalsText },
@@ -1408,12 +1279,8 @@ export default function Home() {
               ].map((item) => (
                 <div
                   key={item.title}
-                  style={{
-                    padding: "16px",
-                    borderRadius: "20px",
-                    background: "rgba(255,255,255,0.84)",
-                    border: "1px solid #e5edf5",
-                  }}
+                  className="homePremium__simpleCard"
+                  style={{ padding: "16px" }}
                 >
                   <strong
                     style={{
@@ -1439,12 +1306,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div
-            style={{
-              display: "grid",
-              gap: "16px",
-            }}
-          >
+          <div className="homePremium__stackGap">
             {[
               {
                 label: t.vision.sleepLabel,
@@ -1467,14 +1329,13 @@ export default function Home() {
             ].map((item) => (
               <div
                 key={item.title}
+                className="homePremium__simpleCard"
                 style={{
                   padding: "22px",
                   borderRadius: "26px",
                   background: item.gradient
                     ? "linear-gradient(135deg, rgba(239,248,255,0.96) 0%, rgba(252,253,255,0.98) 100%)"
                     : "rgba(255,255,255,0.9)",
-                  border: "1px solid rgba(148, 163, 184, 0.14)",
-                  boxShadow: "0 16px 38px rgba(87, 109, 138, 0.05)",
                 }}
               >
                 <p
@@ -1692,10 +1553,9 @@ export default function Home() {
         </div>
 
         <div
+          className="homePremium__padLg"
           style={{
             marginTop: "22px",
-            padding: "22px",
-            borderRadius: "24px",
             background:
               "linear-gradient(135deg, rgba(239,248,255,0.96) 0%, rgba(252,253,255,0.98) 100%)",
             border: "1px solid rgba(148,163,184,0.16)",
@@ -1715,14 +1575,7 @@ export default function Home() {
             {t.pricing.noteTitle}
           </p>
 
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
-              gap: "14px",
-              marginBottom: "14px",
-            }}
-          >
+          <div className="homePremium__grid3" style={{ marginBottom: "14px" }}>
             {[t.pricing.note1, t.pricing.note2, t.pricing.note3].map(
               (item, index) => (
                 <div
@@ -1846,7 +1699,7 @@ export default function Home() {
             <div className="homePremium__footerCol">
               <p className="homePremium__footerTitle">{t.footer.getStarted}</p>
               <a href={`/${locale}/onboarding`}>{t.footer.onboarding}</a>
-              <a href="/login">{t.footer.login}</a>
+              <a href={`/${locale}/login`}>{t.footer.login}</a>
               <a href="/message">{t.footer.messages}</a>
             </div>
           </div>
@@ -1856,6 +1709,1068 @@ export default function Home() {
           <p>{t.footer.bottom}</p>
         </div>
       </footer>
+
+      <style jsx>{`
+        .homePremium {
+          min-height: 100vh;
+          background:
+            radial-gradient(circle at top left, rgba(166, 210, 255, 0.16), transparent 24%),
+            linear-gradient(180deg, #f7fbff 0%, #fcfdff 100%);
+          color: #0f172a;
+          overflow-x: hidden;
+        }
+
+        .homePremium__nav,
+        .homePremium__section,
+        .homePremium__hero,
+        .homePremium__footer {
+          overflow: hidden;
+        }
+
+        .homePremium__nav {
+          position: sticky;
+          top: 0;
+          z-index: 50;
+          padding: 20px 24px 0;
+          backdrop-filter: blur(8px);
+        }
+
+        .homePremium__navInner {
+          max-width: 1180px;
+          margin: 0 auto;
+          display: grid;
+          grid-template-columns: auto 1fr auto;
+          align-items: center;
+          gap: 22px;
+          padding: 18px 22px;
+          border-radius: 28px;
+          background: rgba(255, 255, 255, 0.82);
+          border: 1px solid rgba(148, 163, 184, 0.14);
+          box-shadow: 0 18px 45px rgba(15, 23, 42, 0.05);
+        }
+
+        .homePremium__brand {
+          display: inline-flex;
+          align-items: center;
+          gap: 14px;
+          text-decoration: none;
+          color: inherit;
+          min-width: 0;
+        }
+
+        .homePremium__brandLogo {
+          width: 62px;
+          height: 62px;
+          border-radius: 18px;
+          display: grid;
+          place-items: center;
+          background: linear-gradient(135deg, #8dc5ff 0%, #9fcbf8 100%);
+          color: #0f172a;
+          font-weight: 800;
+          font-size: 20px;
+          box-shadow: 0 16px 30px rgba(59, 130, 246, 0.15);
+          flex-shrink: 0;
+        }
+
+        .homePremium__brandTitle {
+          margin: 0;
+          font-size: 18px;
+          font-weight: 800;
+          line-height: 1.1;
+        }
+
+        .homePremium__brandSub {
+          font-size: 14px;
+          color: #64748b;
+          line-height: 1.2;
+        }
+
+        .homePremium__navLinks {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 18px;
+          min-width: 0;
+          flex-wrap: wrap;
+        }
+
+        .homePremium__navLinks a {
+          text-decoration: none;
+          color: #516173;
+          font-size: 14px;
+          font-weight: 600;
+        }
+
+        .homePremium__navLinks a:hover {
+          color: #0f172a;
+        }
+
+        .homePremium__navActions {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          min-width: 0;
+        }
+
+        .homePremium__langSwitch {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+        }
+
+        .homePremium__navTextBtn {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          min-height: 46px;
+          padding: 10px 14px;
+          border-radius: 14px;
+          text-decoration: none;
+          color: #64748b;
+          font-size: 14px;
+          font-weight: 700;
+          white-space: nowrap;
+        }
+
+        .homePremium__navTextBtn:hover {
+          background: rgba(148, 163, 184, 0.08);
+          color: #0f172a;
+        }
+
+        .homePremium__primaryBtn,
+        .homePremium__ghostBtn {
+          min-height: 50px;
+          padding: 14px 20px;
+          border-radius: 18px;
+          font-size: 15px;
+          font-weight: 800;
+          text-decoration: none;
+          border: none;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          text-align: center;
+          white-space: nowrap;
+        }
+
+        .homePremium__primaryBtn {
+          background: linear-gradient(135deg, #8ec8ff 0%, #a5d4ff 100%);
+          color: #0f172a;
+          box-shadow: 0 14px 28px rgba(59, 130, 246, 0.18);
+        }
+
+        .homePremium__primaryBtn:hover {
+          transform: translateY(-1px);
+        }
+
+        .homePremium__ghostBtn {
+          background: rgba(255, 255, 255, 0.92);
+          color: #0f172a;
+          border: 1px solid rgba(148, 163, 184, 0.16);
+          box-shadow: 0 12px 26px rgba(15, 23, 42, 0.04);
+        }
+
+        .homePremium__hero {
+          max-width: 1180px;
+          margin: 0 auto;
+          padding: 34px 24px 0;
+          display: grid;
+          grid-template-columns: 1.02fr 0.98fr;
+          gap: 22px;
+          align-items: stretch;
+          position: relative;
+        }
+
+        .homePremium__heroBackdrop {
+          position: absolute;
+          inset: 0;
+          pointer-events: none;
+        }
+
+        .homePremium__heroContent,
+        .homePremium__heroPanel {
+          position: relative;
+          min-width: 0;
+        }
+
+        .homePremium__heroBadge {
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
+          padding: 10px 14px;
+          border-radius: 999px;
+          background: rgba(239, 248, 255, 0.96);
+          border: 1px solid rgba(148, 163, 184, 0.16);
+          color: #2563eb;
+          font-size: 13px;
+          font-weight: 700;
+          margin-bottom: 18px;
+          flex-wrap: wrap;
+        }
+
+        .homePremium__heroBadgeDot {
+          width: 10px;
+          height: 10px;
+          border-radius: 999px;
+          background: #2563eb;
+          box-shadow: 0 0 0 6px rgba(37, 99, 235, 0.12);
+          flex-shrink: 0;
+        }
+
+        .homePremium__askBox {
+          padding: 12px;
+          border-radius: 18px;
+          background: rgba(255, 255, 255, 0.96);
+          border: 1px solid rgba(148, 163, 184, 0.18);
+          box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
+          backdrop-filter: blur(12px);
+          max-width: 760px;
+        }
+
+        .homePremium__askForm {
+          display: flex;
+          gap: 10px;
+          align-items: center;
+          flex-wrap: wrap;
+        }
+
+        .homePremium__askInput {
+          flex: 1;
+          min-width: 220px;
+          border: 1px solid rgba(148, 163, 184, 0.22);
+          border-radius: 14px;
+          padding: 14px 16px;
+          font-size: 14px;
+          outline: none;
+          background: #fff;
+        }
+
+        .homePremium__heroActions {
+          display: flex;
+          gap: 12px;
+          flex-wrap: wrap;
+          margin-top: 18px;
+        }
+
+        .homePremium__grid3 {
+          margin-top: 14px;
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 14px;
+        }
+
+        .homePremium__simpleCard {
+          padding: 18px;
+          border-radius: 20px;
+          background: rgba(255, 255, 255, 0.96);
+          border: 1px solid #e5edf5;
+          box-shadow: 0 14px 30px rgba(88, 112, 140, 0.04);
+          min-width: 0;
+          width: 100%;
+        }
+
+        .homePremium__heroPanelShell {
+          padding: 22px;
+          border-radius: 30px;
+          background: rgba(255, 255, 255, 0.92);
+          border: 1px solid rgba(148, 163, 184, 0.14);
+          box-shadow: 0 20px 60px rgba(15, 23, 42, 0.06);
+          min-width: 0;
+          width: 100%;
+        }
+
+        .homePremium__heroPanelTop {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 12px;
+          margin-bottom: 18px;
+          flex-wrap: wrap;
+        }
+
+        .homePremium__windowDots {
+          display: inline-flex;
+          gap: 8px;
+        }
+
+        .homePremium__windowDots span {
+          width: 10px;
+          height: 10px;
+          border-radius: 999px;
+          background: #cbd5e1;
+        }
+
+        .homePremium__showcaseTitle {
+          font-size: 12px;
+          font-weight: 800;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          color: #7288a3;
+        }
+
+        .homePremium__heroPanelBody {
+          display: grid;
+          gap: 14px;
+          min-width: 0;
+        }
+
+        .homePremium__heroPanelMainCard {
+          padding: 22px;
+          border-radius: 24px;
+          background:
+            linear-gradient(135deg, rgba(239, 248, 255, 0.96) 0%, rgba(252, 253, 255, 0.98) 100%);
+          border: 1px solid rgba(148, 163, 184, 0.16);
+          min-width: 0;
+          width: 100%;
+        }
+
+        .homePremium__heroPanelCardHead {
+          display: flex;
+          align-items: flex-start;
+          justify-content: space-between;
+          gap: 14px;
+          margin-bottom: 12px;
+        }
+
+        .homePremium__heroPanelMainCard h3 {
+          margin: 0;
+          font-size: 28px;
+          line-height: 1.08;
+          letter-spacing: -0.03em;
+          color: #0f172a;
+          overflow-wrap: break-word;
+        }
+
+        .homePremium__heroPanelPill {
+          padding: 10px 14px;
+          border-radius: 999px;
+          background: rgba(255, 255, 255, 0.86);
+          border: 1px solid #e5edf5;
+          font-size: 12px;
+          font-weight: 800;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          color: #2563eb;
+          white-space: nowrap;
+        }
+
+        .homePremium__cardLabel {
+          margin: 0 0 8px;
+          font-size: 12px;
+          font-weight: 800;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          color: #7288a3;
+        }
+
+        .homePremium__heroPanelText {
+          color: #607082;
+          line-height: 1.75;
+          font-size: 15px;
+          margin: 0 0 16px;
+          overflow-wrap: break-word;
+        }
+
+        .homePremium__heroPanelMiniStats {
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 12px;
+        }
+
+        .homePremium__heroPanelMiniStat {
+          padding: 14px;
+          border-radius: 18px;
+          background: rgba(255, 255, 255, 0.9);
+          border: 1px solid #e5edf5;
+          min-width: 0;
+        }
+
+        .homePremium__heroPanelMiniStat span {
+          display: block;
+          color: #7288a3;
+          font-size: 12px;
+          font-weight: 700;
+          margin-bottom: 8px;
+          overflow-wrap: break-word;
+        }
+
+        .homePremium__heroPanelMiniStat strong {
+          font-size: 22px;
+          color: #0f172a;
+        }
+
+        .homePremium__heroPanelRow {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 14px;
+        }
+
+        .homePremium__heroSoftCard {
+          padding: 18px;
+          border-radius: 22px;
+          background: rgba(255, 255, 255, 0.96);
+          border: 1px solid rgba(148, 163, 184, 0.14);
+          box-shadow: 0 12px 30px rgba(15, 23, 42, 0.04);
+          min-width: 0;
+          width: 100%;
+        }
+
+        .homePremium__dashboardCardTop {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          margin-bottom: 12px;
+          flex-wrap: wrap;
+        }
+
+        .homePremium__dashboardIcon {
+          width: 34px;
+          height: 34px;
+          border-radius: 12px;
+          display: grid;
+          place-items: center;
+          background: #eef6ff;
+        }
+
+        .homePremium__dashboardBadge {
+          font-size: 12px;
+          font-weight: 800;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          color: #7288a3;
+        }
+
+        .homePremium__heroSoftCard h4 {
+          margin: 0 0 8px;
+          font-size: 22px;
+          line-height: 1.15;
+          color: #0f172a;
+          overflow-wrap: break-word;
+        }
+
+        .homePremium__heroSoftCard p {
+          margin: 0;
+          color: #607082;
+          line-height: 1.75;
+          font-size: 14px;
+          overflow-wrap: break-word;
+        }
+
+        .homePremium__section {
+          max-width: 1180px;
+          margin: 0 auto;
+          padding: 78px 24px 0;
+        }
+
+        .homePremium__sectionHead {
+          margin-bottom: 26px;
+        }
+
+        .homePremium__eyebrow {
+          margin: 0 0 10px;
+          font-size: 12px;
+          font-weight: 800;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+          color: #7288a3;
+        }
+
+        .homePremium__sectionHead h2 {
+          margin: 0 0 12px;
+          font-size: clamp(38px, 5vw, 60px);
+          line-height: 1.02;
+          letter-spacing: -0.05em;
+          color: #0f172a;
+          max-width: 960px;
+          overflow-wrap: break-word;
+        }
+
+        .homePremium__sectionHead p {
+          margin: 0;
+          max-width: 760px;
+          color: #5b6b7e;
+          font-size: 18px;
+          line-height: 1.8;
+          overflow-wrap: break-word;
+        }
+
+        .homePremium__splitGrid {
+          display: grid;
+          grid-template-columns: 1.1fr 0.9fr;
+          gap: 20px;
+          align-items: stretch;
+        }
+
+        .homePremium__stackGap {
+          display: grid;
+          gap: 16px;
+          min-width: 0;
+        }
+
+        .homePremium__stepsGrid {
+          display: grid;
+          gap: 16px;
+        }
+
+        .homePremium__stepCard {
+          padding: 22px;
+          border-radius: 26px;
+          background: rgba(255, 255, 255, 0.96);
+          border: 1px solid rgba(148, 163, 184, 0.14);
+          box-shadow: 0 16px 38px rgba(87, 109, 138, 0.05);
+          min-width: 0;
+          width: 100%;
+        }
+
+        .homePremium__stepNumber {
+          display: inline-block;
+          margin-bottom: 14px;
+          color: #7288a3;
+          font-size: 12px;
+          font-weight: 800;
+          letter-spacing: 0.08em;
+        }
+
+        .homePremium__stepCard h3 {
+          margin: 0 0 10px;
+          font-size: 28px;
+          line-height: 1.1;
+          color: #0f172a;
+          overflow-wrap: break-word;
+        }
+
+        .homePremium__stepCard p {
+          margin: 0;
+          color: #607082;
+          line-height: 1.8;
+          font-size: 16px;
+          overflow-wrap: break-word;
+        }
+
+        .homePremium__padLg {
+          padding: 22px;
+          border-radius: 24px;
+        }
+
+        .homePremium__moduleGrid {
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 16px;
+        }
+
+        .homePremium__moduleCard {
+          padding: 22px;
+          border-radius: 28px;
+          background: rgba(255, 255, 255, 0.96);
+          border: 1px solid rgba(148, 163, 184, 0.14);
+          box-shadow: 0 16px 38px rgba(87, 109, 138, 0.05);
+          text-decoration: none;
+          color: inherit;
+          min-width: 0;
+          width: 100%;
+        }
+
+        .homePremium__moduleTop {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 12px;
+          margin-bottom: 18px;
+          flex-wrap: wrap;
+        }
+
+        .homePremium__moduleIcon {
+          width: 58px;
+          height: 58px;
+          border-radius: 18px;
+          display: grid;
+          place-items: center;
+          background: #eef6ff;
+          font-size: 28px;
+          flex-shrink: 0;
+        }
+
+        .homePremium__moduleBadge {
+          padding: 10px 14px;
+          border-radius: 999px;
+          background: rgba(239, 248, 255, 0.96);
+          color: #2e5f8f;
+          font-size: 12px;
+          font-weight: 800;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          white-space: nowrap;
+        }
+
+        .homePremium__moduleCard h3 {
+          margin: 0 0 12px;
+          font-size: 28px;
+          line-height: 1.08;
+          color: #0f172a;
+          overflow-wrap: break-word;
+        }
+
+        .homePremium__moduleCard p {
+          margin: 0;
+          color: #607082;
+          line-height: 1.85;
+          font-size: 16px;
+          overflow-wrap: break-word;
+        }
+
+        .homePremium__previewStrip {
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 16px;
+        }
+
+        .homePremium__previewCard {
+          padding: 24px;
+          border-radius: 28px;
+          background: rgba(255, 255, 255, 0.96);
+          border: 1px solid rgba(148, 163, 184, 0.14);
+          box-shadow: 0 16px 38px rgba(87, 109, 138, 0.05);
+          min-width: 0;
+          width: 100%;
+        }
+
+        .homePremium__previewCard--highlight {
+          background:
+            linear-gradient(135deg, rgba(239, 248, 255, 0.96) 0%, rgba(252, 253, 255, 0.98) 100%);
+        }
+
+        .homePremium__previewCard h3 {
+          margin: 0 0 12px;
+          font-size: 28px;
+          line-height: 1.08;
+          color: #0f172a;
+          overflow-wrap: break-word;
+        }
+
+        .homePremium__previewCard p {
+          margin: 0;
+          color: #607082;
+          line-height: 1.85;
+          font-size: 16px;
+          overflow-wrap: break-word;
+        }
+
+        .homePremium__pricingGrid {
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 16px;
+        }
+
+        .homePremium__priceCard {
+          position: relative;
+          padding: 24px;
+          border-radius: 28px;
+          background: rgba(255, 255, 255, 0.96);
+          border: 1px solid rgba(148, 163, 184, 0.14);
+          box-shadow: 0 16px 38px rgba(87, 109, 138, 0.05);
+          min-width: 0;
+          width: 100%;
+        }
+
+        .homePremium__priceCard--featured {
+          background:
+            linear-gradient(135deg, rgba(239, 248, 255, 0.96) 0%, rgba(252, 253, 255, 0.98) 100%);
+          border: 1px solid rgba(37, 99, 235, 0.16);
+        }
+
+        .homePremium__priceBadge {
+          position: absolute;
+          top: 18px;
+          right: 18px;
+          padding: 8px 12px;
+          border-radius: 999px;
+          background: #0f172a;
+          color: #fff;
+          font-size: 12px;
+          font-weight: 800;
+          white-space: nowrap;
+        }
+
+        .homePremium__priceLabel {
+          margin: 0 0 8px;
+          color: #7288a3;
+          font-size: 12px;
+          font-weight: 800;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+        }
+
+        .homePremium__priceCard h3 {
+          margin: 0 0 10px;
+          font-size: 42px;
+          line-height: 1;
+          color: #0f172a;
+          overflow-wrap: break-word;
+        }
+
+        .homePremium__priceCard h3 span {
+          font-size: 16px;
+          color: #64748b;
+          font-weight: 700;
+          margin-left: 6px;
+        }
+
+        .homePremium__priceSub {
+          margin: 0 0 16px;
+          color: #607082;
+          line-height: 1.75;
+          font-size: 15px;
+          overflow-wrap: break-word;
+        }
+
+        .homePremium__priceList {
+          margin: 0 0 18px;
+          padding-left: 18px;
+          color: #334155;
+          display: grid;
+          gap: 10px;
+          line-height: 1.7;
+          font-size: 15px;
+        }
+
+        .homePremium__priceBtn {
+          width: 100%;
+        }
+
+        .homePremium__section--cta {
+          padding-bottom: 42px;
+        }
+
+        .homePremium__ctaBox {
+          padding: 28px;
+          border-radius: 30px;
+          background:
+            linear-gradient(135deg, rgba(239, 248, 255, 0.96) 0%, rgba(252, 253, 255, 0.98) 100%);
+          border: 1px solid rgba(148, 163, 184, 0.16);
+          box-shadow: 0 18px 45px rgba(15, 23, 42, 0.05);
+        }
+
+        .homePremium__ctaBox h2 {
+          margin: 0 0 12px;
+          font-size: clamp(34px, 4.6vw, 56px);
+          line-height: 1.02;
+          letter-spacing: -0.05em;
+          color: #0f172a;
+          max-width: 840px;
+          overflow-wrap: break-word;
+        }
+
+        .homePremium__ctaBox p {
+          margin: 0;
+          color: #5b6b7e;
+          line-height: 1.8;
+          font-size: 17px;
+          max-width: 760px;
+          overflow-wrap: break-word;
+        }
+
+        .homePremium__ctaActions {
+          display: flex;
+          gap: 12px;
+          flex-wrap: wrap;
+          margin-top: 18px;
+        }
+
+        .homePremium__footer {
+          padding: 0 24px 28px;
+        }
+
+        .homePremium__footerInner {
+          max-width: 1180px;
+          margin: 0 auto;
+          padding: 28px;
+          border-radius: 30px;
+          background: rgba(255, 255, 255, 0.9);
+          border: 1px solid rgba(148, 163, 184, 0.14);
+          box-shadow: 0 18px 45px rgba(15, 23, 42, 0.05);
+          display: grid;
+          grid-template-columns: 1.1fr 0.9fr;
+          gap: 24px;
+        }
+
+        .homePremium__footerBrandCol {
+          min-width: 0;
+        }
+
+        .homePremium__footerText {
+          margin: 18px 0;
+          color: #607082;
+          line-height: 1.8;
+          font-size: 15px;
+          max-width: 520px;
+          overflow-wrap: break-word;
+        }
+
+        .homePremium__footerSocials {
+          display: flex;
+          gap: 14px;
+          flex-wrap: wrap;
+        }
+
+        .homePremium__footerSocials a,
+        .homePremium__footerCol a {
+          text-decoration: none;
+          color: #64748b;
+          font-size: 14px;
+          font-weight: 600;
+        }
+
+        .homePremium__footerGrid {
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 18px;
+        }
+
+        .homePremium__footerCol {
+          display: grid;
+          gap: 12px;
+          min-width: 0;
+        }
+
+        .homePremium__footerTitle {
+          margin: 0 0 4px;
+          font-size: 12px;
+          font-weight: 800;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          color: #7288a3;
+        }
+
+        .homePremium__footerBottom {
+          max-width: 1180px;
+          margin: 14px auto 0;
+          padding: 0 4px;
+        }
+
+        .homePremium__footerBottom p {
+          margin: 0;
+          color: #7288a3;
+          font-size: 13px;
+          line-height: 1.7;
+        }
+
+        @media (max-width: 1100px) {
+          .homePremium__hero {
+            grid-template-columns: 1fr;
+          }
+
+          .homePremium__splitGrid {
+            grid-template-columns: 1fr !important;
+          }
+
+          .homePremium__heroPanelRow {
+            grid-template-columns: 1fr;
+          }
+        }
+
+        @media (max-width: 900px) {
+          .homePremium__navInner {
+            grid-template-columns: 1fr;
+            gap: 16px;
+            align-items: stretch;
+          }
+
+          .homePremium__navLinks {
+            display: none;
+          }
+
+          .homePremium__navActions {
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1.4fr;
+            gap: 12px;
+            align-items: center;
+          }
+
+          .homePremium__moduleGrid,
+          .homePremium__previewStrip,
+          .homePremium__pricingGrid,
+          .homePremium__footerGrid,
+          .homePremium__grid3 {
+            grid-template-columns: 1fr;
+          }
+
+          .homePremium__footerInner {
+            grid-template-columns: 1fr;
+          }
+        }
+
+        @media (max-width: 640px) {
+          .homePremium {
+            overflow-x: hidden !important;
+          }
+
+          .homePremium__nav,
+          .homePremium__section,
+          .homePremium__hero,
+          .homePremium__footer {
+            overflow: hidden !important;
+          }
+
+          .homePremium__nav {
+            padding: 14px 16px 0;
+          }
+
+          .homePremium__section,
+          .homePremium__hero,
+          .homePremium__footer {
+            padding-left: 16px !important;
+            padding-right: 16px !important;
+          }
+
+          .homePremium__navInner {
+            padding: 18px;
+            border-radius: 24px;
+            gap: 14px;
+          }
+
+          .homePremium__brandLogo {
+            width: 64px;
+            height: 64px;
+            font-size: 20px;
+          }
+
+          .homePremium__brandTitle {
+            font-size: 18px;
+          }
+
+          .homePremium__brandSub {
+            font-size: 14px;
+          }
+
+          .homePremium__navActions {
+            grid-template-columns: 1fr 1fr 1.4fr;
+            gap: 10px;
+          }
+
+          .homePremium__navTextBtn,
+          .homePremium__primaryBtn,
+          .homePremium__ghostBtn {
+            min-height: 48px;
+            padding: 12px 14px;
+            font-size: 14px;
+          }
+
+          .homePremium__hero {
+            padding-top: 24px;
+            gap: 18px;
+          }
+
+          .homePremium__heroContent h1 {
+            font-size: clamp(34px, 10vw, 48px) !important;
+          }
+
+          .homePremium__sectionHead h2,
+          .homePremium__ctaBox h2 {
+            font-size: clamp(30px, 9vw, 42px) !important;
+            line-height: 1.04 !important;
+          }
+
+          .homePremium__sectionHead p,
+          .homePremium__ctaBox p {
+            font-size: 16px !important;
+            line-height: 1.75 !important;
+          }
+
+          .homePremium__askForm {
+            display: grid;
+            grid-template-columns: 1fr;
+          }
+
+          .homePremium__askInput {
+            min-width: 0;
+            width: 100%;
+          }
+
+          .homePremium__heroActions,
+          .homePremium__ctaActions {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+          }
+
+          .homePremium__heroPanelMiniStats,
+          .homePremium__moduleGrid,
+          .homePremium__previewStrip,
+          .homePremium__pricingGrid,
+          .homePremium__footerGrid,
+          .homePremium__stepsGrid,
+          .homePremium__grid3,
+          .homePremium__heroPanelRow {
+            grid-template-columns: 1fr !important;
+          }
+
+          .homePremium__footerInner,
+          .homePremium__splitGrid,
+          .homePremium__hero {
+            grid-template-columns: 1fr !important;
+          }
+
+          .homePremium__simpleCard,
+          .homePremium__stepCard,
+          .homePremium__previewCard,
+          .homePremium__moduleCard,
+          .homePremium__priceCard,
+          .homePremium__heroSoftCard,
+          .homePremium__heroPanelMainCard,
+          .homePremium__ctaBox,
+          .homePremium__heroPanelShell {
+            min-width: 0 !important;
+            width: 100% !important;
+            max-width: 100% !important;
+          }
+
+          .homePremium__heroPanelMainCard h3,
+          .homePremium__previewCard h3,
+          .homePremium__stepCard h3,
+          .homePremium__moduleCard h3,
+          .homePremium__heroSoftCard h4 {
+            font-size: 28px !important;
+            line-height: 1.08 !important;
+            overflow-wrap: break-word !important;
+          }
+
+          .homePremium__heroPanelText,
+          .homePremium__previewCard p,
+          .homePremium__moduleCard p,
+          .homePremium__stepCard p,
+          .homePremium__priceSub,
+          .homePremium__footerText {
+            font-size: 15px !important;
+            line-height: 1.75 !important;
+            overflow-wrap: break-word !important;
+          }
+
+          .homePremium__priceCard h3 {
+            font-size: 34px !important;
+          }
+
+          .homePremium__heroPanelCardHead {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+          }
+
+          .homePremium__heroPanelShell {
+            padding: 18px;
+          }
+
+          .homePremium__heroPanelMainCard {
+            padding: 18px;
+          }
+
+          .homePremium__section {
+            padding-top: 56px;
+          }
+        }
+      `}</style>
     </main>
   );
 }
