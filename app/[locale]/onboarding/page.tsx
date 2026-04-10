@@ -263,9 +263,26 @@ function getPlanFromUrl(): PlanTier {
   return "premium";
 }
 
+function useIsMobile(breakpoint = 900) {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    function update() {
+      setIsMobile(window.innerWidth <= breakpoint);
+    }
+
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, [breakpoint]);
+
+  return isMobile;
+}
+
 export default function OnboardingPage() {
   const router = useRouter();
   const params = useParams();
+  const isMobile = useIsMobile();
 
   const rawLocale =
     typeof params.locale === "string" ? params.locale : defaultLocale;
@@ -373,7 +390,7 @@ export default function OnboardingPage() {
         minHeight: "100vh",
         background:
           "radial-gradient(circle at top left, rgba(166, 210, 255, 0.18), transparent 26%), linear-gradient(180deg, #f7fbff 0%, #fcfdff 100%)",
-        padding: "32px 20px",
+        padding: isMobile ? "20px 14px" : "32px 20px",
       }}
     >
       <div
@@ -386,10 +403,11 @@ export default function OnboardingPage() {
           style={{
             display: "flex",
             justifyContent: "space-between",
-            alignItems: "center",
+            alignItems: isMobile ? "stretch" : "center",
             gap: "16px",
             flexWrap: "wrap",
             marginBottom: "22px",
+            flexDirection: isMobile ? "column" : "row",
           }}
         >
           <a
@@ -401,6 +419,7 @@ export default function OnboardingPage() {
               textDecoration: "none",
               color: "#334155",
               fontWeight: 700,
+              width: isMobile ? "100%" : "auto",
             }}
           >
             <span
@@ -414,6 +433,7 @@ export default function OnboardingPage() {
                 color: "#fff",
                 fontSize: "13px",
                 fontWeight: 800,
+                flexShrink: 0,
               }}
             >
               SB
@@ -433,6 +453,7 @@ export default function OnboardingPage() {
               color: "#475569",
               fontWeight: 700,
               fontSize: "13px",
+              width: isMobile ? "fit-content" : "auto",
             }}
           >
             <span
@@ -452,7 +473,7 @@ export default function OnboardingPage() {
           style={{
             display: "grid",
             gap: "24px",
-            gridTemplateColumns: "1.08fr 0.92fr",
+            gridTemplateColumns: isMobile ? "1fr" : "1.08fr 0.92fr",
             alignItems: "start",
           }}
         >
@@ -460,8 +481,8 @@ export default function OnboardingPage() {
             style={{
               background: "rgba(255,255,255,0.86)",
               border: "1px solid rgba(148,163,184,0.16)",
-              borderRadius: "30px",
-              padding: "28px",
+              borderRadius: isMobile ? "24px" : "30px",
+              padding: isMobile ? "20px" : "28px",
               boxShadow: "0 18px 50px rgba(15,23,42,0.08)",
               backdropFilter: "blur(14px)",
             }}
@@ -484,7 +505,7 @@ export default function OnboardingPage() {
               <h1
                 style={{
                   margin: "0 0 12px",
-                  fontSize: "clamp(34px, 4.8vw, 56px)",
+                  fontSize: isMobile ? "34px" : "clamp(34px, 4.8vw, 56px)",
                   lineHeight: 1.02,
                   letterSpacing: "-0.05em",
                   color: "#0f172a",
@@ -497,7 +518,7 @@ export default function OnboardingPage() {
               <p
                 style={{
                   margin: 0,
-                  fontSize: "17px",
+                  fontSize: isMobile ? "15px" : "17px",
                   lineHeight: 1.8,
                   color: "#5b6b7e",
                   maxWidth: "760px",
@@ -510,7 +531,7 @@ export default function OnboardingPage() {
             <div
               style={{
                 marginBottom: "22px",
-                padding: "18px",
+                padding: isMobile ? "16px" : "18px",
                 borderRadius: "22px",
                 background:
                   "linear-gradient(135deg, rgba(239,248,255,0.96) 0%, rgba(252,253,255,0.98) 100%)",
@@ -534,7 +555,9 @@ export default function OnboardingPage() {
                 style={{
                   display: "grid",
                   gap: "12px",
-                  gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+                  gridTemplateColumns: isMobile
+                    ? "1fr"
+                    : "repeat(3, minmax(0, 1fr))",
                 }}
               >
                 {(["basic", "premium", "elite"] as PlanTier[]).map((item) => {
@@ -558,6 +581,7 @@ export default function OnboardingPage() {
                           ? "0 16px 34px rgba(37,99,235,0.08)"
                           : "0 10px 24px rgba(15,23,42,0.03)",
                         cursor: "pointer",
+                        width: "100%",
                       }}
                     >
                       <div
@@ -566,6 +590,7 @@ export default function OnboardingPage() {
                           alignItems: "center",
                           gap: "8px",
                           marginBottom: "8px",
+                          flexWrap: "wrap",
                         }}
                       >
                         <span
@@ -574,6 +599,7 @@ export default function OnboardingPage() {
                             height: "10px",
                             borderRadius: "999px",
                             background: active ? "#2563eb" : "#cbd5e1",
+                            flexShrink: 0,
                           }}
                         />
                         <strong
@@ -628,7 +654,9 @@ export default function OnboardingPage() {
               style={{
                 display: "grid",
                 gap: "12px",
-                gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+                gridTemplateColumns: isMobile
+                  ? "1fr"
+                  : "repeat(3, minmax(0, 1fr))",
                 marginBottom: "22px",
               }}
             >
@@ -693,7 +721,9 @@ export default function OnboardingPage() {
                   style={{
                     display: "grid",
                     gap: "16px",
-                    gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+                    gridTemplateColumns: isMobile
+                      ? "1fr"
+                      : "repeat(2, minmax(0, 1fr))",
                   }}
                 >
                   <Field
@@ -784,6 +814,7 @@ export default function OnboardingPage() {
                   gap: "12px",
                   flexWrap: "wrap",
                   marginTop: "24px",
+                  flexDirection: isMobile ? "column" : "row",
                 }}
               >
                 <button
@@ -793,6 +824,7 @@ export default function OnboardingPage() {
                     ...primaryButtonStyle,
                     opacity: loading ? 0.72 : 1,
                     cursor: loading ? "not-allowed" : "pointer",
+                    width: isMobile ? "100%" : "auto",
                   }}
                 >
                   {loading ? t.saving : t.save}
@@ -801,7 +833,10 @@ export default function OnboardingPage() {
                 <button
                   type="button"
                   onClick={() => router.push(`/${locale}/dashboard`)}
-                  style={secondaryButtonStyle}
+                  style={{
+                    ...secondaryButtonStyle,
+                    width: isMobile ? "100%" : "auto",
+                  }}
                 >
                   {t.skip}
                 </button>
@@ -813,8 +848,8 @@ export default function OnboardingPage() {
             style={{
               background: "linear-gradient(180deg, #0f172a 0%, #172554 100%)",
               color: "#fff",
-              borderRadius: "30px",
-              padding: "28px",
+              borderRadius: isMobile ? "24px" : "30px",
+              padding: isMobile ? "20px" : "28px",
               boxShadow: "0 22px 60px rgba(15,23,42,0.18)",
               minHeight: "100%",
               display: "grid",
@@ -838,8 +873,9 @@ export default function OnboardingPage() {
               <h2
                 style={{
                   margin: "12px 0 6px",
-                  fontSize: "34px",
+                  fontSize: isMobile ? "28px" : "34px",
                   lineHeight: 1.1,
+                  wordBreak: "break-word",
                 }}
               >
                 {isReady ? plan.name : "Loading..."}
@@ -861,6 +897,7 @@ export default function OnboardingPage() {
                   margin: 0,
                   lineHeight: 1.7,
                   color: "#cbd5e1",
+                  fontSize: isMobile ? "14px" : "16px",
                 }}
               >
                 {isReady ? plan.text : ""}
@@ -897,6 +934,7 @@ export default function OnboardingPage() {
                         color: "#e2e8f0",
                         lineHeight: 1.6,
                         fontSize: "14px",
+                        wordBreak: "break-word",
                       }}
                     >
                       • {feature}
