@@ -354,6 +354,24 @@ export default function DashboardClient() {
   const [aiInput, setAiInput] = useState("");
   const [aiQuestion, setAiQuestion] = useState("");
   const [isLoadingData, setIsLoadingData] = useState(true);
+  const [windowWidth, setWindowWidth] = useState<number>(1200);
+
+  useEffect(() => {
+    function updateWidth() {
+      if (typeof window === "undefined") return;
+      setWindowWidth(window.innerWidth);
+    }
+
+    updateWidth();
+    window.addEventListener("resize", updateWidth);
+
+    return () => {
+      window.removeEventListener("resize", updateWidth);
+    };
+  }, []);
+
+  const isMobile = windowWidth < 768;
+  const isTablet = windowWidth >= 768 && windowWidth < 1100;
 
   useEffect(() => {
     let isMounted = true;
@@ -1064,7 +1082,11 @@ export default function DashboardClient() {
           style={{
             display: "grid",
             gap: "16px",
-            gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+            gridTemplateColumns: isMobile
+              ? "1fr"
+              : isTablet
+              ? "repeat(2, minmax(0, 1fr))"
+              : "repeat(3, minmax(0, 1fr))",
           }}
         >
           <div
@@ -1083,7 +1105,7 @@ export default function DashboardClient() {
               type="button"
               className="neoDash__secondaryBtn"
               onClick={() => choosePlan("basic")}
-              style={{ marginTop: "12px" }}
+              style={{ marginTop: "12px", width: isMobile ? "100%" : "auto" }}
             >
               {selectedPlan === "basic" ? t.selected : t.chooseBasic}
             </button>
@@ -1105,7 +1127,7 @@ export default function DashboardClient() {
               type="button"
               className="neoDash__primaryBtn"
               onClick={() => choosePlan("premium")}
-              style={{ marginTop: "12px" }}
+              style={{ marginTop: "12px", width: isMobile ? "100%" : "auto" }}
             >
               {selectedPlan === "premium" ? t.selected : t.choosePremium}
             </button>
@@ -1127,7 +1149,7 @@ export default function DashboardClient() {
               type="button"
               className="neoDash__secondaryBtn"
               onClick={() => choosePlan("elite")}
-              style={{ marginTop: "12px" }}
+              style={{ marginTop: "12px", width: isMobile ? "100%" : "auto" }}
             >
               {selectedPlan === "elite" ? t.selected : t.chooseElite}
             </button>
@@ -1135,19 +1157,42 @@ export default function DashboardClient() {
         </div>
       </section>
 
-      <div className="neoDash__heroGrid">
+      <div
+        className="neoDash__heroGrid"
+        style={{
+          display: "grid",
+          gridTemplateColumns: isMobile ? "1fr" : "minmax(0, 1.4fr) minmax(260px, 0.6fr)",
+          gap: "20px",
+          alignItems: "stretch",
+        }}
+      >
         <article className="neoDash__heroCard">
           <p className="neoDash__label">{t.mainOverview}</p>
-          <h2>
+          <h2
+            style={{
+              fontSize: isMobile ? "28px" : "clamp(30px, 3vw, 42px)",
+              lineHeight: 1.08,
+              wordBreak: "break-word",
+            }}
+          >
             {babyName}&apos;s {t.dailySystem}
           </h2>
-          <p>
+          <p style={{ lineHeight: 1.8 }}>
             {babyName} {t.currentlyOn}{" "}
             <strong style={{ textTransform: "capitalize" }}>{selectedPlan}</strong> {t.plan}.
+            {" "}
             You have <strong>{totalLogs}</strong> {t.totalLogs}.
           </p>
 
-          <div className="neoDash__miniStats">
+          <div
+            className="neoDash__miniStats"
+            style={{
+              display: "grid",
+              gap: "12px",
+              gridTemplateColumns: isMobile ? "1fr" : "repeat(3, minmax(0, 1fr))",
+              marginTop: "18px",
+            }}
+          >
             <div className="neoDash__miniStat">
               <span>{t.bedtime}</span>
               <strong>{bedtime}</strong>
@@ -1184,8 +1229,8 @@ export default function DashboardClient() {
 
           <div className="neoDash__card" style={{ marginTop: 0 }}>
             <p className="neoDash__label">{t.yourQuestion}</p>
-            <h3>{aiQuestion}</h3>
-            <p>{aiAssistant.message}</p>
+            <h3 style={{ wordBreak: "break-word" }}>{aiQuestion}</h3>
+            <p style={{ lineHeight: 1.8 }}>{aiAssistant.message}</p>
 
             {!planAccess.canSeePlan && (
               <div
@@ -1268,14 +1313,26 @@ export default function DashboardClient() {
           </div>
 
           <div className="neoDash__formActions">
-            <button type="button" className="neoDash__primaryBtn" onClick={handleAskAgain}>
+            <button
+              type="button"
+              className="neoDash__primaryBtn"
+              onClick={handleAskAgain}
+              style={{ width: isMobile ? "100%" : "auto" }}
+            >
               {t.askAi}
             </button>
           </div>
         </div>
       </section>
 
-      <div className="neoDash__summaryGrid">
+      <div
+        className="neoDash__summaryGrid"
+        style={{
+          display: "grid",
+          gap: "16px",
+          gridTemplateColumns: isMobile ? "1fr" : "repeat(3, minmax(0, 1fr))",
+        }}
+      >
         <article className="neoDash__summaryCard">
           <p className="neoDash__label">{t.sleepScore}</p>
           <strong>{sleepScore}</strong>
@@ -1299,7 +1356,11 @@ export default function DashboardClient() {
         style={{
           display: "grid",
           gap: "20px",
-          gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+          gridTemplateColumns: isMobile
+            ? "1fr"
+            : isTablet
+            ? "repeat(2, minmax(0, 1fr))"
+            : "repeat(3, minmax(0, 1fr))",
         }}
       >
         <a
@@ -1308,8 +1369,10 @@ export default function DashboardClient() {
           style={{ textDecoration: "none", color: "inherit" }}
         >
           <p className="neoDash__label">{t.sleepModule}</p>
-          <h3>🌙 {sleepInsight.title}</h3>
-          <p>{sleepInsight.subtitle}</p>
+          <h3 style={{ fontSize: isMobile ? "22px" : "26px", lineHeight: 1.2 }}>
+            🌙 {sleepInsight.title}
+          </h3>
+          <p style={{ lineHeight: 1.75 }}>{sleepInsight.subtitle}</p>
           <div style={{ marginTop: "12px" }}>
             <strong>{t.rhythm}:</strong> {sleepInsight.rhythm}
           </div>
@@ -1324,8 +1387,10 @@ export default function DashboardClient() {
           style={{ textDecoration: "none", color: "inherit" }}
         >
           <p className="neoDash__label">{t.foodModule}</p>
-          <h3>🍼 {foodInsight.title}</h3>
-          <p>{foodInsight.subtitle}</p>
+          <h3 style={{ fontSize: isMobile ? "22px" : "26px", lineHeight: 1.2 }}>
+            🍼 {foodInsight.title}
+          </h3>
+          <p style={{ lineHeight: 1.75 }}>{foodInsight.subtitle}</p>
           <div style={{ marginTop: "12px" }}>
             <strong>{t.reactionSignal}:</strong> {foodInsight.reactionSignal}
           </div>
@@ -1340,8 +1405,10 @@ export default function DashboardClient() {
           style={{ textDecoration: "none", color: "inherit" }}
         >
           <p className="neoDash__label">{t.careModule}</p>
-          <h3>💙 {careInsight.title}</h3>
-          <p>{careInsight.subtitle}</p>
+          <h3 style={{ fontSize: isMobile ? "22px" : "26px", lineHeight: 1.2 }}>
+            💙 {careInsight.title}
+          </h3>
+          <p style={{ lineHeight: 1.75 }}>{careInsight.subtitle}</p>
           <div style={{ marginTop: "12px" }}>
             <strong>{t.consistency}:</strong> {careInsight.consistencySignal}
           </div>
@@ -1351,7 +1418,15 @@ export default function DashboardClient() {
         </a>
       </div>
 
-      <div className="neoDash__contentGrid" style={{ marginTop: "20px" }}>
+      <div
+        className="neoDash__contentGrid"
+        style={{
+          marginTop: "20px",
+          display: "grid",
+          gap: "20px",
+          gridTemplateColumns: isMobile ? "1fr" : "repeat(2, minmax(0, 1fr))",
+        }}
+      >
         <article className="neoDash__card">
           <p className="neoDash__label">{t.profileSummary}</p>
           <h3>{t.currentProfileContext}</h3>
@@ -1369,7 +1444,7 @@ export default function DashboardClient() {
         <article className="neoDash__card">
           <p className="neoDash__label">{t.parentNotes}</p>
           <h3>{t.savedContext}</h3>
-          <p>{notes}</p>
+          <p style={{ lineHeight: 1.8 }}>{notes}</p>
         </article>
       </div>
 
