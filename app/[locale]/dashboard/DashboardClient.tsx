@@ -354,24 +354,18 @@ export default function DashboardClient() {
   const [aiInput, setAiInput] = useState("");
   const [aiQuestion, setAiQuestion] = useState("");
   const [isLoadingData, setIsLoadingData] = useState(true);
-  const [windowWidth, setWindowWidth] = useState<number>(1200);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    function updateWidth() {
+    function updateViewport() {
       if (typeof window === "undefined") return;
-      setWindowWidth(window.innerWidth);
+      setIsMobile(window.innerWidth < 900);
     }
 
-    updateWidth();
-    window.addEventListener("resize", updateWidth);
-
-    return () => {
-      window.removeEventListener("resize", updateWidth);
-    };
+    updateViewport();
+    window.addEventListener("resize", updateViewport);
+    return () => window.removeEventListener("resize", updateViewport);
   }, []);
-
-  const isMobile = windowWidth < 768;
-  const isTablet = windowWidth >= 768 && windowWidth < 1100;
 
   useEffect(() => {
     let isMounted = true;
@@ -1084,9 +1078,7 @@ export default function DashboardClient() {
             gap: "16px",
             gridTemplateColumns: isMobile
               ? "1fr"
-              : isTablet
-              ? "repeat(2, minmax(0, 1fr))"
-              : "repeat(3, minmax(0, 1fr))",
+              : "repeat(auto-fit, minmax(220px, 1fr))",
           }}
         >
           <div
@@ -1161,27 +1153,25 @@ export default function DashboardClient() {
         className="neoDash__heroGrid"
         style={{
           display: "grid",
-          gridTemplateColumns: isMobile ? "1fr" : "minmax(0, 1.4fr) minmax(260px, 0.6fr)",
           gap: "20px",
-          alignItems: "stretch",
+          gridTemplateColumns: isMobile ? "1fr" : "minmax(0, 1.35fr) minmax(280px, 0.65fr)",
         }}
       >
         <article className="neoDash__heroCard">
           <p className="neoDash__label">{t.mainOverview}</p>
           <h2
             style={{
-              fontSize: isMobile ? "28px" : "clamp(30px, 3vw, 42px)",
-              lineHeight: 1.08,
+              fontSize: isMobile ? "30px" : undefined,
+              lineHeight: isMobile ? 1.08 : undefined,
               wordBreak: "break-word",
             }}
           >
             {babyName}&apos;s {t.dailySystem}
           </h2>
-          <p style={{ lineHeight: 1.8 }}>
+          <p>
             {babyName} {t.currentlyOn}{" "}
             <strong style={{ textTransform: "capitalize" }}>{selectedPlan}</strong> {t.plan}.
-            {" "}
-            You have <strong>{totalLogs}</strong> {t.totalLogs}.
+            {" "}You have <strong>{totalLogs}</strong> {t.totalLogs}.
           </p>
 
           <div
@@ -1190,7 +1180,6 @@ export default function DashboardClient() {
               display: "grid",
               gap: "12px",
               gridTemplateColumns: isMobile ? "1fr" : "repeat(3, minmax(0, 1fr))",
-              marginTop: "18px",
             }}
           >
             <div className="neoDash__miniStat">
@@ -1230,7 +1219,7 @@ export default function DashboardClient() {
           <div className="neoDash__card" style={{ marginTop: 0 }}>
             <p className="neoDash__label">{t.yourQuestion}</p>
             <h3 style={{ wordBreak: "break-word" }}>{aiQuestion}</h3>
-            <p style={{ lineHeight: 1.8 }}>{aiAssistant.message}</p>
+            <p>{aiAssistant.message}</p>
 
             {!planAccess.canSeePlan && (
               <div
@@ -1312,7 +1301,14 @@ export default function DashboardClient() {
             </label>
           </div>
 
-          <div className="neoDash__formActions">
+          <div
+            className="neoDash__formActions"
+            style={{
+              display: "flex",
+              gap: "12px",
+              flexWrap: "wrap",
+            }}
+          >
             <button
               type="button"
               className="neoDash__primaryBtn"
@@ -1358,9 +1354,7 @@ export default function DashboardClient() {
           gap: "20px",
           gridTemplateColumns: isMobile
             ? "1fr"
-            : isTablet
-            ? "repeat(2, minmax(0, 1fr))"
-            : "repeat(3, minmax(0, 1fr))",
+            : "repeat(auto-fit, minmax(280px, 1fr))",
         }}
       >
         <a
@@ -1369,10 +1363,8 @@ export default function DashboardClient() {
           style={{ textDecoration: "none", color: "inherit" }}
         >
           <p className="neoDash__label">{t.sleepModule}</p>
-          <h3 style={{ fontSize: isMobile ? "22px" : "26px", lineHeight: 1.2 }}>
-            🌙 {sleepInsight.title}
-          </h3>
-          <p style={{ lineHeight: 1.75 }}>{sleepInsight.subtitle}</p>
+          <h3>🌙 {sleepInsight.title}</h3>
+          <p>{sleepInsight.subtitle}</p>
           <div style={{ marginTop: "12px" }}>
             <strong>{t.rhythm}:</strong> {sleepInsight.rhythm}
           </div>
@@ -1387,10 +1379,8 @@ export default function DashboardClient() {
           style={{ textDecoration: "none", color: "inherit" }}
         >
           <p className="neoDash__label">{t.foodModule}</p>
-          <h3 style={{ fontSize: isMobile ? "22px" : "26px", lineHeight: 1.2 }}>
-            🍼 {foodInsight.title}
-          </h3>
-          <p style={{ lineHeight: 1.75 }}>{foodInsight.subtitle}</p>
+          <h3>🍼 {foodInsight.title}</h3>
+          <p>{foodInsight.subtitle}</p>
           <div style={{ marginTop: "12px" }}>
             <strong>{t.reactionSignal}:</strong> {foodInsight.reactionSignal}
           </div>
@@ -1405,10 +1395,8 @@ export default function DashboardClient() {
           style={{ textDecoration: "none", color: "inherit" }}
         >
           <p className="neoDash__label">{t.careModule}</p>
-          <h3 style={{ fontSize: isMobile ? "22px" : "26px", lineHeight: 1.2 }}>
-            💙 {careInsight.title}
-          </h3>
-          <p style={{ lineHeight: 1.75 }}>{careInsight.subtitle}</p>
+          <h3>💙 {careInsight.title}</h3>
+          <p>{careInsight.subtitle}</p>
           <div style={{ marginTop: "12px" }}>
             <strong>{t.consistency}:</strong> {careInsight.consistencySignal}
           </div>
@@ -1444,7 +1432,7 @@ export default function DashboardClient() {
         <article className="neoDash__card">
           <p className="neoDash__label">{t.parentNotes}</p>
           <h3>{t.savedContext}</h3>
-          <p style={{ lineHeight: 1.8 }}>{notes}</p>
+          <p>{notes}</p>
         </article>
       </div>
 
