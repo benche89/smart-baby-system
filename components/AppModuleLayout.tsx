@@ -35,6 +35,11 @@ export default function AppModuleLayout({
       ? ((rawLocale[0] as Locale) || "en")
       : ((rawLocale as Locale) || "en");
 
+  const betaText =
+    locale === "fr"
+      ? "Accès anticipé • Conçu pour de vrais parents • En constante évolution"
+      : "Early access • Built for real parents • Constantly evolving";
+
   const navItems: Array<{
     key: ActiveModule;
     href: string;
@@ -43,18 +48,68 @@ export default function AppModuleLayout({
   }> =
     locale === "fr"
       ? [
-          { key: "dashboard", href: `/${locale}/dashboard`, label: "Tableau principal", icon: "✨" },
-          { key: "profile", href: `/${locale}/profile`, label: "Modifier le profil", icon: "👶" },
-          { key: "sleep", href: `/${locale}/sleep`, label: "Module sommeil", icon: "🌙" },
-          { key: "food", href: `/${locale}/food`, label: "Module alimentation", icon: "🍼" },
-          { key: "care", href: `/${locale}/care`, label: "Module soins", icon: "💙" },
+          {
+            key: "dashboard",
+            href: `/${locale}/dashboard`,
+            label: "Tableau principal",
+            icon: "✨",
+          },
+          {
+            key: "profile",
+            href: `/${locale}/profile`,
+            label: "Modifier le profil",
+            icon: "👶",
+          },
+          {
+            key: "sleep",
+            href: `/${locale}/sleep`,
+            label: "Module sommeil",
+            icon: "🌙",
+          },
+          {
+            key: "food",
+            href: `/${locale}/food`,
+            label: "Module alimentation",
+            icon: "🍼",
+          },
+          {
+            key: "care",
+            href: `/${locale}/care`,
+            label: "Module soins",
+            icon: "💙",
+          },
         ]
       : [
-          { key: "dashboard", href: `/${locale}/dashboard`, label: "Main dashboard", icon: "✨" },
-          { key: "profile", href: `/${locale}/profile`, label: "Edit profile", icon: "👶" },
-          { key: "sleep", href: `/${locale}/sleep`, label: "Sleep module", icon: "🌙" },
-          { key: "food", href: `/${locale}/food`, label: "Food module", icon: "🍼" },
-          { key: "care", href: `/${locale}/care`, label: "Care module", icon: "💙" },
+          {
+            key: "dashboard",
+            href: `/${locale}/dashboard`,
+            label: "Main dashboard",
+            icon: "✨",
+          },
+          {
+            key: "profile",
+            href: `/${locale}/profile`,
+            label: "Edit profile",
+            icon: "👶",
+          },
+          {
+            key: "sleep",
+            href: `/${locale}/sleep`,
+            label: "Sleep module",
+            icon: "🌙",
+          },
+          {
+            key: "food",
+            href: `/${locale}/food`,
+            label: "Food module",
+            icon: "🍼",
+          },
+          {
+            key: "care",
+            href: `/${locale}/care`,
+            label: "Care module",
+            icon: "💙",
+          },
         ];
 
   return (
@@ -97,6 +152,24 @@ export default function AppModuleLayout({
       </aside>
 
       <main className="neoDash__main">
+        <div
+          style={{
+            width: "100%",
+            marginBottom: "18px",
+            padding: "10px 14px",
+            borderRadius: "16px",
+            background: "linear-gradient(90deg, #0f172a, #1e293b)",
+            color: "#ffffff",
+            textAlign: "center",
+            fontSize: "13px",
+            fontWeight: 700,
+            letterSpacing: "0.02em",
+            boxShadow: "0 12px 30px rgba(15,23,42,0.14)",
+          }}
+        >
+          {betaText}
+        </div>
+
         <section className="neoDash__topline">
           <div>
             {title ? <h1>{title}</h1> : null}
