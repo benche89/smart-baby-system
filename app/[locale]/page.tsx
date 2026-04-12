@@ -172,7 +172,8 @@ const copy = {
       startFree: "Commencer gratuitement",
       seeMarketplace: "Voir le marketplace",
       previewEyebrow: "Aperçu du produit",
-      previewTitle: "Un seul système apaisant pour de meilleures décisions parentales",
+      previewTitle:
+        "Un seul système apaisant pour de meilleures décisions parentales",
       previewText:
         "Sommeil, alimentation, soins et guidance IA travaillent ensemble dans une seule expérience connectée.",
       scoreTitle: "Aperçu du jour",
@@ -647,7 +648,9 @@ export default function Home() {
           </article>
 
           <article className="homePremium__priceCard homePremium__priceCard--featured">
-            <div className="homePremium__priceBadge">{t.pricing.mostPopular}</div>
+            <div className="homePremium__priceBadge">
+              {t.pricing.mostPopular}
+            </div>
             <p className="homePremium__priceLabel">{t.pricing.premium}</p>
             <h3>
               {t.pricing.premiumPrice}
@@ -1510,7 +1513,10 @@ export default function Home() {
         }
 
         @media (max-width: 1100px) {
-          .homePremium__hero,
+          .homePremium__hero {
+            grid-template-columns: 1fr;
+          }
+
           .homePremium__moduleGrid--four,
           .homePremium__pricingGrid,
           .homePremium__grid3,
@@ -1538,7 +1544,6 @@ export default function Home() {
             align-items: center;
           }
 
-          .homePremium__hero,
           .homePremium__moduleGrid--four,
           .homePremium__pricingGrid,
           .homePremium__grid3,
